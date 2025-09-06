@@ -1,4 +1,4 @@
-
-class ImagePath{
-  static const  String logo='';
+class ImagePath {
+  static String logo = '';
+  static String profile = 'assets/images/profile.png';
 }
