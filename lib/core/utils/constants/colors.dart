@@ -10,8 +10,8 @@ class AppColors {
   static const Color secondary = Color(
     0xFFFEC601,
   ); // Bright yellow for highlights and accents
-  static const Color accent = Color(
-    0xFF89A7FF,
+  static const Color background = Color(
+    0xFFF5F5F5,
   ); // Softer blue for a modern touch
 
   // Gradient Colors
