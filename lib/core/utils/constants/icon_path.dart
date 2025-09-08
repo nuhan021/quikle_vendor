@@ -10,9 +10,10 @@ class IconPath {
   static String support = 'assets/icons/support.svg';
   static String logout = 'assets/icons/logout.svg';
   static String paytm = 'assets/icons/paytm.png';
-  static String googlePlay = 'assets/icons/google_play.png';
+  static String googlePay = 'assets/icons/google_pay.png';
   static String cashfree = 'assets/icons/cashfree.png';
   static String razorpay = 'assets/icons/razorpay.png';
   static String phonepe = 'assets/icons/phonepe.png';
   static String bankTransfer = 'assets/icons/bank_transfer.png';
+  static String export = 'assets/icons/export.svg';
 }

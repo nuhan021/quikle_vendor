@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
+import '../../../core/common/styles/global_text_style.dart';
 
 class AppbarScreen extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -11,7 +12,7 @@ class AppbarScreen extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(
         title,
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w600),
       ),
       centerTitle: false,
       shape: RoundedRectangleBorder(

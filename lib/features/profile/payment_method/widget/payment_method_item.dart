@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../../../core/common/styles/global_text_style.dart';
 
 class PaymentMethodItem extends StatelessWidget {
   final String iconPath;
@@ -42,7 +43,7 @@ class PaymentMethodItem extends StatelessWidget {
           Expanded(
             child: Text(
               name,
-              style: const TextStyle(
+              style: getTextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
                 color: Colors.black87,

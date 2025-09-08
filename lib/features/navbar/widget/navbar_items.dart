@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
+import '../../../core/common/styles/global_text_style.dart';
 
 class NavbarItems extends StatelessWidget {
   final String iconPath;
@@ -35,7 +36,7 @@ class NavbarItems extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(
+            style: getTextStyle(
               color: selected ? AppColors.primary : Colors.white,
             ),
           ),

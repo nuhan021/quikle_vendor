@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../../core/common/styles/global_text_style.dart';
 
 class TransactionCard extends StatelessWidget {
-  final String orderId, amount, status, time, customer;
+  final String orderId, amount, status, time, customer, delivery;
   final List<String> tags;
 
   const TransactionCard({
@@ -11,19 +12,12 @@ class TransactionCard extends StatelessWidget {
     required this.status,
     required this.time,
     required this.customer,
+    required this.delivery,
     required this.tags,
   });
 
-  Color getStatusColor() {
-    switch (status) {
-      case "Received":
-        return Colors.green;
-      case "Pending":
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
-  }
+  bool isReceived() => status == "Received";
+  bool isPending() => status == "Pending";
 
   @override
   Widget build(BuildContext context) {
@@ -41,97 +35,117 @@ class TransactionCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// Left side
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Order $orderId",
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
+          /// Order ID + Amount
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Order $orderId",
+                style: getTextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              Text(
+                amount,
+                style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          /// Customer + Time
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                customer,
+                style: getTextStyle(
+                  fontSize: 14,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                time,
+                style: getTextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          /// Status + Tags | Delivery
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  /// Status Badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isReceived()
+                          ? Colors.green.withValues(alpha: .2)
+                          : Colors.transparent,
+                      border: isPending()
+                          ? Border.all(color: Colors.orange, width: 1)
+                          : null,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      status,
+                      style: getTextStyle(
+                        color: isReceived()
+                            ? Colors.black87
+                            : isPending()
+                            ? Colors.orange
+                            : Colors.grey,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  customer,
-                  style: const TextStyle(fontSize: 14, color: Colors.black87),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    /// Status Badge
+                  const SizedBox(width: 8),
+
+                  /// Tags
+                  for (final tag in tags)
                     Container(
+                      margin: const EdgeInsets.only(right: 6),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
+                        horizontal: 10,
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: getStatusColor().withValues(alpha: .1),
+                        color: Colors.orange.withValues(alpha: .2),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        status,
-                        style: TextStyle(
-                          color: getStatusColor(),
+                        tag,
+                        style: getTextStyle(
                           fontSize: 12,
+                          color: Colors.black87,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-
-                    /// Tags
-                    for (final tag in tags)
-                      Container(
-                        margin: const EdgeInsets.only(right: 6),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.orange.withValues(alpha: .1),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          tag,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.orange,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "Cash On Delivery",
-                  style: const TextStyle(fontSize: 13, color: Colors.black54),
-                ),
-              ],
-            ),
-          ),
-
-          /// Right side (Amount + Time)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                amount,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
+                ],
               ),
-              const SizedBox(height: 6),
+
+              /// Delivery
               Text(
-                time,
-                style: const TextStyle(fontSize: 12, color: Colors.black54),
+                delivery,
+                style: getTextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ],
           ),

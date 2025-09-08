@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../styles/global_text_style.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
@@ -12,6 +13,7 @@ class CustomButton extends StatelessWidget {
   final double borderRadius;
   final Color? borderColor;
   final bool isLoading;
+  final TextStyle? style;
 
   const CustomButton({
     super.key,
@@ -26,6 +28,7 @@ class CustomButton extends StatelessWidget {
     this.borderRadius = 8,
     this.borderColor,
     this.isLoading = false,
+    this.style,
   });
 
   @override
@@ -54,11 +57,13 @@ class CustomButton extends StatelessWidget {
               )
             : Text(
                 text,
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontWeight: fontWeight,
-                  color: textColor,
-                ),
+                style:
+                    style ??
+                    getTextStyle(
+                      fontSize: fontSize,
+                      fontWeight: fontWeight,
+                      color: textColor,
+                    ),
               ),
       ),
     );

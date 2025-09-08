@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
+import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/utils/constants/icon_path.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../appbar/screen/appbar_screen.dart';
@@ -36,7 +37,7 @@ class AccountScreen extends StatelessWidget {
                 ],
               ),
               child: Column(
-                children: const [
+                children: [
                   CircleAvatar(
                     radius: 45,
                     backgroundImage: AssetImage("assets/images/profile.png"),
@@ -44,7 +45,7 @@ class AccountScreen extends StatelessWidget {
                   SizedBox(height: 12),
                   Text(
                     "Vikram Rajput",
-                    style: TextStyle(
+                    style: getTextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                       color: Colors.black87,
@@ -53,7 +54,7 @@ class AccountScreen extends StatelessWidget {
                   SizedBox(height: 4),
                   Text(
                     "vikramrajput@gmail.com",
-                    style: TextStyle(fontSize: 14, color: Colors.black54),
+                    style: getTextStyle(fontSize: 14, color: Colors.black54),
                   ),
                 ],
               ),

@@ -1,6 +1,7 @@
 import 'package:quikle_vendor/features/authentication/controllers/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/common/styles/global_text_style.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -24,12 +25,7 @@ class HomeScreen extends StatelessWidget {
               onTap: () {
                 controller.addCategory(); // Add category when clicked
               },
-              child: Row(
-                children: [
-                  Icon(Icons.add),
-                  Text('Add new category'),
-                ],
-              ),
+              child: Row(children: [Icon(Icons.add), Text('Add new category')]),
             ),
             SizedBox(height: 10),
             // "Add your own" Section with new userId
@@ -60,7 +56,7 @@ class HomeScreen extends StatelessWidget {
                         title: Text(category.categoryName ?? ''),
                         subtitle: Text(
                           'UserId: ${category.userId}\nCreated: ${category.createdAt}\nUpdated: ${category.updatedAt}',
-                          style: TextStyle(fontSize: 12),
+                          style: getTextStyle(fontSize: 12),
                         ),
                       ),
                     );

@@ -12,7 +12,7 @@ class PaymentMethodController extends GetxController {
     /// Initial default methods
     methods.addAll([
       {"icon": IconPath.paytm, "name": "Paytm"},
-      {"icon": IconPath.googlePlay, "name": "Google Pay"},
+      {"icon": IconPath.googlePay, "name": "Google Pay"},
       {"icon": IconPath.phonepe, "name": "PhonePe"},
       {"icon": IconPath.cashfree, "name": "Cashfree"},
       {"icon": IconPath.razorpay, "name": "Razorpay"},

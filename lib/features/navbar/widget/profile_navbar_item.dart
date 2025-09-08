@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/common/styles/global_text_style.dart';
 import '../../../core/utils/constants/colors.dart';
 
 class ProfileNavbarItem extends StatelessWidget {
@@ -26,7 +27,7 @@ class ProfileNavbarItem extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(
+            style: getTextStyle(
               color: selected ? AppColors.primary : Colors.white,
             ),
           ),

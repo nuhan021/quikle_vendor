@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 
 class LanguageDialog extends StatelessWidget {
@@ -23,9 +24,9 @@ class LanguageDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               "Language Settings",
-              style: TextStyle(
+              style: getTextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
@@ -34,11 +35,11 @@ class LanguageDialog extends StatelessWidget {
             const SizedBox(height: 16),
 
             /// Dropdown Label
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 "Choose Language",
-                style: TextStyle(
+                style: getTextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: Colors.black87,

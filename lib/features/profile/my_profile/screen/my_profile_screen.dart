@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
+import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../appbar/screen/appbar_screen.dart';
 import '../widget/profile_field.dart';
@@ -34,7 +35,7 @@ class MyProfileScreen extends StatelessWidget {
                 ],
               ),
               child: Column(
-                children: const [
+                children: [
                   CircleAvatar(
                     radius: 45,
                     backgroundImage: AssetImage("assets/images/profile.png"),
@@ -42,7 +43,7 @@ class MyProfileScreen extends StatelessWidget {
                   SizedBox(height: 12),
                   Text(
                     "Vikram Rajput",
-                    style: TextStyle(
+                    style: getTextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                       color: Colors.black87,
@@ -51,7 +52,7 @@ class MyProfileScreen extends StatelessWidget {
                   SizedBox(height: 4),
                   Text(
                     "vikramrajput@gmail.com",
-                    style: TextStyle(fontSize: 14, color: Colors.black54),
+                    style: getTextStyle(fontSize: 14, color: Colors.black54),
                   ),
                 ],
               ),
@@ -80,9 +81,9 @@ class MyProfileScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         "My Profile",
-                        style: TextStyle(
+                        style: getTextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -91,6 +92,11 @@ class MyProfileScreen extends StatelessWidget {
                         width: 50,
                         height: 26,
                         text: "Edit",
+                        style: getTextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                        ),
                         onPressed: () {
                           // TODO: edit profile action
                           Get.toNamed(AppRoute.editProfileScreen);

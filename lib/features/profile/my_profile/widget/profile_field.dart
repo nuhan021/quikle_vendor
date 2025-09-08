@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/common/styles/global_text_style.dart';
 
 class ProfileField extends StatelessWidget {
   final String label;
@@ -21,17 +22,14 @@ class ProfileField extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: getTextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: Colors.black87,
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 14, color: Colors.black54),
-          ),
+          const SizedBox(height: 8),
+          Text(value, style: getTextStyle(fontSize: 14, color: Colors.black54)),
           if (showDivider) const Divider(height: 20),
         ],
       ),

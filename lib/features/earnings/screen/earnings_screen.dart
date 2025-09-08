@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
-import '../../../appbar/screen/appbar_screen.dart';
+import '../../../core/common/styles/global_text_style.dart';
+import '../../appbar/screen/appbar_screen.dart';
 import '../controller/earnings_controller.dart';
 import '../widget/invoices/invoices_tab.dart';
 import '../widget/overview/overview_tab.dart';
@@ -16,10 +17,10 @@ class EarningsScreen extends StatelessWidget {
     final controller = Get.put(EarningsController());
 
     final tabWidgets = [
-      const OverviewTab(),
-      const PaymentsTab(),
-      const InvoicesTab(),
-      const PayoutsTab(),
+      OverviewTab(),
+      PaymentsTab(),
+      InvoicesTab(),
+      PayoutsTab(),
     ];
 
     return Scaffold(
@@ -50,7 +51,7 @@ class EarningsScreen extends StatelessWidget {
                           ),
                           child: Text(
                             controller.tabs[i],
-                            style: TextStyle(
+                            style: getTextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                               color: isSelected ? Colors.white : Colors.black87,

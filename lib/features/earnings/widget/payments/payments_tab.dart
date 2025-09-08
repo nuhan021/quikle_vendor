@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:quikle_vendor/core/utils/constants/icon_path.dart';
 
+import '../../../../core/common/styles/global_text_style.dart';
 import 'transaction_card.dart';
 
 class PaymentsTab extends StatelessWidget {
@@ -14,37 +17,48 @@ class PaymentsTab extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               "Recent Transactions",
-              style: TextStyle(
+              style: getTextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
               ),
             ),
-            OutlinedButton.icon(
-              onPressed: () {
-                // TODO: export logic
+            GestureDetector(
+              onTap: () {
+                // TODO: Implement export functionality
               },
-              style: OutlinedButton.styleFrom(
+              child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 6,
                 ),
-                side: const BorderSide(color: Colors.black12),
-                shape: RoundedRectangleBorder(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.black12, width: 1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-              ),
-              icon: const Icon(Icons.download, size: 18, color: Colors.black),
-              label: const Text(
-                "Export",
-                style: TextStyle(color: Colors.black, fontSize: 14),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Export",
+                      style: getTextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    SvgPicture.asset(IconPath.export, width: 14, height: 14),
+                  ],
+                ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 10),
 
         /// Transactions List
         Expanded(
@@ -57,6 +71,7 @@ class PaymentsTab extends StatelessWidget {
                 time: "10 minutes ago",
                 customer: "Anaya Desai",
                 tags: ["Food"],
+                delivery: 'Cash On Delivery',
               ),
               TransactionCard(
                 orderId: "ORD-GR-087",
@@ -65,6 +80,7 @@ class PaymentsTab extends StatelessWidget {
                 time: "10 minutes ago",
                 customer: "Anaya Desai",
                 tags: ["Food"],
+                delivery: 'Cash On Delivery',
               ),
             ],
           ),

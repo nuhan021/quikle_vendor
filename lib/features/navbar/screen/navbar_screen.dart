@@ -4,7 +4,7 @@ import 'package:quikle_vendor/features/profile/account/screen/account_screen.dar
 import '../../../core/utils/constants/colors.dart';
 import '../../../core/utils/constants/icon_path.dart';
 import '../../../core/utils/constants/image_path.dart';
-import '../../home/earnings/screen/earnings_screen.dart';
+import '../../earnings/screen/earnings_screen.dart';
 // import '../../home/screen/home_screen.dart';
 import '../../orders/screen/orders_screen.dart';
 import '../../products/screen/products_screen.dart';

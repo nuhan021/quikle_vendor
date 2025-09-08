@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:quikle_vendor/features/earnings/widget/invoices/action_button.dart';
+import '../../../../core/common/styles/global_text_style.dart';
 
 class InvoiceCard extends StatelessWidget {
   final String invoiceId, orderId, amount, customer, date, time, status;
@@ -16,16 +18,8 @@ class InvoiceCard extends StatelessWidget {
     required this.tags,
   });
 
-  Color getStatusColor() {
-    switch (status) {
-      case "Paid":
-        return Colors.green;
-      case "Pending":
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
-  }
+  bool get isPaid => status == "Paid";
+  bool get isPending => status == "Pending";
 
   @override
   Widget build(BuildContext context) {
@@ -46,42 +40,58 @@ class InvoiceCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// Top Row (Invoice ID + Amount)
+          /// Row 1: Invoice ID + Amount
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 invoiceId,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: getTextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
               Text(
                 amount,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
+                style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          /// Row 2: Order ID + Time
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Order: $orderId",
+                style: getTextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              Text(
+                time,
+                style: getTextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            "Order: $orderId",
-            style: const TextStyle(fontSize: 13, color: Colors.black87),
-          ),
-          Text(
-            customer,
-            style: const TextStyle(fontSize: 13, color: Colors.black87),
-          ),
-          Text(
-            time,
-            style: const TextStyle(fontSize: 12, color: Colors.black54),
-          ),
           const SizedBox(height: 8),
 
-          /// Status + Date
+          /// Row 3: Customer Name
+          Text(
+            customer,
+            style: getTextStyle(
+              fontSize: 14,
+              color: Colors.black,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          /// Row 4: Status + Tags + Generated Date
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -90,19 +100,24 @@ class InvoiceCard extends StatelessWidget {
                   /// Status Badge
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
+                      horizontal: 10,
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: getStatusColor().withValues(alpha: .1),
+                      color: isPaid
+                          ? Colors.green.withValues(alpha: .2)
+                          : Colors.transparent,
+                      border: isPending
+                          ? Border.all(color: Colors.orange, width: 1)
+                          : null,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       status,
-                      style: TextStyle(
-                        color: getStatusColor(),
+                      style: getTextStyle(
+                        color: Colors.black,
                         fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ),
@@ -111,20 +126,20 @@ class InvoiceCard extends StatelessWidget {
                   /// Tags
                   for (final tag in tags)
                     Container(
-                      margin: const EdgeInsets.only(left: 4),
+                      margin: const EdgeInsets.only(left: 6),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
+                        horizontal: 10,
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withValues(alpha: .1),
+                        color: Colors.orange.withValues(alpha: .2),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         tag,
-                        style: const TextStyle(
+                        style: getTextStyle(
                           fontSize: 12,
-                          color: Colors.orange,
+                          color: Colors.black87,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -133,56 +148,33 @@ class InvoiceCard extends StatelessWidget {
               ),
               Text(
                 "Generated: $date",
-                style: const TextStyle(fontSize: 12, color: Colors.black54),
+                style: getTextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ],
           ),
-
           const SizedBox(height: 12),
 
-          /// Buttons Row
+          /// Row 5: Action Buttons
           Row(
             children: [
-              OutlinedButton.icon(
-                onPressed: () {},
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  side: const BorderSide(color: Colors.black12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                icon: const Icon(Icons.download, size: 18, color: Colors.black),
-                label: const Text(
-                  "Download",
-                  style: TextStyle(color: Colors.black, fontSize: 13),
-                ),
+              ActionButton(
+                label: "Download",
+                icon: Icons.download,
+                onTap: () {
+                  // TODO: download action
+                },
               ),
               const SizedBox(width: 8),
-              OutlinedButton.icon(
-                onPressed: () {},
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  side: const BorderSide(color: Colors.black12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                icon: const Icon(
-                  Icons.visibility,
-                  size: 18,
-                  color: Colors.black,
-                ),
-                label: const Text(
-                  "View",
-                  style: TextStyle(color: Colors.black, fontSize: 13),
-                ),
+              ActionButton(
+                label: "View",
+                icon: Icons.visibility,
+                onTap: () {
+                  // TODO: view action
+                },
               ),
             ],
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/common/styles/global_text_style.dart';
 import 'stat_card.dart';
 
 class OverviewTab extends StatelessWidget {
@@ -13,47 +14,67 @@ class OverviewTab extends StatelessWidget {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
+            children: [
               Text(
                 "Earnings Overview",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: getTextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
-              Text("This Week"),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 1),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.all(Radius.circular(6)),
+                  border: Border.all(color: Colors.black38),
+                ),
+                child: Text(
+                  "This Week",
+                  style: getTextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
 
           /// Earnings Card
           Container(
+            height: 164,
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 24),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Colors.black, Colors.black87],
+                colors: [Colors.black, Color(0xFF333333)],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
-              children: const [
-                Text(
-                  "\$ Total Earnings",
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
-                ),
+              children: [
                 SizedBox(height: 8),
                 Text(
+                  "\$ Total Earnings",
+                  style: getTextStyle(color: Colors.white70, fontSize: 16),
+                ),
+                SizedBox(height: 20),
+                Text(
                   "\$4,250.80",
-                  style: TextStyle(
+                  style: getTextStyle(
                     color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(height: 6),
+                SizedBox(height: 20),
                 Text(
                   "Net \$325.72",
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                  style: getTextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/common/widgets/custom_button.dart';
+import '../../../../core/common/styles/global_text_style.dart';
+import '../../../../core/common/widgets/custom_button.dart';
 
 class PayoutsTab extends StatelessWidget {
   const PayoutsTab({super.key});
@@ -31,38 +32,42 @@ class PayoutsTab extends StatelessWidget {
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       "Available Balance",
-                      style: TextStyle(fontSize: 14, color: Colors.black54),
+                      style: getTextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 10),
                     Text(
                       "\$47.40",
-                      style: TextStyle(
+                      style: getTextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    SizedBox(height: 6),
+                    const SizedBox(height: 10),
                     Text(
                       "Next auto-withdrawal: Every Friday",
-                      style: TextStyle(fontSize: 12, color: Colors.black54),
+                      style: getTextStyle(fontSize: 12, color: Colors.black54),
                     ),
                   ],
                 ),
 
                 /// Custom Withdraw Button
                 CustomButton(
-                  height: 40,
-                  width: 100,
+                  height: 32,
+                  width: 87,
                   text: "Withdraw",
                   onPressed: () {
                     // TODO: Withdraw logic
                   },
                   backgroundColor: Colors.black,
                   textColor: Colors.white,
-                  fontSize: 14,
+                  fontSize: 12,
                   borderRadius: 8,
                 ),
               ],
@@ -89,16 +94,19 @@ class PayoutsTab extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   "Withdrawal Configuration",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: getTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 16),
 
                 /// Minimum Withdrawal Amount
-                const Text(
+                Text(
                   "Minimum Withdrawal Amount",
-                  style: TextStyle(fontSize: 14, color: Colors.black87),
+                  style: getTextStyle(fontSize: 14, color: Colors.black87),
                 ),
                 const SizedBox(height: 6),
                 TextFormField(
@@ -115,9 +123,9 @@ class PayoutsTab extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       "Auto Withdrawal Day",
-                      style: TextStyle(fontSize: 14, color: Colors.black87),
+                      style: getTextStyle(fontSize: 14, color: Colors.black87),
                     ),
                     SizedBox(
                       height: 28,
@@ -147,9 +155,27 @@ class PayoutsTab extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  items: const [
-                    DropdownMenuItem(value: "Monday", child: Text("Monday")),
-                    DropdownMenuItem(value: "Friday", child: Text("Friday")),
+                  items: [
+                    DropdownMenuItem(
+                      value: "Monday",
+                      child: Text(
+                        "Monday",
+                        style: getTextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: "Friday",
+                      child: Text(
+                        "Friday",
+                        style: getTextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
                   ],
                   onChanged: (val) {
                     // TODO: change withdrawal day
@@ -158,9 +184,9 @@ class PayoutsTab extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 /// Payment Method
-                const Text(
+                Text(
                   "Payment Method",
-                  style: TextStyle(fontSize: 14, color: Colors.black87),
+                  style: getTextStyle(fontSize: 14, color: Colors.black87),
                 ),
                 const SizedBox(height: 6),
                 DropdownButtonFormField<String>(
@@ -170,12 +196,27 @@ class PayoutsTab extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  items: const [
+                  items: [
                     DropdownMenuItem(
                       value: "Bank Transfer",
-                      child: Text("Bank Transfer"),
+                      child: Text(
+                        "Bank Transfer",
+                        style: getTextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                      ),
                     ),
-                    DropdownMenuItem(value: "PayPal", child: Text("PayPal")),
+                    DropdownMenuItem(
+                      value: "PayPal",
+                      child: Text(
+                        "PayPal",
+                        style: getTextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
                   ],
                   onChanged: (val) {
                     // TODO: change payment method
@@ -184,9 +225,9 @@ class PayoutsTab extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 /// Bank Account
-                const Text(
+                Text(
                   "Bank Account",
-                  style: TextStyle(fontSize: 14, color: Colors.black87),
+                  style: getTextStyle(fontSize: 14, color: Colors.black87),
                 ),
                 const SizedBox(height: 6),
                 TextFormField(

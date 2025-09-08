@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/utils.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
+import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_textfield.dart';
 import '../../../appbar/screen/appbar_screen.dart';
@@ -49,7 +50,7 @@ class EditProfileScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text(
                     nameController.text,
-                    style: const TextStyle(
+                    style: getTextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                       color: Colors.black87,
@@ -58,7 +59,7 @@ class EditProfileScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     emailController.text,
-                    style: const TextStyle(fontSize: 14, color: Colors.black54),
+                    style: getTextStyle(fontSize: 14, color: Colors.black54),
                   ),
                 ],
               ),
@@ -83,9 +84,12 @@ class EditProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "Edit Profile",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    style: getTextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 16),
 
@@ -117,7 +121,7 @@ class EditProfileScreen extends StatelessWidget {
                   /// Save Button
                   CustomButton(
                     text: "Save Changes",
-                    fontSize: 18,
+                    fontSize: 16,
                     onPressed: () {
                       // TODO: save profile logic
                       Get.back();
@@ -126,6 +130,7 @@ class EditProfileScreen extends StatelessWidget {
                     textColor: Colors.white,
                     height: 50,
                     borderRadius: 8,
+                    fontWeight: FontWeight.w600,
                   ),
                 ],
               ),

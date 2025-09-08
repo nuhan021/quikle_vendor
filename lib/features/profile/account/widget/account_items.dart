@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/common/styles/global_text_style.dart';
 
 class AccountItems extends StatelessWidget {
   final List<Map<String, Object>> items;
@@ -33,7 +34,7 @@ class AccountItems extends StatelessWidget {
                 ),
                 title: Text(
                   item['text'] as String,
-                  style: TextStyle(
+                  style: getTextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     color: item['textColor'] as Color? ?? Colors.black87,

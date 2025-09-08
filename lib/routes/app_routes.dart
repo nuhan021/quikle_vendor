@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:quikle_vendor/features/navbar/screen/navbar_screen.dart';
 
 import '../features/authentication/presentation/screens/login_screen.dart';
-import '../features/home/earnings/screen/earnings_screen.dart';
+import '../features/earnings/screen/earnings_screen.dart';
 import '../features/profile/edit_profile/screen/edit_profile_screen.dart';
 import '../features/profile/my_profile/screen/my_profile_screen.dart';
 import '../features/profile/notification_settings/screen/notification_settings_screen.dart'

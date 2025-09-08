@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/common/styles/global_text_style.dart';
 
 class NotificationTile extends StatelessWidget {
   final String title;
@@ -33,7 +34,7 @@ class NotificationTile extends StatelessWidget {
       child: SwitchListTile(
         title: Text(
           title,
-          style: const TextStyle(
+          style: getTextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w500,
             color: Colors.black87,
@@ -42,7 +43,7 @@ class NotificationTile extends StatelessWidget {
         subtitle: subtitle != null
             ? Text(
                 subtitle!,
-                style: const TextStyle(fontSize: 13, color: Colors.black54),
+                style: getTextStyle(fontSize: 13, color: Colors.black54),
               )
             : null,
         value: value,
