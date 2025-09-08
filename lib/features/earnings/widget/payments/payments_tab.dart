@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/icon_path.dart';
 
 import '../../../../core/common/styles/global_text_style.dart';
+import '../../controller/payments_controller.dart';
 import 'transaction_card.dart';
 
 class PaymentsTab extends StatelessWidget {
@@ -10,6 +12,8 @@ class PaymentsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(PaymentsController());
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -60,29 +64,24 @@ class PaymentsTab extends StatelessWidget {
         ),
         const SizedBox(height: 10),
 
-        /// Transactions List
+        /// Transactions List (reactive)
         Expanded(
-          child: ListView(
-            children: const [
-              TransactionCard(
-                orderId: "ORD-FD-001",
-                amount: "\$47.40",
-                status: "Received",
-                time: "10 minutes ago",
-                customer: "Anaya Desai",
-                tags: ["Food"],
-                delivery: 'Cash On Delivery',
-              ),
-              TransactionCard(
-                orderId: "ORD-GR-087",
-                amount: "\$47.40",
-                status: "Pending",
-                time: "10 minutes ago",
-                customer: "Anaya Desai",
-                tags: ["Food"],
-                delivery: 'Cash On Delivery',
-              ),
-            ],
+          child: Obx(
+            () => ListView.builder(
+              itemCount: controller.transactions.length,
+              itemBuilder: (context, index) {
+                final tx = controller.transactions[index];
+                return TransactionCard(
+                  orderId: tx["orderId"],
+                  amount: tx["amount"],
+                  status: tx["status"],
+                  time: tx["time"],
+                  customer: tx["customer"],
+                  delivery: tx["delivery"],
+                  tags: List<String>.from(tx["tags"]),
+                );
+              },
+            ),
           ),
         ),
       ],

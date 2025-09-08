@@ -5,6 +5,7 @@ import 'package:quikle_vendor/features/navbar/screen/navbar_screen.dart';
 import '../features/authentication/presentation/screens/login_screen.dart';
 import '../features/earnings/screen/earnings_screen.dart';
 import '../features/profile/edit_profile/screen/edit_profile_screen.dart';
+import '../features/profile/help_and_support/screen/help_and_support_screen.dart';
 import '../features/profile/my_profile/screen/my_profile_screen.dart';
 import '../features/profile/notification_settings/screen/notification_settings_screen.dart'
     show NotificationSettingsScreen;
@@ -19,6 +20,7 @@ class AppRoute {
   static String earningsScreen = '/earningsScreen';
   static String paymentMethodScreen = '/paymentMethodScreen';
   static String notificationSettingsScreen = '/notificationSettingsScreen';
+  static String helpAndSupportScreen = '/helpAndSupportScreen';
 
   static String getLoginScreen() => loginScreen;
   static String getNavbarScreen() => navbarScreen;
@@ -27,6 +29,7 @@ class AppRoute {
   static String getEarningsScreen() => earningsScreen;
   static String getPaymentMethodScreen() => paymentMethodScreen;
   static String getNotificationSettingsScreen() => notificationSettingsScreen;
+  static String getHelpAndSupportScreen() => helpAndSupportScreen;
 
   static List<GetPage> routes = [
     GetPage(name: loginScreen, page: () => LoginScreen()),
@@ -40,5 +43,6 @@ class AppRoute {
       name: notificationSettingsScreen,
       page: () => NotificationSettingsScreen(),
     ),
+    GetPage(name: helpAndSupportScreen, page: () => HelpAndSupportScreen()),
   ];
 }

@@ -15,44 +15,40 @@ class PaymentMethodScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8F8),
       appBar: const AppbarScreen(title: "Payment Method"),
+      body: Obx(
+        () => SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              /// Payment Method List
+              ...List.generate(controller.methods.length, (index) {
+                final method = controller.methods[index];
+                return PaymentMethodItem(
+                  iconPath: method["icon"]!,
+                  name: method["name"]!,
+                  onDelete: () => controller.deleteMethod(index),
+                );
+              }),
 
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            /// Payment Method List (reactive)
-            Expanded(
-              child: Obx(
-                () => ListView.builder(
-                  itemCount: controller.methods.length,
-                  itemBuilder: (context, index) {
-                    final method = controller.methods[index];
-                    return PaymentMethodItem(
-                      iconPath: method["icon"]!,
-                      name: method["name"]!,
-                      onDelete: () => controller.deleteMethod(index),
-                    );
-                  },
-                ),
+              /// Spacing after last payment method
+              const SizedBox(height: 30),
+
+              /// Add New Payment Method Button
+              CustomButton(
+                text: "Add New Payment Method",
+                onPressed: () {
+                  // Example: Add PayPal
+                  controller.addMethod("assets/icons/paypal.png", "PayPal");
+                },
+                height: 48,
+                backgroundColor: Colors.black,
+                textColor: Colors.white,
+                fontSize: 15,
+                borderRadius: 8,
               ),
-            ),
-
-            const SizedBox(height: 16),
-
-            /// Add New Payment Method Button
-            CustomButton(
-              text: "Add New Payment Method",
-              onPressed: () {
-                // Example: Add PayPal
-                controller.addMethod("assets/icons/paypal.png", "PayPal");
-              },
-              height: 48,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-              fontSize: 15,
-              borderRadius: 8,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
