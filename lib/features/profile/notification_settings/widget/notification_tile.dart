@@ -19,7 +19,7 @@ class NotificationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -31,27 +31,43 @@ class NotificationTile extends StatelessWidget {
           ),
         ],
       ),
-      child: SwitchListTile(
-        title: Text(
-          title,
-          style: getTextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// Title + Switch (Same Row)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: getTextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+              Transform.scale(
+                scale: 0.65,
+                child: Switch(
+                  value: value,
+                  onChanged: onChanged,
+                  activeTrackColor: Colors.green,
+                  inactiveThumbColor: Colors.white,
+                  inactiveTrackColor: Colors.grey.shade300,
+                ),
+              ),
+            ],
           ),
-        ),
-        subtitle: subtitle != null
-            ? Text(
-                subtitle!,
-                style: getTextStyle(fontSize: 13, color: Colors.black54),
-              )
-            : null,
-        value: value,
-        onChanged: onChanged,
-        activeColor: Colors.white,
-        activeTrackColor: Colors.green,
-        inactiveThumbColor: Colors.white,
-        inactiveTrackColor: Colors.grey.shade300,
+
+          /// Subtitle (only if available, below title row)
+          if (subtitle != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              subtitle!,
+              style: getTextStyle(fontSize: 13, color: Colors.black54),
+            ),
+          ],
+        ],
       ),
     );
   }

@@ -13,6 +13,7 @@ class CustomTextField extends StatelessWidget {
   final bool readOnly;
   final VoidCallback? onTap;
   final int maxLines;
+  final double? height;
 
   const CustomTextField({
     super.key,
@@ -27,6 +28,7 @@ class CustomTextField extends StatelessWidget {
     this.readOnly = false,
     this.onTap,
     this.maxLines = 1,
+    this.height,
   });
 
   @override
@@ -59,9 +61,9 @@ class CustomTextField extends StatelessWidget {
             fillColor: Colors.white,
             suffixIcon: suffixIcon,
             prefixIcon: prefixIcon,
-            contentPadding: const EdgeInsets.symmetric(
+            contentPadding: EdgeInsets.symmetric(
               horizontal: 12,
-              vertical: 14,
+              vertical: height != null ? (height! - 20) / 2 : 14,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),

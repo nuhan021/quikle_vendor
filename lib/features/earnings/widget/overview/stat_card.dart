@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 
 class StatCard extends StatelessWidget {
   final String title, value, subtitle;
-  const StatCard(this.title, this.value, this.subtitle);
+  const StatCard(this.title, this.value, this.subtitle, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +23,7 @@ class StatCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(
             title,
             style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w500),

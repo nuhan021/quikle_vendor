@@ -113,7 +113,9 @@ class AccountScreen extends StatelessWidget {
                 {
                   "icon": SvgPicture.asset(IconPath.support),
                   "text": "Help & Support",
-                  "onTap": () {},
+                  "onTap": () {
+                    Get.toNamed(AppRoute.helpAndSupportScreen);
+                  },
                 },
                 {
                   "icon": SvgPicture.asset(IconPath.logout),

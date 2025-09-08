@@ -16,4 +16,5 @@ class IconPath {
   static String phonepe = 'assets/icons/phonepe.png';
   static String bankTransfer = 'assets/icons/bank_transfer.png';
   static String export = 'assets/icons/export.svg';
+  static String upload = 'assets/icons/upload.svg';
 }

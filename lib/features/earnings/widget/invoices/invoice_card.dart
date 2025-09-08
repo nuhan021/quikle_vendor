@@ -115,7 +115,7 @@ class InvoiceCard extends StatelessWidget {
                     child: Text(
                       status,
                       style: getTextStyle(
-                        color: Colors.black,
+                        color: isPending ? Colors.orange : Colors.black,
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
                       ),
