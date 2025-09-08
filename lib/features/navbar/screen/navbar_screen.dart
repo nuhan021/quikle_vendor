@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:quikle_vendor/features/profile/account/screen/account_screen.dart';
 import '../../../core/utils/constants/colors.dart';
 import '../../../core/utils/constants/icon_path.dart';
 import '../../../core/utils/constants/image_path.dart';
-import '../../earnings/screen/earnings_screen.dart';
-// import '../../home/screen/home_screen.dart';
+import '../../home/screen/home_screen.dart';
 import '../../orders/screen/orders_screen.dart';
 import '../../products/screen/products_screen.dart';
+import '../../profile/account/screen/account_screen.dart';
 import '../controller/navbar_controller.dart';
 import '../widget/navbar_items.dart';
 import '../widget/profile_navbar_item.dart';
@@ -18,7 +17,7 @@ class NavbarScreen extends StatelessWidget {
   final NavbarController controller = Get.put(NavbarController());
 
   final pages = [
-    EarningsScreen(),
+    HomeScreen(),
     OrdersScreen(),
     ProductsScreen(),
     AccountScreen(),
