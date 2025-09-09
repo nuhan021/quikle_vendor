@@ -57,9 +57,7 @@ class HomeController extends GetxController {
   void navigateDashboard(String name) {
     switch (name) {
       case 'Orders':
-        // Navigate to Orders screen
-        // e.g., Get.to(() => OrdersScreen());
-        print('Navigating to Orders'); // Placeholder
+        Get.toNamed(AppRoute.orderManagementScreen);
         break;
       case 'Products':
         // Navigate to Products screen
@@ -68,7 +66,6 @@ class HomeController extends GetxController {
         break;
       case 'Earnings':
         Get.toNamed(AppRoute.earningsScreen);
-        print('Navigating to Earnings'); // Placeholder
         break;
       default:
         debugPrint('Invalid navigation: $name');

@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:quikle_vendor/features/home/screen/home_screen.dart';
 import 'package:quikle_vendor/features/navbar/screen/navbar_screen.dart';
+import 'package:quikle_vendor/features/order_management/screen/order_management_screen.dart';
 
 import '../features/authentication/presentation/screens/login_screen.dart';
 import '../features/earnings/screen/earnings_screen.dart';
@@ -21,6 +22,7 @@ class AppRoute {
   static String paymentMethodScreen = '/paymentMethodScreen';
   static String notificationSettingsScreen = '/notificationSettingsScreen';
   static String helpAndSupportScreen = '/helpAndSupportScreen';
+  static String orderManagementScreen = '/orderManagementScreen';
 
   static String getLoginScreen() => loginScreen;
   static String getNavbarScreen() => navbarScreen;
@@ -44,5 +46,6 @@ class AppRoute {
       page: () => NotificationSettingsScreen(),
     ),
     GetPage(name: helpAndSupportScreen, page: () => HelpAndSupportScreen()),
+    GetPage(name: orderManagementScreen, page: () => OrderManagementScreen()),
   ];
 }
