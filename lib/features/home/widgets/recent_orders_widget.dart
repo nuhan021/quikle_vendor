@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/core/utils/constants/colors.dart';
+import '../../../core/common/styles/global_text_style.dart';
 import '../controller/home_controller.dart';
 import 'recent_order_card_widget.dart';
 
 class RecentOrdersWidget extends StatelessWidget {
-  RecentOrdersWidget({super.key});
+  const RecentOrdersWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class RecentOrdersWidget extends StatelessWidget {
                 SizedBox(width: 8),
                 Text(
                   'Recent Orders',
-                  style: TextStyle(
+                  style: getTextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF111827),
@@ -34,10 +36,10 @@ class RecentOrdersWidget extends StatelessWidget {
               onTap: controller.seeAllRecentOrders,
               child: Text(
                 'See All',
-                style: TextStyle(
+                style: getTextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF6366F1),
+                  color: AppColors.backgroundDark,
                 ),
               ),
             ),
@@ -45,19 +47,27 @@ class RecentOrdersWidget extends StatelessWidget {
         ),
         SizedBox(height: 16),
         Obx(
-          () => Column(
-            children: controller.recentOrders
-                .map(
-                  (order) => RecentOrderCardWidget(
-                    customer: order['customer'] as String,
-                    items: order['items'] as String,
-                    amount: order['amount'] as String,
-                    time: order['time'] as String,
-                    status: order['status'] as String,
-                    statusColor: order['statusColor'] as Color,
-                  ),
-                )
-                .toList(),
+          () => Container(
+            padding: const EdgeInsets.all(16),
+
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            child: Column(
+              children: controller.recentOrders
+                  .map(
+                    (order) => RecentOrderCardWidget(
+                      customer: order['customer'] as String,
+                      items: order['items'] as String,
+                      amount: order['amount'] as String,
+                      time: order['time'] as String,
+                      status: order['status'] as String,
+                      statusColor: order['statusColor'] as Color,
+                    ),
+                  )
+                  .toList(),
+            ),
           ),
         ),
       ],

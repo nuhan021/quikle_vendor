@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/routes/app_routes.dart';
 
 class HomeController extends GetxController {
   var selectedTab = 0.obs;
@@ -53,7 +54,27 @@ class HomeController extends GetxController {
     },
   ].obs;
 
-  void navigateDashboard(String name) {}
+  void navigateDashboard(String name) {
+    switch (name) {
+      case 'Orders':
+        // Navigate to Orders screen
+        // e.g., Get.to(() => OrdersScreen());
+        print('Navigating to Orders'); // Placeholder
+        break;
+      case 'Products':
+        // Navigate to Products screen
+        // e.g., Get.to(() => ProductsScreen());
+        print('Navigating to Products'); // Placeholder
+        break;
+      case 'Earnings':
+        Get.toNamed(AppRoute.earningsScreen);
+        print('Navigating to Earnings'); // Placeholder
+        break;
+      default:
+        debugPrint('Invalid navigation: $name');
+        break;
+    }
+  }
 
   void toggleRestaurantStatus() {
     isShopOpen.value = !isShopOpen.value;

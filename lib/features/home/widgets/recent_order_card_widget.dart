@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:quikle_vendor/core/utils/constants/colors.dart';
+
+import '../../../core/common/styles/global_text_style.dart';
 
 class RecentOrderCardWidget extends StatelessWidget {
   final String customer;
@@ -24,7 +27,7 @@ class RecentOrderCardWidget extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
@@ -42,7 +45,7 @@ class RecentOrderCardWidget extends StatelessWidget {
             children: [
               Text(
                 customer,
-                style: TextStyle(
+                style: getTextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF111827),
@@ -56,7 +59,7 @@ class RecentOrderCardWidget extends StatelessWidget {
                 ),
                 child: Text(
                   status,
-                  style: TextStyle(
+                  style: getTextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                     color: Colors.white,
@@ -71,11 +74,11 @@ class RecentOrderCardWidget extends StatelessWidget {
             children: [
               Text(
                 '$items • $amount',
-                style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                style: getTextStyle(fontSize: 14, color: Color(0xFF6B7280)),
               ),
               Text(
                 time,
-                style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                style: getTextStyle(fontSize: 14, color: Color(0xFF6B7280)),
               ),
             ],
           ),

@@ -22,13 +22,15 @@ class HomeScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            RestaurantHeaderWidget(),
-            DashboardOptions(),
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(16),
                 child: Column(
                   children: [
+                    RestaurantHeaderWidget(),
+                    SizedBox(height: 20),
+                    DashboardOptions(),
+                    SizedBox(height: 20),
                     OrdersOverviewWidget(),
                     SizedBox(height: 20),
                     PendingActionsWidget(),

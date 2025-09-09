@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:quikle_vendor/core/utils/constants/colors.dart';
+
+import '../../../core/common/styles/global_text_style.dart';
 
 class PendingActionCardWidget extends StatelessWidget {
   final String title;
@@ -22,7 +25,7 @@ class PendingActionCardWidget extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
@@ -40,16 +43,16 @@ class PendingActionCardWidget extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: getTextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF111827),
                   ),
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: 8),
                 Text(
                   subtitle,
-                  style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                  style: getTextStyle(fontSize: 12, color: Color(0xFF6B7280)),
                 ),
               ],
             ),
@@ -64,7 +67,7 @@ class PendingActionCardWidget extends StatelessWidget {
               ),
               child: Text(
                 buttonText,
-                style: TextStyle(
+                style: getTextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: Colors.white,
