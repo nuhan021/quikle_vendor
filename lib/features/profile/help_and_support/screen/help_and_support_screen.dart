@@ -60,16 +60,31 @@ class HelpAndSupportScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     DropdownButtonFormField<String>(
+                      dropdownColor: Colors.white,
                       value: controller.selectedSubject.value.isEmpty
                           ? null
                           : controller.selectedSubject.value,
                       items: controller.subjects
                           .map(
-                            (s) => DropdownMenuItem(value: s, child: Text(s)),
+                            (s) => DropdownMenuItem(
+                              value: s,
+                              child: Text(
+                                s,
+                                style: getTextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
                           )
                           .toList(),
+                      style: getTextStyle(fontSize: 14, color: Colors.black87),
                       decoration: InputDecoration(
                         hintText: "Select an issue type",
+                        hintStyle: getTextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 14,

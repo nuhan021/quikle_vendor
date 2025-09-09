@@ -52,6 +52,7 @@ class LanguageDialog extends StatelessWidget {
             DropdownButtonFormField<String>(
               dropdownColor: Colors.white,
               initialValue: selectedLanguage,
+              style: getTextStyle(fontSize: 14, color: Colors.black87),
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -63,7 +64,16 @@ class LanguageDialog extends StatelessWidget {
               ),
               items: languages
                   .map(
-                    (lang) => DropdownMenuItem(value: lang, child: Text(lang)),
+                    (lang) => DropdownMenuItem(
+                      value: lang,
+                      child: Text(
+                        lang,
+                        style: getTextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
                   )
                   .toList(),
               onChanged: (value) {

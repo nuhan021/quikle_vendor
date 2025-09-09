@@ -160,6 +160,7 @@ class PayoutsTab extends StatelessWidget {
                     value: controller.selectedDay.value.isEmpty
                         ? null
                         : controller.selectedDay.value,
+                    style: getTextStyle(fontSize: 14, color: Colors.black87),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -197,6 +198,7 @@ class PayoutsTab extends StatelessWidget {
                     value: controller.paymentMethod.value.isEmpty
                         ? null
                         : controller.paymentMethod.value,
+                    style: getTextStyle(fontSize: 14, color: Colors.black87),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),

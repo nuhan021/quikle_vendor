@@ -42,6 +42,11 @@ class OverviewTab extends StatelessWidget {
                         value: controller.selectedRange.value,
                         icon: const Icon(Icons.keyboard_arrow_down, size: 16),
                         dropdownColor: Colors.white,
+                        style: getTextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
                         items: controller.ranges
                             .map(
                               (range) => DropdownMenuItem(
