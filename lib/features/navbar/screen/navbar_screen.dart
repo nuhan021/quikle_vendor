@@ -18,8 +18,7 @@ class NavbarScreen extends StatelessWidget {
   final NavbarController controller = Get.put(NavbarController());
 
   final pages = [
-    // HomeScreen(),
-    EarningsScreen(),
+    HomeScreen(),
     OrdersScreen(),
     ProductsScreen(),
     AccountScreen(),
