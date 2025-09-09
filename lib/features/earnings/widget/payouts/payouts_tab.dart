@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
+import '../../../../core/common/widgets/custom_textfield.dart';
 import '../../controller/payouts_controller.dart';
 import 'show_withdraw_sheet.dart';
 
@@ -111,19 +112,18 @@ class PayoutsTab extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   /// Minimum Withdrawal Amount
-                  Text(
-                    "Minimum Withdrawal Amount",
-                    style: getTextStyle(fontSize: 14, color: Colors.black87),
-                  ),
-                  const SizedBox(height: 6),
-                  TextFormField(
-                    initialValue: controller.minWithdrawalAmount.value,
-                    onChanged: controller.updateMinWithdrawal,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                  CustomTextField(
+                    label: "Minimum Withdrawal Amount",
+                    hintText: "Enter minimum amount",
+                    hintTextStyle: getTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey.shade500,
                     ),
+                    controller: TextEditingController(
+                      text: controller.minWithdrawalAmount.value,
+                    ),
+                    onChanged: controller.updateMinWithdrawal,
                   ),
                   const SizedBox(height: 16),
 
@@ -225,19 +225,18 @@ class PayoutsTab extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   /// Bank Account
-                  Text(
-                    "Bank Account",
-                    style: getTextStyle(fontSize: 14, color: Colors.black87),
-                  ),
-                  const SizedBox(height: 6),
-                  TextFormField(
-                    initialValue: controller.bankAccount.value,
-                    onChanged: controller.updateBankAccount,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                  CustomTextField(
+                    label: "Bank Account",
+                    hintText: "Enter bank account details",
+                    hintTextStyle: getTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey.shade500,
                     ),
+                    controller: TextEditingController(
+                      text: controller.bankAccount.value,
+                    ),
+                    onChanged: controller.updateBankAccount,
                   ),
                 ],
               ),

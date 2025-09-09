@@ -4,6 +4,8 @@ import '../styles/global_text_style.dart';
 class CustomTextField extends StatelessWidget {
   final String label;
   final String? hintText;
+  final TextStyle? hintTextStyle;
+  final TextStyle? textStyle;
   final TextEditingController? controller;
   final TextInputType keyboardType;
   final bool obscureText;
@@ -12,6 +14,7 @@ class CustomTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final bool readOnly;
   final VoidCallback? onTap;
+  final Function(String)? onChanged;
   final int maxLines;
   final double? height;
 
@@ -19,6 +22,8 @@ class CustomTextField extends StatelessWidget {
     super.key,
     required this.label,
     this.hintText,
+    this.hintTextStyle,
+    this.textStyle,
     this.controller,
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
@@ -27,6 +32,7 @@ class CustomTextField extends StatelessWidget {
     this.validator,
     this.readOnly = false,
     this.onTap,
+    this.onChanged,
     this.maxLines = 1,
     this.height,
   });
@@ -54,9 +60,24 @@ class CustomTextField extends StatelessWidget {
           validator: validator,
           readOnly: readOnly,
           onTap: onTap,
+          onChanged: onChanged,
           maxLines: maxLines,
+          style:
+              textStyle ??
+              getTextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Colors.black87,
+              ),
           decoration: InputDecoration(
             hintText: hintText,
+            hintStyle:
+                hintTextStyle ??
+                getTextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey.shade600,
+                ),
             filled: true,
             fillColor: Colors.white,
             suffixIcon: suffixIcon,

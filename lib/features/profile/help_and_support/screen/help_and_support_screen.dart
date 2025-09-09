@@ -4,8 +4,10 @@ import 'package:get/get.dart';
 import '../../../appbar/screen/appbar_screen.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
+import '../../../../core/common/widgets/custom_textfield.dart';
 import '../../../../core/utils/constants/icon_path.dart';
 import '../controller/help_and_support_controller.dart';
+import '../widget/support_history_item.dart';
 
 class HelpAndSupportScreen extends StatelessWidget {
   const HelpAndSupportScreen({super.key});
@@ -100,24 +102,15 @@ class HelpAndSupportScreen extends StatelessWidget {
                     const SizedBox(height: 12),
 
                     /// Description
-                    Text(
-                      "Description",
-                      style: getTextStyle(
+                    CustomTextField(
+                      label: "Description",
+                      hintText: "Please describe your issue in detail...",
+                      hintTextStyle: getTextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey.shade500,
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextFormField(
                       maxLines: 3,
-                      decoration: InputDecoration(
-                        hintText: "Please describe your issue in detail...",
-                        contentPadding: const EdgeInsets.all(12),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
                       onChanged: controller.setDescription,
                     ),
                     const SizedBox(height: 12),
@@ -189,48 +182,20 @@ class HelpAndSupportScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
               /// --- Support History ---
-              Text(
-                "Recent Support History",
-                style: getTextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              Padding(
+                padding: const EdgeInsets.only(top: 1),
+                child: Text(
+                  "Recent Support History",
+                  style: getTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
               const SizedBox(height: 12),
 
               for (final item in controller.supportHistory)
-                Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: .05),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item["title"]!,
-                        style: getTextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        item["subtitle"]!,
-                        style: getTextStyle(
-                          fontSize: 12,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                SupportHistoryItem(item: item),
             ],
           ),
         ),

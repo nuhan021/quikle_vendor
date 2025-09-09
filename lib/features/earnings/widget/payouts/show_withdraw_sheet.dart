@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
+import '../../../../core/common/widgets/custom_textfield.dart';
 import '../../controller/payouts_controller.dart';
 
 void showWithdrawDialog(BuildContext context, PayoutsController controller) {
@@ -56,23 +57,16 @@ void showWithdrawDialog(BuildContext context, PayoutsController controller) {
               const SizedBox(height: 16),
 
               /// Enter Amount
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Enter Amount",
-                  style: getTextStyle(fontSize: 14, color: Colors.black87),
+              CustomTextField(
+                label: "Enter Amount",
+                hintText: "Enter amount",
+                hintTextStyle: getTextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey.shade500,
                 ),
-              ),
-              const SizedBox(height: 6),
-              TextField(
                 controller: amountController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: "Enter amount",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
               ),
               const SizedBox(height: 20),
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/features/earnings/screen/earnings_screen.dart';
 import '../../../core/utils/constants/colors.dart';
 import '../../../core/utils/constants/icon_path.dart';
 import '../../../core/utils/constants/image_path.dart';
@@ -17,7 +18,8 @@ class NavbarScreen extends StatelessWidget {
   final NavbarController controller = Get.put(NavbarController());
 
   final pages = [
-    HomeScreen(),
+    // HomeScreen(),
+    EarningsScreen(),
     OrdersScreen(),
     ProductsScreen(),
     AccountScreen(),

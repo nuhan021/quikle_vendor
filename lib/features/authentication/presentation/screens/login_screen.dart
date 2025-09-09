@@ -2,6 +2,7 @@ import 'package:quikle_vendor/features/authentication/controllers/login_controll
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/styles/global_text_style.dart';
+import '../../../../core/common/widgets/custom_textfield.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -67,13 +68,16 @@ class LoginScreen extends StatelessWidget {
             // New Category TextField for adding categories
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: controller.categoryController,
-                decoration: InputDecoration(
-                  hintText: 'Enter new category name',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.category),
+              child: CustomTextField(
+                label: "",
+                hintText: 'Enter new category name',
+                hintTextStyle: getTextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey.shade500,
                 ),
+                controller: controller.categoryController,
+                prefixIcon: const Icon(Icons.category),
               ),
             ),
           ],

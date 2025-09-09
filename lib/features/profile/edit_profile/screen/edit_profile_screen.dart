@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/utils.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
@@ -94,12 +93,37 @@ class EditProfileScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   /// Name
-                  CustomTextField(label: "Name", controller: nameController),
+                  CustomTextField(
+                    label: "Name",
+                    hintText: "Enter your full name",
+                    hintTextStyle: getTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey.shade500,
+                    ),
+                    textStyle: getTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
+                    controller: nameController,
+                  ),
                   const SizedBox(height: 12),
 
                   /// Email
                   CustomTextField(
                     label: "Email Address",
+                    hintText: "Enter your email address",
+                    hintTextStyle: getTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey.shade500,
+                    ),
+                    textStyle: getTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
                     controller: emailController,
                   ),
                   const SizedBox(height: 12),
@@ -107,6 +131,17 @@ class EditProfileScreen extends StatelessWidget {
                   /// Phone
                   CustomTextField(
                     label: "Phone Number",
+                    hintText: "Enter your phone number",
+                    hintTextStyle: getTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey.shade500,
+                    ),
+                    textStyle: getTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
                     controller: phoneController,
                   ),
                   const SizedBox(height: 12),
@@ -114,6 +149,17 @@ class EditProfileScreen extends StatelessWidget {
                   /// NID
                   CustomTextField(
                     label: "National Identity Number",
+                    hintText: "Enter your NID number",
+                    hintTextStyle: getTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey.shade500,
+                    ),
+                    textStyle: getTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
                     controller: nidController,
                   ),
                   const SizedBox(height: 20),
