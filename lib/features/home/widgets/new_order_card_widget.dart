@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/core/common/styles/global_text_style.dart';
+import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/features/home/controller/home_controller.dart';
 
 class NewOrderCardWidget extends StatelessWidget {
@@ -20,7 +22,7 @@ class NewOrderCardWidget extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 8),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
@@ -32,14 +34,6 @@ class NewOrderCardWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: Color(0xFF10B981),
-              shape: BoxShape.circle,
-            ),
-          ),
           SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -47,7 +41,7 @@ class NewOrderCardWidget extends StatelessWidget {
               children: [
                 Text(
                   orderId,
-                  style: TextStyle(
+                  style: getTextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF111827),
@@ -55,7 +49,7 @@ class NewOrderCardWidget extends StatelessWidget {
                 ),
                 Text(
                   items,
-                  style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                  style: getTextStyle(fontSize: 14, color: Color(0xFF6B7280)),
                 ),
               ],
             ),
@@ -70,7 +64,7 @@ class NewOrderCardWidget extends StatelessWidget {
               ),
               child: Text(
                 'Accept',
-                style: TextStyle(
+                style: getTextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: Colors.white,

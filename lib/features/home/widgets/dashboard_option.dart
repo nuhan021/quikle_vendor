@@ -13,23 +13,30 @@ class DashboardOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity, // Ensure the container takes full width
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          DashboardCardWidget(
-            title: 'Orders',
-            image: IconPath.orderDashboard,
-            controller: controller,
+          Expanded(
+            child: DashboardCardWidget(
+              title: 'Orders',
+              image: IconPath.orderDashboard,
+              controller: controller,
+            ),
           ),
-          DashboardCardWidget(
-            title: 'Products',
-            image: IconPath.productDashboard,
-            controller: controller,
+          Expanded(
+            child: DashboardCardWidget(
+              title: 'Products',
+              image: IconPath.productDashboard,
+              controller: controller,
+            ),
           ),
-          DashboardCardWidget(
-            title: 'Earnings',
-            image: IconPath.earningDashboard,
-            controller: controller,
+          Expanded(
+            child: DashboardCardWidget(
+              title: 'Earnings',
+              image: IconPath.earningDashboard,
+              controller: controller,
+            ),
           ),
         ],
       ),

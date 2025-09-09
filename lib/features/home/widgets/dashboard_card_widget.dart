@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:quikle_vendor/core/common/styles/global_text_style.dart';
 import '../controller/home_controller.dart';
 
 class DashboardCardWidget extends StatelessWidget {
@@ -16,29 +16,26 @@ class DashboardCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      elevation: 2, // Fixed elevation for a consistent card look
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: EdgeInsets.symmetric(
-        horizontal: 8,
-        vertical: 8,
-      ), // Adjusted margin for spacing
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: 12,
-          horizontal: 20,
-        ), // Adjusted padding for better content spacing
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset(image),
-            SizedBox(height: 4),
-            Text(
-              title,
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-            ),
-          ],
+    return GestureDetector(
+      onTap: () => controller.navigateDashboard(title),
+      child: Card(
+        color: Colors.white,
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 25),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(image),
+              SizedBox(height: 6),
+              Text(
+                title,
+                style: getTextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
         ),
       ),
     );
