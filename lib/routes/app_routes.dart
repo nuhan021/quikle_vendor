@@ -2,10 +2,11 @@ import 'package:get/get.dart';
 import 'package:quikle_vendor/features/home/screen/home_screen.dart';
 import 'package:quikle_vendor/features/navbar/screen/navbar_screen.dart';
 import 'package:quikle_vendor/features/order_management/screen/order_details_screen.dart';
-import 'package:quikle_vendor/features/order_management/screen/order_management_screen.dart';
 
 import '../features/authentication/presentation/screens/login_screen.dart';
 import '../features/earnings/screen/earnings_screen.dart';
+import '../features/order_management/screen/order_management_screen.dart';
+import '../features/product_management/screen/products_screen.dart';
 import '../features/profile/edit_profile/screen/edit_profile_screen.dart';
 import '../features/profile/help_and_support/screen/help_and_support_screen.dart';
 import '../features/profile/my_profile/screen/my_profile_screen.dart';
@@ -25,6 +26,7 @@ class AppRoute {
   static String helpAndSupportScreen = '/helpAndSupportScreen';
   static String orderManagementScreen = '/orderManagementScreen';
   static String orderDetailsScreen = '/orderDetailsScreen';
+  static String productManagementScreen = '/productManagementScreen';
 
   static String getLoginScreen() => loginScreen;
   static String getNavbarScreen() => navbarScreen;
@@ -50,5 +52,6 @@ class AppRoute {
     GetPage(name: helpAndSupportScreen, page: () => HelpAndSupportScreen()),
     GetPage(name: orderManagementScreen, page: () => OrderManagementScreen()),
     GetPage(name: orderDetailsScreen, page: () => OrderDetailsScreen()),
+    GetPage(name: productManagementScreen, page: () => ProductsScreen()),
   ];
 }

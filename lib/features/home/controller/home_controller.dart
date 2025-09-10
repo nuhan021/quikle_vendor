@@ -60,9 +60,7 @@ class HomeController extends GetxController {
         Get.toNamed(AppRoute.orderManagementScreen);
         break;
       case 'Products':
-        // Navigate to Products screen
-        // e.g., Get.to(() => ProductsScreen());
-        print('Navigating to Products'); // Placeholder
+        Get.toNamed(AppRoute.productManagementScreen);
         break;
       case 'Earnings':
         Get.toNamed(AppRoute.earningsScreen);
