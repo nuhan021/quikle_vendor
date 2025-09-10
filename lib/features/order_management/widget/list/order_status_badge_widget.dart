@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/common/styles/global_text_style.dart';
+import '../../../../core/common/styles/global_text_style.dart';
 
 class OrderStatusBadgeWidget extends StatelessWidget {
   final String tag;

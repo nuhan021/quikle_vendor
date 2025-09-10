@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controller/order_management_controller.dart';
+import '../../controller/order_management_controller.dart';
 import 'order_card_widget.dart';
 
 class OrdersListWidget extends StatelessWidget {

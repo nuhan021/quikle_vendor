@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/features/order_management/controller/order_management_controller.dart';
-import '../../../core/common/styles/global_text_style.dart';
+import '../../../../core/common/styles/global_text_style.dart';
 import 'order_status_badge_widget.dart';
 import 'order_action_buttons_widget.dart';
 
@@ -31,7 +31,7 @@ class OrderCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<OrderManagementController>();
     return GestureDetector(
-      onTap: () => controller.navigateToOrderDetails(),
+      onTap: () => controller.navigateToOrderDetails(orderId),
       child: Container(
         margin: EdgeInsets.only(bottom: 16),
         padding: EdgeInsets.all(20),

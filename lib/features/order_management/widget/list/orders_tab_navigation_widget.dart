@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../core/common/styles/global_text_style.dart';
-import '../controller/order_management_controller.dart';
+import '../../../../core/common/styles/global_text_style.dart';
+import '../../controller/order_management_controller.dart';
 
 class OrdersTabNavigationWidget extends StatelessWidget {
   const OrdersTabNavigationWidget({super.key});

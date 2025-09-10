@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/routes/app_routes.dart';
 
 class OrderManagementController extends GetxController {
   var tabs = ["New", "Accepted", "In Progress", "Completed"];
   var selectedTab = 0.obs;
 
-  // All Orders Data with different states
   var allOrders = [
     // New Orders
     {
@@ -13,30 +13,58 @@ class OrderManagementController extends GetxController {
       'customerName': 'Sarah Johnson',
       'timeAgo': '10 mins ago',
       'deliveryTime': 'Delivery in 30 min',
+      'estimatedDelivery': '30-45 minutes',
+      'address': '456 Oak Ave, Downtown',
       'status': 'new',
       'tags': ['New', 'Urgent'],
       'isUrgent': true,
       'requiresPrescription': false,
+      'items': [
+        {
+          'name': 'Pad Thai Chicken X 1',
+          'description': 'Medium spicy, no peanuts',
+          'price': 24.99,
+          'image': '/placeholder.svg?height=60&width=60',
+        },
+        {
+          'name': 'Spring Rolls X 2',
+          'description': 'Vegetarian',
+          'price': 39.98,
+          'image': '/placeholder.svg?height=60&width=60',
+        },
+      ],
+      'total': 24.00,
+      'specialInstructions':
+          'Please call when outside. Leave package at the door. The doorbell doesn\'t work.',
     },
     {
-      'id': '#5680',
-      'customerName': 'Sarah Johnson',
-      'timeAgo': '10 mins ago',
-      'deliveryTime': 'Delivery in 30 min',
+      'id': '#12346',
+      'customerName': 'John Smith',
+      'timeAgo': '15 mins ago',
+      'deliveryTime': 'Delivery in 15 min',
+      'estimatedDelivery': '30-45 minutes',
+      'address': '456 Oak Ave, Downtown',
       'status': 'new',
-      'tags': ['New', 'Urgent'],
-      'isUrgent': true,
-      'requiresPrescription': false,
-    },
-    {
-      'id': '#5681',
-      'customerName': 'Sarah Johnson',
-      'timeAgo': '10 mins ago',
-      'deliveryTime': 'Delivery in 30 min',
-      'status': 'new',
-      'tags': ['New', 'Urgent', 'Prescription Required'],
+      'tags': ['New', 'Urgent', 'Prescription'],
       'isUrgent': true,
       'requiresPrescription': true,
+      'items': [
+        {
+          'name': 'Azithromycin 250mg X 1',
+          'description': 'Prescription medication',
+          'price': 24.99,
+          'image': '/placeholder.svg?height=60&width=60',
+        },
+        {
+          'name': 'Paracetamol 500mg X 2',
+          'description': 'Pain relief',
+          'price': 39.98,
+          'image': '/placeholder.svg?height=60&width=60',
+        },
+      ],
+      'total': 24.00,
+      'specialInstructions':
+          'Please call when outside. Leave package at the door. The doorbell doesn\'t work.',
     },
     // Accepted Orders
     {
@@ -44,41 +72,45 @@ class OrderManagementController extends GetxController {
       'customerName': 'John Smith',
       'timeAgo': '25 mins ago',
       'deliveryTime': 'Delivery in 15 min',
+      'estimatedDelivery': '15-20 minutes',
+      'address': '123 Main St, City Center',
       'status': 'accepted',
       'tags': ['Accepted'],
       'isUrgent': false,
       'requiresPrescription': false,
-    },
-    {
-      'id': '#1326',
-      'customerName': 'Alice Johnson',
-      'timeAgo': '30 mins ago',
-      'deliveryTime': 'Delivery in 20 min',
-      'status': 'accepted',
-      'tags': ['Accepted'],
-      'isUrgent': false,
-      'requiresPrescription': false,
+      'items': [
+        {
+          'name': 'Burger Combo X 1',
+          'description': 'With fries and drink',
+          'price': 15.99,
+          'image': '/placeholder.svg?height=60&width=60',
+        },
+      ],
+      'total': 15.99,
+      'specialInstructions': 'Ring doorbell twice',
     },
     // In Progress Orders
     {
-      'id': '#1325',
+      'id': '#1327',
       'customerName': 'Emma Davis',
       'timeAgo': '40 mins ago',
       'deliveryTime': 'Delivery in 5 min',
+      'estimatedDelivery': '5-10 minutes',
+      'address': '789 Pine St, Uptown',
       'status': 'in-progress',
       'tags': ['In Progress'],
       'isUrgent': false,
       'requiresPrescription': false,
-    },
-    {
-      'id': '#1327',
-      'customerName': 'Robert Wilson',
-      'timeAgo': '45 mins ago',
-      'deliveryTime': 'Delivery in 8 min',
-      'status': 'in-progress',
-      'tags': ['In Progress'],
-      'isUrgent': false,
-      'requiresPrescription': false,
+      'items': [
+        {
+          'name': 'Pizza Margherita X 1',
+          'description': 'Large size, extra cheese',
+          'price': 18.50,
+          'image': '/placeholder.svg?height=60&width=60',
+        },
+      ],
+      'total': 18.50,
+      'specialInstructions': 'Leave at front door',
     },
     // Completed Orders
     {
@@ -86,27 +118,31 @@ class OrderManagementController extends GetxController {
       'customerName': 'Michael Brown',
       'timeAgo': '40 mins ago',
       'deliveryTime': 'Delivered at 2:30 PM',
+      'estimatedDelivery': 'Delivered',
+      'address': '321 Elm St, Suburb',
       'status': 'completed',
       'tags': ['Completed'],
       'isUrgent': false,
       'requiresPrescription': false,
-    },
-    {
-      'id': '#13276',
-      'customerName': 'Lisa Anderson',
-      'timeAgo': '1 hour ago',
-      'deliveryTime': 'Delivered at 1:45 PM',
-      'status': 'completed',
-      'tags': ['Completed'],
-      'isUrgent': false,
-      'requiresPrescription': false,
+      'items': [
+        {
+          'name': 'Sushi Platter X 1',
+          'description': 'Mixed sushi, 12 pieces',
+          'price': 32.00,
+          'image': '/placeholder.svg?height=60&width=60',
+        },
+      ],
+      'total': 32.00,
+      'specialInstructions': 'Call upon arrival',
     },
   ].obs;
 
-  void navigateToOrderDetails() {}
-
   void changeTab(int index) {
     selectedTab.value = index;
+  }
+
+  void navigateToOrderDetails(String orderId) {
+    Get.toNamed(AppRoute.orderDetailsScreen, arguments: orderId);
   }
 
   void acceptOrder(String orderId) {
@@ -160,13 +196,25 @@ class OrderManagementController extends GetxController {
   }
 
   void viewDetails(String orderId) {
+    navigateToOrderDetails(orderId);
+  }
+
+  void viewPrescription(String orderId) {
     Get.snackbar(
-      'Order Details',
-      'Viewing details for order $orderId',
+      'View Prescription',
+      'Opening prescription for order $orderId',
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Color(0xFF6366F1),
       colorText: Colors.white,
     );
+  }
+
+  Map<String, dynamic>? getOrderById(String orderId) {
+    try {
+      return allOrders.firstWhere((order) => order['id'] == orderId);
+    } catch (e) {
+      return null;
+    }
   }
 
   List<Map<String, dynamic>> get filteredOrders {
