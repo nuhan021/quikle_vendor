@@ -103,6 +103,8 @@ class OrderManagementController extends GetxController {
     },
   ].obs;
 
+  void navigateToOrderDetails() {}
+
   void changeTab(int index) {
     selectedTab.value = index;
   }
