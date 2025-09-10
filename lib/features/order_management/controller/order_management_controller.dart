@@ -5,8 +5,9 @@ class OrderManagementController extends GetxController {
   var tabs = ["New", "Accepted", "In Progress", "Completed"];
   var selectedTab = 0.obs;
 
-  // Orders Data
-  var orders = [
+  // All Orders Data with different states
+  var allOrders = [
+    // New Orders
     {
       'id': '#5679',
       'customerName': 'Sarah Johnson',
@@ -18,7 +19,7 @@ class OrderManagementController extends GetxController {
       'requiresPrescription': false,
     },
     {
-      'id': '#5679',
+      'id': '#5680',
       'customerName': 'Sarah Johnson',
       'timeAgo': '10 mins ago',
       'deliveryTime': 'Delivery in 30 min',
@@ -28,7 +29,7 @@ class OrderManagementController extends GetxController {
       'requiresPrescription': false,
     },
     {
-      'id': '#5679',
+      'id': '#5681',
       'customerName': 'Sarah Johnson',
       'timeAgo': '10 mins ago',
       'deliveryTime': 'Delivery in 30 min',
@@ -36,6 +37,69 @@ class OrderManagementController extends GetxController {
       'tags': ['New', 'Urgent', 'Prescription Required'],
       'isUrgent': true,
       'requiresPrescription': true,
+    },
+    // Accepted Orders
+    {
+      'id': '#1325',
+      'customerName': 'John Smith',
+      'timeAgo': '25 mins ago',
+      'deliveryTime': 'Delivery in 15 min',
+      'status': 'accepted',
+      'tags': ['Accepted'],
+      'isUrgent': false,
+      'requiresPrescription': false,
+    },
+    {
+      'id': '#1326',
+      'customerName': 'Alice Johnson',
+      'timeAgo': '30 mins ago',
+      'deliveryTime': 'Delivery in 20 min',
+      'status': 'accepted',
+      'tags': ['Accepted'],
+      'isUrgent': false,
+      'requiresPrescription': false,
+    },
+    // In Progress Orders
+    {
+      'id': '#1325',
+      'customerName': 'Emma Davis',
+      'timeAgo': '40 mins ago',
+      'deliveryTime': 'Delivery in 5 min',
+      'status': 'in-progress',
+      'tags': ['In Progress'],
+      'isUrgent': false,
+      'requiresPrescription': false,
+    },
+    {
+      'id': '#1327',
+      'customerName': 'Robert Wilson',
+      'timeAgo': '45 mins ago',
+      'deliveryTime': 'Delivery in 8 min',
+      'status': 'in-progress',
+      'tags': ['In Progress'],
+      'isUrgent': false,
+      'requiresPrescription': false,
+    },
+    // Completed Orders
+    {
+      'id': '#13275',
+      'customerName': 'Michael Brown',
+      'timeAgo': '40 mins ago',
+      'deliveryTime': 'Delivered at 2:30 PM',
+      'status': 'completed',
+      'tags': ['Completed'],
+      'isUrgent': false,
+      'requiresPrescription': false,
+    },
+    {
+      'id': '#13276',
+      'customerName': 'Lisa Anderson',
+      'timeAgo': '1 hour ago',
+      'deliveryTime': 'Delivered at 1:45 PM',
+      'status': 'completed',
+      'tags': ['Completed'],
+      'isUrgent': false,
+      'requiresPrescription': false,
     },
   ].obs;
 
@@ -73,14 +137,43 @@ class OrderManagementController extends GetxController {
     );
   }
 
+  void markAsPrepared(String orderId) {
+    Get.snackbar(
+      'Order Prepared',
+      'Order $orderId marked as prepared',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Color(0xFF10B981),
+      colorText: Colors.white,
+    );
+  }
+
+  void markAsDispatched(String orderId) {
+    Get.snackbar(
+      'Order Dispatched',
+      'Order $orderId marked as dispatched',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Color(0xFF10B981),
+      colorText: Colors.white,
+    );
+  }
+
+  void viewDetails(String orderId) {
+    Get.snackbar(
+      'Order Details',
+      'Viewing details for order $orderId',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Color(0xFF6366F1),
+      colorText: Colors.white,
+    );
+  }
+
   List<Map<String, dynamic>> get filteredOrders {
     String currentStatus = tabs[selectedTab.value].toLowerCase().replaceAll(
       ' ',
       '-',
     );
-    if (currentStatus == 'new') {
-      return orders.where((order) => order['status'] == 'new').toList();
-    }
-    return orders.where((order) => order['status'] == currentStatus).toList();
+    return allOrders
+        .where((order) => order['status'] == currentStatus)
+        .toList();
   }
 }

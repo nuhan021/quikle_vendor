@@ -4,14 +4,14 @@ import '../../../core/common/styles/global_text_style.dart';
 import '../controller/order_management_controller.dart';
 
 class OrdersTabNavigationWidget extends StatelessWidget {
-  OrdersTabNavigationWidget({super.key});
+  const OrdersTabNavigationWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<OrderManagementController>();
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB), width: 1)),
@@ -37,8 +37,8 @@ class OrdersTabNavigationWidget extends StatelessWidget {
                   child: Text(
                     controller.tabs[index],
                     style: getTextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
                       color: controller.selectedTab.value == index
                           ? Color(0xFF111827)
                           : Color(0xFF9CA3AF),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:quikle_vendor/features/order_management/controller/order_management_controller.dart';
+import '../controller/order_management_controller.dart';
 import 'order_card_widget.dart';
 
 class OrdersListWidget extends StatelessWidget {
-  const OrdersListWidget({super.key});
+  OrdersListWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +22,7 @@ class OrdersListWidget extends StatelessWidget {
             timeAgo: order['timeAgo']!,
             deliveryTime: order['deliveryTime']!,
             tags: List<String>.from(order['tags']),
+            status: order['status']!,
             isUrgent: order['isUrgent']!,
             requiresPrescription: order['requiresPrescription']!,
           );

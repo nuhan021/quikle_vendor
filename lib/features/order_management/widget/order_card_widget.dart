@@ -9,6 +9,7 @@ class OrderCardWidget extends StatelessWidget {
   final String timeAgo;
   final String deliveryTime;
   final List<String> tags;
+  final String status;
   final bool isUrgent;
   final bool requiresPrescription;
 
@@ -19,6 +20,7 @@ class OrderCardWidget extends StatelessWidget {
     required this.timeAgo,
     required this.deliveryTime,
     required this.tags,
+    required this.status,
     required this.isUrgent,
     required this.requiresPrescription,
   });
@@ -67,13 +69,7 @@ class OrderCardWidget extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: tags
-                .map(
-                  (tag) => OrderStatusBadgeWidget(
-                    tag: tag,
-                    isUrgent: tag == 'Urgent',
-                    isPrescription: tag == 'Prescription Required',
-                  ),
-                )
+                .map((tag) => OrderStatusBadgeWidget(tag: tag, status: status))
                 .toList(),
           ),
           SizedBox(height: 16),
@@ -127,6 +123,7 @@ class OrderCardWidget extends StatelessWidget {
           // Action Buttons
           OrderActionButtonsWidget(
             orderId: orderId,
+            status: status,
             requiresPrescription: requiresPrescription,
           ),
         ],
