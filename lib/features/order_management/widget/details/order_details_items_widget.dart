@@ -49,10 +49,10 @@ class OrderDetailsItemsWidget extends StatelessWidget {
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
                                 color: Color(0xFFF3F4F6),
-                                child: Icon(
-                                  Icons.fastfood,
-                                  color: Color(0xFF9CA3AF),
-                                  size: 24,
+                                child: Image.asset(
+                                  item['image'],
+                                  height: 24,
+                                  width: 24,
                                 ),
                               );
                             },
