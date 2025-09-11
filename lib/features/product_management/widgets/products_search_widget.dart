@@ -11,18 +11,18 @@ class ProductsSearchWidget extends StatelessWidget {
     final controller = Get.find<ProductsController>();
 
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(14),
       child: Row(
         children: [
           Expanded(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 6,
                     offset: Offset(0, 2),
                   ),
@@ -30,8 +30,8 @@ class ProductsSearchWidget extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.search, color: Color(0xFF9CA3AF), size: 20),
-                  SizedBox(width: 12),
+                  Icon(Icons.search, color: Color(0xFF9CA3AF), size: 24),
+                  SizedBox(width: 10),
                   Expanded(
                     child: TextField(
                       onChanged: controller.onSearchChanged,
@@ -42,6 +42,8 @@ class ProductsSearchWidget extends StatelessWidget {
                           fontSize: 16,
                         ),
                         border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
                       ),
                     ),
                   ),
@@ -50,21 +52,24 @@ class ProductsSearchWidget extends StatelessWidget {
             ),
           ),
           SizedBox(width: 12),
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 6,
-                  offset: Offset(0, 2),
-                ),
-              ],
+          GestureDetector(
+            onTap: () => controller.showFilterProductDialog(),
+            child: Container(
+              width: 55,
+              height: 55,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 6,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Icon(Icons.tune, color: Color(0xFF374151), size: 24),
             ),
-            child: Icon(Icons.tune, color: Color(0xFF374151), size: 20),
           ),
         ],
       ),

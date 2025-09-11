@@ -4,7 +4,7 @@ import '../controllers/products_controller.dart';
 import 'product_card_widget.dart';
 
 class ProductsListWidget extends StatelessWidget {
-  ProductsListWidget({super.key});
+  const ProductsListWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class ProductsListWidget extends StatelessWidget {
 
     return Obx(
       () => ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: EdgeInsets.symmetric(horizontal: 12),
         itemCount: controller.products.length,
         itemBuilder: (context, index) {
           final product = controller.products[index];

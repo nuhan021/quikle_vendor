@@ -14,13 +14,13 @@ class ProductCardWidget extends StatelessWidget {
 
     return Container(
       margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 6,
             offset: Offset(0, 2),
           ),
@@ -46,11 +46,7 @@ class ProductCardWidget extends StatelessWidget {
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         color: _getImageBackgroundColor(product['status']),
-                        child: Icon(
-                          Icons.fastfood,
-                          color: Colors.white,
-                          size: 32,
-                        ),
+                        child: Image.asset(product['image']),
                       );
                     },
                   ),
@@ -70,7 +66,7 @@ class ProductCardWidget extends StatelessWidget {
                           child: Text(
                             product['name'],
                             style: getTextStyle(
-                              fontSize: 18,
+                              fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF111827),
                             ),
@@ -79,8 +75,9 @@ class ProductCardWidget extends StatelessWidget {
                         Row(
                           children: [
                             GestureDetector(
-                              onTap: () =>
-                                  controller.editProduct(product['id']),
+                              onTap: () => controller.editProduct(
+                                product['id'].toString(),
+                              ),
                               child: Icon(
                                 Icons.edit_outlined,
                                 color: Color(0xFF6B7280),
@@ -110,7 +107,7 @@ class ProductCardWidget extends StatelessWidget {
                         Text(
                           '${product['rating']}',
                           style: getTextStyle(
-                            fontSize: 14,
+                            fontSize: 12,
                             fontWeight: FontWeight.w500,
                             color: Color(0xFF111827),
                           ),
@@ -119,7 +116,7 @@ class ProductCardWidget extends StatelessWidget {
                         Text(
                           '• ${product['pack']}',
                           style: getTextStyle(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: Color(0xFF6B7280),
                           ),
                         ),
@@ -127,7 +124,7 @@ class ProductCardWidget extends StatelessWidget {
                         Text(
                           product['status'],
                           style: getTextStyle(
-                            fontSize: 14,
+                            fontSize: 12,
                             fontWeight: FontWeight.w500,
                             color: _getStatusColor(product['status']),
                           ),
@@ -138,7 +135,7 @@ class ProductCardWidget extends StatelessWidget {
                     Text(
                       '\$${product['price'].toStringAsFixed(2)}',
                       style: getTextStyle(
-                        fontSize: 20,
+                        fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF111827),
                       ),
@@ -153,17 +150,13 @@ class ProductCardWidget extends StatelessWidget {
           // Stock Info and Progress Bar
           Row(
             children: [
-              Icon(
-                Icons.inventory_2_outlined,
-                color: Color(0xFF6B7280),
-                size: 16,
-              ),
+              Icon(Icons.inventory, color: Colors.black, size: 16),
               SizedBox(width: 8),
               Text(
                 '${product['stock']} units',
                 style: getTextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                   color: Color(0xFF111827),
                 ),
               ),

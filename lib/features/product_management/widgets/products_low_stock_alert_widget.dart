@@ -4,7 +4,7 @@ import '../../../core/common/styles/global_text_style.dart';
 import '../controllers/products_controller.dart';
 
 class ProductsLowStockAlertWidget extends StatelessWidget {
-  ProductsLowStockAlertWidget({super.key});
+  const ProductsLowStockAlertWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,12 +12,15 @@ class ProductsLowStockAlertWidget extends StatelessWidget {
 
     return Obx(
       () => Container(
-        margin: EdgeInsets.all(20),
+        margin: EdgeInsets.only(bottom: 20),
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Color(0xFFFEF2F2),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Color(0xFFFECACA), width: 1),
+          border: Border.all(
+            color: Color.fromARGB(255, 233, 233, 233),
+            width: 1,
+          ),
         ),
         child: Row(
           children: [
@@ -26,18 +29,14 @@ class ProductsLowStockAlertWidget extends StatelessWidget {
             Expanded(
               child: Text(
                 '${controller.lowStockCount} products are running low on stock',
-                style: getTextStyle(fontSize: 16, color: Color(0xFF111827)),
+                style: getTextStyle(fontSize: 14, color: Color(0xFF111827)),
               ),
             ),
             GestureDetector(
               onTap: controller.viewLowStockProducts,
               child: Text(
                 'View',
-                style: getTextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF6366F1),
-                ),
+                style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
             ),
           ],

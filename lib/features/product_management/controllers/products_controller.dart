@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/routes/app_routes.dart';
 
 class ProductsController extends GetxController {
   var searchText = ''.obs;
@@ -8,6 +9,7 @@ class ProductsController extends GetxController {
 
   var showAddProductModal = false.obs;
   var showCreateDiscountModal = false.obs;
+  var showFilterProductModal = false.obs;
   var showDeleteDialog = false.obs;
   var productToDelete = ''.obs;
 
@@ -21,8 +23,9 @@ class ProductsController extends GetxController {
       'price': 12.00,
       'stock': 200,
       'status': 'In Stock',
-      'image': '/placeholder.svg?height=80&width=80',
+      'image': 'assets/images/green_apple.png',
       'category': 'Fruits',
+      'hasDiscount': true,
     },
     {
       'id': '2',
@@ -32,8 +35,9 @@ class ProductsController extends GetxController {
       'price': 12.00,
       'stock': 15,
       'status': 'Low Stock',
-      'image': '/placeholder.svg?height=80&width=80',
+      'image': 'assets/images/orange.png',
       'category': 'Fruits',
+      'hasDiscount': false,
     },
     {
       'id': '3',
@@ -43,10 +47,15 @@ class ProductsController extends GetxController {
       'price': 12.00,
       'stock': 0,
       'status': 'Out of Stock',
-      'image': '/placeholder.svg?height=80&width=80',
+      'image': 'assets/images/tomato.png',
       'category': 'Vegetables',
+      'hasDiscount': true,
     },
   ].obs;
+
+  Map<String, dynamic>? getProductById(String id) {
+    return products.firstWhere((product) => product['id'] == id);
+  }
 
   void onSearchChanged(String value) {
     searchText.value = value;
@@ -64,8 +73,16 @@ class ProductsController extends GetxController {
     showCreateDiscountModal.value = true;
   }
 
+  void showFilterProductDialog() {
+    showFilterProductModal.value = true;
+  }
+
   void hideCreateDiscountDialog() {
     showCreateDiscountModal.value = false;
+  }
+
+  void hideFilterProductDialog() {
+    showFilterProductModal.value = false;
   }
 
   void showDeleteConfirmation(String productId) {
@@ -91,12 +108,9 @@ class ProductsController extends GetxController {
   }
 
   void editProduct(String productId) {
-    Get.snackbar(
-      'Edit Product',
-      'Opening edit form for product $productId',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Color(0xFF6366F1),
-      colorText: Colors.white,
+    Get.toNamed(
+      AppRoute.productEditScreen,
+      arguments: {'id': productId.toString()},
     );
   }
 
