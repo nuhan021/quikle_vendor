@@ -8,6 +8,7 @@ TextStyle getTextStyle({
   double lineHeight = 1,
   TextAlign textAlign = TextAlign.center,
   Color color = Colors.black,
+  font,
 }) {
   return GoogleFonts.poppins(
     fontSize: fontSize.sp,

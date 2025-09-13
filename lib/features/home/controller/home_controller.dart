@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/features/home/controller/rider_assignment_controller.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
 
 class HomeController extends GetxController {
   var selectedTab = 0.obs;
   var isShopOpen = true.obs;
+  var riderAssignController = RiderAssignmentController();
 
   // New Orders Data
   var newOrders = [
@@ -93,42 +95,24 @@ class HomeController extends GetxController {
   }
 
   void viewAllOrders() {
-    Get.snackbar(
-      'View All Orders',
-      'Opening all orders view...',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Color(0xFF6366F1),
-      colorText: Colors.white,
-    );
+    Get.toNamed(AppRoute.orderManagementScreen);
   }
 
   void updateInventory() {
-    Get.snackbar(
-      'Update Inventory',
-      'Opening inventory update...',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Color(0xFF6366F1),
-      colorText: Colors.white,
-    );
+    Get.toNamed(AppRoute.productManagementScreen);
   }
 
   void assignRider() {
-    Get.snackbar(
-      'Assign Rider',
-      'Opening rider assignment...',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Color(0xFF6366F1),
-      colorText: Colors.white,
-    );
+    riderAssignController.currentDialogState.value = 'initial';
   }
 
   void seeAllRecentOrders() {
-    Get.snackbar(
-      'Recent Orders',
-      'Opening all recent orders...',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Color(0xFF6366F1),
-      colorText: Colors.white,
-    );
+    Get.toNamed(AppRoute.orderManagementScreen);
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    riderAssignController = Get.put(RiderAssignmentController());
   }
 }

@@ -7,6 +7,10 @@ class AppColors {
   static const Color primary = Color(
     0xFFFFC200,
   ); // Darker primary for a more professional look
+  static const Color eggshellWhite = Color(0xFFF8F8F8);
+  static const Color beakYellow = Color(0xFFFFC200);
+  static const Color ebonyBlack = Colors.black;
+  static const Color featherGrey = Color(0xFF9B9B9B);
   static const Color secondary = Color(
     0xFFFEC601,
   ); // Bright yellow for highlights and accents
