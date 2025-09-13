@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import '../../appbar/screen/appbar_screen.dart';
 import '../controller/order_management_controller.dart';
-import '../widget/orders_list_widget.dart';
-import '../widget/orders_tab_navigation_widget.dart';
+import '../widget/list/orders_list_widget.dart';
+import '../widget/list/orders_tab_navigation_widget.dart';
 
 class OrderManagementScreen extends StatelessWidget {
   const OrderManagementScreen({super.key});
