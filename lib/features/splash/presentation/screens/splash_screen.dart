@@ -25,6 +25,7 @@ class SplashScreen extends GetView<SplashController> {
         statusBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Colors.white,
         body: Stack(
           clipBehavior: Clip.none,
@@ -120,18 +121,21 @@ class SplashScreen extends GetView<SplashController> {
                 right: 0,
                 bottom: controller.showLogin.value ? 0 : -1.sh,
                 height: 1.sh,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: controller.showLogin.value
-                        ? BorderRadius.zero
-                        : const BorderRadius.only(
-                            topLeft: Radius.circular(24),
-                            topRight: Radius.circular(24),
-                          ),
+                child: Scaffold(
+                  resizeToAvoidBottomInset: false,
+                  backgroundColor: Colors.transparent,
+                  body: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: controller.showLogin.value
+                          ? BorderRadius.zero
+                          : const BorderRadius.only(
+                              topLeft: Radius.circular(24),
+                              topRight: Radius.circular(24),
+                            ),
+                    ),
+                    child: const LoginScreen(),
                   ),
-
-                  child: const LoginScreen(),
                 ),
               );
             }),

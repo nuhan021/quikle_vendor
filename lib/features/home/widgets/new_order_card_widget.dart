@@ -19,7 +19,7 @@ class NewOrderCardWidget extends StatelessWidget {
     final controller = Get.find<HomeController>();
 
     return Container(
-      margin: EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.background,

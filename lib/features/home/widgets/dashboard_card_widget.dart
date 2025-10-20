@@ -18,11 +18,19 @@ class DashboardCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => controller.navigateDashboard(title),
-      child: Card(
-        color: Colors.white,
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
         margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 12, horizontal: 25),
           child: Column(

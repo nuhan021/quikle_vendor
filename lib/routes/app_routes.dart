@@ -6,8 +6,8 @@ import 'package:quikle_vendor/features/product_management/screen/edit_product_sc
 import 'package:quikle_vendor/features/splash/presentation/screens/splash_screen.dart';
 
 import '../features/auth/presentation/screens/login_screen.dart';
-import '../features/auth/presentation/screens/resgiter_screen.dart';
-import '../features/auth/presentation/screens/verification_scree.dart';
+import '../features/auth/presentation/screens/register_screen.dart';
+import '../features/auth/presentation/screens/verification_screen.dart';
 import '../features/auth/presentation/screens/welcome_screen.dart';
 import '../features/earnings/screen/earnings_screen.dart';
 import '../features/order_management/screen/order_management_screen.dart';
