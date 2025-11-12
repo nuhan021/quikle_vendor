@@ -1,17 +1,21 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
-import 'package:quikle_vendor/routes/app_routes.dart';
+import 'package:quikle_vendor/features/profile/my_profile/widget/basic_information_widget.dart';
+import 'package:quikle_vendor/features/profile/my_profile/widget/business_details_widget.dart';
+import 'package:quikle_vendor/features/profile/my_profile/widget/contactInfoCard.dart';
 import '../../../../core/common/styles/global_text_style.dart';
-import '../../../../core/common/widgets/custom_button.dart';
 import '../../../appbar/screen/appbar_screen.dart';
-import '../widget/profile_field.dart';
+import '../controller/my_profile_controller.dart';
 
 class MyProfileScreen extends StatelessWidget {
   const MyProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(MyProfileController());
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const AppbarScreen(title: "My Profile"),
@@ -19,7 +23,7 @@ class MyProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            /// Profile Header
+            /// Profile Header with editable image
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 20),
@@ -36,23 +40,62 @@ class MyProfileScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 45,
-                    backgroundImage: AssetImage("assets/images/profile.png"),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    "Vikram Rajput",
-                    style: getTextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                  Obx(
+                    () => Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 45,
+                          backgroundImage:
+                              controller.profileImagePath.value != null
+                              ? FileImage(
+                                  File(controller.profileImagePath.value!),
+                                )
+                              : const AssetImage("assets/images/profile.png")
+                                    as ImageProvider,
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: controller.pickImage,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    "vikramrajput@gmail.com",
-                    style: getTextStyle(fontSize: 14, color: Colors.black54),
+                  const SizedBox(height: 12),
+                  Obx(
+                    () => Text(
+                      controller.businessName.value,
+                      style: getTextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Obx(
+                    () => Text(
+                      controller.address.value,
+                      style: getTextStyle(fontSize: 14, color: Colors.black54),
+                    ),
                   ),
                 ],
               ),
@@ -60,74 +103,15 @@ class MyProfileScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             /// Profile Info Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: .05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// Title + Edit
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "My Profile",
-                        style: getTextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      CustomButton(
-                        width: 50,
-                        height: 26,
-                        text: "Edit",
-                        style: getTextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          // TODO: edit profile action
-                          Get.toNamed(AppRoute.editProfileScreen);
-                        },
-                        backgroundColor: Colors.black,
-                        textColor: Colors.white,
-                        fontSize: 14,
-                        borderRadius: 6,
-                      ),
-                    ],
-                  ),
-                  const Divider(height: 24, thickness: 0.8),
+            const BasicInfoCard(),
+            const SizedBox(height: 20),
 
-                  /// Profile Fields
-                  const ProfileField(label: "Name", value: "Vikram Rajput"),
-                  const ProfileField(
-                    label: "Email Address",
-                    value: "vikramrajput@gmail.com",
-                  ),
-                  const ProfileField(
-                    label: "Phone Number",
-                    value: "+1 (555) 123-4567",
-                  ),
-                  const ProfileField(
-                    label: "National Identity Number",
-                    value: "1234567981011",
-                    showDivider: false,
-                  ),
-                ],
-              ),
-            ),
+            /// Contact Info
+            const ContactInfoCard(),
+            const SizedBox(height: 20),
+
+            // Business Details Card
+            const BusinessDetailsCard(),
           ],
         ),
       ),

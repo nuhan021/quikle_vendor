@@ -6,55 +6,29 @@ import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_textfield.dart';
 import '../../../appbar/screen/appbar_screen.dart';
 
-class EditProfileScreen extends StatelessWidget {
-  const EditProfileScreen({super.key});
+class EditContactInfoScreen extends StatelessWidget {
+  const EditContactInfoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final businessNameController = TextEditingController(
-      text: "Tandoori Tarang",
+    final contactPersonController = TextEditingController(
+      text: "Vikram Rajput",
     );
-    final ownerNameController = TextEditingController(text: "Vikash Rajput");
-    final accountStatusController = TextEditingController(text: "Active");
-    final servicesController = TextEditingController(
-      text: "Describe services offered",
+    final phoneController = TextEditingController(text: "+963-172-345678");
+    final addressController = TextEditingController(
+      text: "House 34, Road 12, Dhanmondi, Dhaka",
+    );
+    final openingHoursController = TextEditingController(
+      text: "9:00 AM - 8:00 PM",
     );
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const AppbarScreen(title: "Edit Profile"),
+      appBar: const AppbarScreen(title: "Edit Contact Info"),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            /// Profile Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: .05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: const [
-                  CircleAvatar(
-                    radius: 45,
-                    backgroundImage: AssetImage("assets/images/profile.png"),
-                  ),
-                  SizedBox(height: 12),
-                  // Optionally display the business name here
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
             /// Form Card
             Container(
               width: double.infinity,
@@ -74,44 +48,44 @@ class EditProfileScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Edit Profile",
+                    "Edit Contact Information",
                     style: getTextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 16),
 
-                  /// Business Name
+                  /// Contact Person
                   CustomTextField(
-                    label: "Business Name",
-                    hintText: "Enter business name",
-                    controller: businessNameController,
+                    label: "Contact Person",
+                    hintText: "Enter contact person name",
+                    controller: contactPersonController,
                   ),
                   const SizedBox(height: 12),
 
-                  /// Owner Name
+                  /// Phone Number
                   CustomTextField(
-                    label: "Owner Name",
-                    hintText: "Enter owner name",
-                    controller: ownerNameController,
+                    label: "Phone Number",
+                    hintText: "Enter phone number",
+                    controller: phoneController,
                   ),
                   const SizedBox(height: 12),
 
-                  /// Account Status
+                  /// Business Address
                   CustomTextField(
-                    label: "Account Status",
-                    hintText: "Enter account status",
-                    controller: accountStatusController,
+                    label: "Business Address",
+                    hintText: "Enter business address",
+                    controller: addressController,
                   ),
                   const SizedBox(height: 12),
 
-                  /// Services Offered
+                  /// Opening Hours
                   CustomTextField(
-                    label: "Services Offered",
-                    hintText: "Describe services offered",
-                    controller: servicesController,
-                    maxLines: 4, // allows multiline input
+                    label: "Opening Hours",
+                    hintText: "Enter opening hours",
+                    controller: openingHoursController,
                   ),
                   const SizedBox(height: 20),
 
@@ -120,7 +94,7 @@ class EditProfileScreen extends StatelessWidget {
                     text: "Save Changes",
                     fontSize: 16,
                     onPressed: () {
-                      // TODO: save profile logic
+                      // TODO: Save contact info logic
                       Get.back();
                     },
                     backgroundColor: Colors.black,
