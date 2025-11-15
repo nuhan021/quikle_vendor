@@ -2,6 +2,7 @@ class IconPath {
   static String logo = '';
   static String home = 'assets/icons/home.svg';
   static String order = 'assets/icons/order.svg';
+  static String earning = 'assets/icons/earnings.svg';
   static String product = 'assets/icons/product.svg';
   static String profile = 'assets/icons/profile.svg';
   static String payment = 'assets/icons/payment.svg';
@@ -21,5 +22,4 @@ class IconPath {
   static String orderDashboard = 'assets/icons/order.png';
   static String productDashboard = 'assets/icons/product.png';
   static String earningDashboard = 'assets/icons/earning.png';
-
 }

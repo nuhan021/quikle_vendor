@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/features/earnings/screen/earnings_screen.dart';
 import '../../../core/utils/constants/colors.dart';
 import '../../../core/utils/constants/icon_path.dart';
 import '../../../core/utils/constants/image_path.dart';
@@ -19,6 +20,7 @@ class NavbarScreen extends StatelessWidget {
   final pages = [
     HomeScreen(),
     OrderManagementScreen(),
+    EarningsScreen(),
     ProductsScreen(),
     AccountScreen(),
   ];
@@ -60,16 +62,22 @@ class NavbarScreen extends StatelessWidget {
                 onTap: () => controller.changeTab(1),
               ),
               NavbarItems(
-                iconPath: IconPath.product,
-                label: 'Products',
+                iconPath: IconPath.earning,
+                label: 'Earnings',
                 selected: controller.currentIndex.value == 2,
                 onTap: () => controller.changeTab(2),
+              ),
+              NavbarItems(
+                iconPath: IconPath.product,
+                label: 'Products',
+                selected: controller.currentIndex.value == 3,
+                onTap: () => controller.changeTab(3),
               ),
               ProfileNavbarItem(
                 imagePath: ImagePath.profile,
                 label: 'Ananya',
-                selected: controller.currentIndex.value == 3,
-                onTap: () => controller.changeTab(3),
+                selected: controller.currentIndex.value == 4,
+                onTap: () => controller.changeTab(4),
               ),
             ],
           ),
