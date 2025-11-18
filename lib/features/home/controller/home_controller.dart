@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/features/home/controller/rider_assignment_controller.dart';
+import 'package:quikle_vendor/features/navbar/controller/navbar_controller.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
 
 class HomeController extends GetxController {
+  final controller = Get.find<NavbarController>();
   var selectedTab = 0.obs;
   var isShopOpen = true.obs;
   var riderAssignController = RiderAssignmentController();
@@ -26,12 +28,6 @@ class HomeController extends GetxController {
       'title': 'Update Inventory',
       'subtitle': '3 items low in stock',
       'buttonText': 'Update',
-      'buttonColor': Color(0xFFEF4444),
-    },
-    {
-      'title': 'Assign Rider',
-      'subtitle': 'Order #12344 ready for pickup',
-      'buttonText': 'Assign',
       'buttonColor': Color(0xFFEF4444),
     },
   ].obs;
@@ -59,13 +55,16 @@ class HomeController extends GetxController {
   void navigateDashboard(String name) {
     switch (name) {
       case 'Orders':
-        Get.toNamed(AppRoute.orderManagementScreen);
+        // Get.toNamed(AppRoute.orderManagementScreen);
+        controller.changeTab(1);
         break;
       case 'Products':
-        Get.toNamed(AppRoute.productManagementScreen);
+        //Get.toNamed(AppRoute.productManagementScreen);
+        controller.changeTab(3);
         break;
       case 'Earnings':
-        Get.toNamed(AppRoute.earningsScreen);
+        // Get.toNamed(AppRoute.earningsScreen);
+        controller.changeTab(2);
         break;
       default:
         debugPrint('Invalid navigation: $name');

@@ -40,9 +40,9 @@ class OrderCardWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.5),
-              blurRadius: 6,
-              offset: Offset(0, 3),
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 2,
+              offset: Offset(0, 1),
             ),
           ],
         ),

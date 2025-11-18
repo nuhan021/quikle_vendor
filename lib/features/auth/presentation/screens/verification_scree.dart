@@ -183,8 +183,9 @@ class VerificationScreen extends StatelessWidget {
                     top: 495.h,
                     child: SizedBox(
                       width: 352.w,
-                      height: 155.h,
+                      // height: 155.h,
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // OTP row (6 boxes) – first 2 yellow per Figma, others grey

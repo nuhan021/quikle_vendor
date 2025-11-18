@@ -123,7 +123,7 @@ class OverviewTab extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
-              childAspectRatio: 1.6,
+              childAspectRatio: 1.5,
               children: [
                 StatCard(
                   "Payment Received",
