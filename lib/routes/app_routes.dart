@@ -1,9 +1,12 @@
 import 'package:get/get.dart';
 import 'package:quikle_vendor/features/home/screen/home_screen.dart';
+import 'package:quikle_vendor/features/kyc_verification/screen/kyc_verification_screen.dart';
 import 'package:quikle_vendor/features/navbar/screen/navbar_screen.dart';
 import 'package:quikle_vendor/features/order_management/screen/order_details_screen.dart';
 import 'package:quikle_vendor/features/product_management/screen/edit_product_screen.dart';
 import 'package:quikle_vendor/features/splash/presentation/screens/splash_screen.dart';
+import 'package:quikle_vendor/features/vendor_selection/screen/vendor_selection_screen.dart'
+    show VendorSelectionScreen;
 
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/resgiter_screen.dart';
@@ -25,6 +28,8 @@ class AppRoute {
   static const String _register = '/register';
   static const String _verify = '/verify';
   static const String _welcome = '/welcome';
+  static String vendorSelectionScreen = '/vendorSelectionScreen';
+  static String kycVerificationScreen = '/kycVerificationScreen';
   static String homeScreen = "/homeScreen";
   static String navbarScreen = '/navbarScreen';
   static String myProfileScreen = '/myProfileScreen';
@@ -37,11 +42,12 @@ class AppRoute {
   static String orderDetailsScreen = '/orderDetailsScreen';
   static String productManagementScreen = '/productManagementScreen';
   static String productEditScreen = '/productEditScreen';
-
   static String getSplashScreen() => splash;
   static String getLoginScreen() => _login;
   static String getRegister() => _register;
   static String getVerify() => _verify;
+  static String getVendorSelectionScreen() => vendorSelectionScreen;
+  static String getKycVerificationScreen() => kycVerificationScreen;
   static String getNavbarScreen() => navbarScreen;
   static String getMyProfileScreen() => myProfileScreen;
   static String getEditProfileScreen() => editProfileScreen;
@@ -56,6 +62,8 @@ class AppRoute {
     GetPage(name: _register, page: () => const RegisterScreen()),
     GetPage(name: _verify, page: () => const VerificationScreen()),
     GetPage(name: _welcome, page: () => const WelcomeScreen()),
+    GetPage(name: vendorSelectionScreen, page: () => VendorSelectionScreen()),
+    GetPage(name: kycVerificationScreen, page: () => KycVerificationScreen()),
     GetPage(name: homeScreen, page: () => HomeScreen()),
     GetPage(name: navbarScreen, page: () => NavbarScreen()),
     GetPage(name: myProfileScreen, page: () => MyProfileScreen()),

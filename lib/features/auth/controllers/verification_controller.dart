@@ -93,7 +93,7 @@ class VerificationController extends GetxController {
             backgroundColor: Colors.green.withValues(alpha: 0.1),
             colorText: Colors.green,
           );
-          Get.offAllNamed(AppRoute.getNavbarScreen());
+          Get.offAllNamed(AppRoute.vendorSelectionScreen);
         } else {
           errorMessage.value = response.errorMessage;
           Get.snackbar(

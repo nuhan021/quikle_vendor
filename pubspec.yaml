@@ -50,6 +50,11 @@ dependencies:
   flutter_svg: ^2.2.1
   video_player: ^2.10.0
   image_picker: ^1.2.1
+  file_picker: ^10.3.6
+  google_maps_flutter: ^2.14.0
+  geolocator: ^14.0.2
+  geocoding: ^4.0.0
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   flutter_test:
