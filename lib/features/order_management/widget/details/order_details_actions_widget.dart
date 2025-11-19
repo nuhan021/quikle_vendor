@@ -1,77 +1,85 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import '../../../../core/common/widgets/custom_button.dart';
-import '../../controller/order_management_controller.dart';
+import '../../../../core/utils/constants/colors.dart';
 
 class OrderDetailsActionsWidget extends StatelessWidget {
-  final Map<String, dynamic> orderData;
+  final String orderId;
+  final String status;
+  final bool requiresPrescription;
+  final Function(String)? onAccept;
+  final Function(String)? onReject;
+  final Function(String)? onReview;
+  final Function(String)? onPrepared;
+  final Function(String)? onDispatched;
+  final Function(String)? onViewPrescription;
 
-  const OrderDetailsActionsWidget({super.key, required this.orderData});
+  const OrderDetailsActionsWidget({
+    super.key,
+    required this.orderId,
+    required this.status,
+    required this.requiresPrescription,
+    this.onAccept,
+    this.onReject,
+    this.onReview,
+    this.onPrepared,
+    this.onDispatched,
+    this.onViewPrescription,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<OrderManagementController>();
-    final String status = orderData['status'];
-    final bool requiresPrescription = orderData['requiresPrescription'];
-    final String orderId = orderData['id'];
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
-          // View Prescription Button (if prescription required)
           if (requiresPrescription) ...[
             CustomButton(
               text: 'View Prescription',
-              onPressed: () => controller.viewPrescription(orderId),
+              onPressed: () => onViewPrescription?.call(orderId),
               backgroundColor: AppColors.backgroundLight,
               textColor: AppColors.backgroundDark,
               borderColor: AppColors.textSecondary,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
           ],
 
-          // Action Buttons based on status
           if (status == 'new') ...[
-            if (requiresPrescription) ...[
+            if (requiresPrescription)
               CustomButton(
                 text: 'Review',
-                onPressed: () => controller.reviewOrder(orderId),
-              ),
-            ] else ...[
+                onPressed: () => onReview?.call(orderId),
+              )
+            else
               Row(
                 children: [
                   Expanded(
                     child: CustomButton(
                       text: 'Reject',
-                      onPressed: () => controller.rejectOrder(orderId),
+                      onPressed: () => onReject?.call(orderId),
                       backgroundColor: Colors.white,
                       textColor: AppColors.error,
                       borderColor: AppColors.error,
                     ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: CustomButton(
                       text: 'Accept',
-                      onPressed: () => controller.acceptOrder(orderId),
+                      onPressed: () => onAccept?.call(orderId),
                     ),
                   ),
                 ],
               ),
-            ],
-          ] else if (status == 'accepted') ...[
+          ] else if (status == 'accepted')
             CustomButton(
               text: 'Mark as Prepared',
-              onPressed: () => controller.markAsPrepared(orderId),
-            ),
-          ] else if (status == 'in-progress') ...[
+              onPressed: () => onPrepared?.call(orderId),
+            )
+          else if (status == 'in-progress')
             CustomButton(
               text: 'Mark as Dispatched',
-              onPressed: () => controller.markAsDispatched(orderId),
+              onPressed: () => onDispatched?.call(orderId),
             ),
-          ],
         ],
       ),
     );

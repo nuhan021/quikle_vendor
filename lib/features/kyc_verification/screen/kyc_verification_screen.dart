@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_textfield.dart';
+import '../../../routes/app_routes.dart';
 import '../../appbar/screen/appbar_screen.dart';
 import '../controller/kyc_verification_controller.dart';
 
@@ -23,74 +24,7 @@ class KycVerificationScreen extends StatelessWidget {
           () => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Upload your document and mark your business location.",
-                style: getTextStyle(fontSize: 14, color: Colors.black54),
-              ),
-              const SizedBox(height: 16),
-
-              /// File Upload Section
-              Text(
-                "KYC Documents",
-                style: getTextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 8),
-
-              GestureDetector(
-                onTap: controller.pickKycFiles,
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.black26),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Tap to upload multiple files",
-                      style: getTextStyle(fontSize: 14, color: Colors.black54),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              /// Show uploaded files with progress bars
-              for (int i = 0; i < controller.kycFiles.length; i++)
-                Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.black12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        controller.kycFiles[i].path.split('/').last,
-                        style: getTextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      LinearProgressIndicator(
-                        value: controller.uploadProgress[i],
-                        color: Colors.black,
-                        backgroundColor: Colors.grey.shade300,
-                        minHeight: 5,
-                      ),
-                    ],
-                  ),
-                ),
-
-              const SizedBox(height: 24),
-
-              /// Location Section
+              /// Location Section (MOVED TO TOP)
               Text(
                 "Business Location",
                 style: getTextStyle(fontSize: 15, fontWeight: FontWeight.w600),
@@ -182,6 +116,83 @@ class KycVerificationScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(height: 24),
+
+              /// File Upload Section (MOVED TO BOTTOM)
+              Text(
+                "KYC Documents",
+                style: getTextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+
+              GestureDetector(
+                onTap: controller.pickKycFiles,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black26),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Tap to upload KYC files",
+                      style: getTextStyle(fontSize: 14, color: Colors.black54),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              /// Show uploaded files with progress bars
+              for (int i = 0; i < controller.kycFiles.length; i++)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              controller.kycFiles[i].path.split('/').last,
+                              style: getTextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.close,
+                              size: 20,
+                              color: Colors.red,
+                            ),
+                            onPressed: () => controller.removeKycFile(i),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ],
+                      ),
+                      LinearProgressIndicator(
+                        value: controller.uploadProgress[i],
+                        color: Colors.black,
+                        backgroundColor: Colors.grey.shade300,
+                        minHeight: 5,
+                      ),
+                    ],
+                  ),
+                ),
               const SizedBox(height: 40),
 
               /// Submit Button
@@ -191,7 +202,12 @@ class KycVerificationScreen extends StatelessWidget {
                     : "Submit",
                 onPressed: controller.isSubmitting.value
                     ? () {}
-                    : () => controller.submitKyc(),
+                    : () async {
+                        await controller.submitKyc();
+                        // Ensure navigation even if controller fails
+                        // (controller already calls navigation, but this is a fallback)
+                        Get.offAllNamed(AppRoute.kycApprovalScreen);
+                      },
                 height: 50,
                 borderRadius: 10,
                 backgroundColor: controller.isSubmitting.value

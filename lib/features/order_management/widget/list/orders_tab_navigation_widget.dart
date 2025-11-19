@@ -11,7 +11,7 @@ class OrdersTabNavigationWidget extends StatelessWidget {
     final controller = Get.find<OrderManagementController>();
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      // padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB), width: 1)),

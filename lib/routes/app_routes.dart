@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:quikle_vendor/features/home/screen/home_screen.dart';
+import 'package:quikle_vendor/features/kyc_approval/screen/kyc_approval_screen.dart';
 import 'package:quikle_vendor/features/kyc_verification/screen/kyc_verification_screen.dart';
 import 'package:quikle_vendor/features/navbar/screen/navbar_screen.dart';
 import 'package:quikle_vendor/features/order_management/screen/order_details_screen.dart';
@@ -30,6 +31,7 @@ class AppRoute {
   static const String _welcome = '/welcome';
   static String vendorSelectionScreen = '/vendorSelectionScreen';
   static String kycVerificationScreen = '/kycVerificationScreen';
+  static String kycApprovalScreen = '/kycApprovalScreen';
   static String homeScreen = "/homeScreen";
   static String navbarScreen = '/navbarScreen';
   static String myProfileScreen = '/myProfileScreen';
@@ -48,6 +50,7 @@ class AppRoute {
   static String getVerify() => _verify;
   static String getVendorSelectionScreen() => vendorSelectionScreen;
   static String getKycVerificationScreen() => kycVerificationScreen;
+  static String getKycApprovalScreen() => kycApprovalScreen;
   static String getNavbarScreen() => navbarScreen;
   static String getMyProfileScreen() => myProfileScreen;
   static String getEditProfileScreen() => editProfileScreen;
@@ -64,6 +67,7 @@ class AppRoute {
     GetPage(name: _welcome, page: () => const WelcomeScreen()),
     GetPage(name: vendorSelectionScreen, page: () => VendorSelectionScreen()),
     GetPage(name: kycVerificationScreen, page: () => KycVerificationScreen()),
+    GetPage(name: kycApprovalScreen, page: () => KycApprovalScreen()),
     GetPage(name: homeScreen, page: () => HomeScreen()),
     GetPage(name: navbarScreen, page: () => NavbarScreen()),
     GetPage(name: myProfileScreen, page: () => MyProfileScreen()),

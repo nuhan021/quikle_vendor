@@ -1,21 +1,26 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/core/common/widgets/custom_button.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/features/profile/my_profile/widget/basic_information_widget.dart';
 import 'package:quikle_vendor/features/profile/my_profile/widget/business_details_widget.dart';
 import 'package:quikle_vendor/features/profile/my_profile/widget/contactInfoCard.dart';
+import 'package:quikle_vendor/routes/app_routes.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../appbar/screen/appbar_screen.dart';
 import '../controller/my_profile_controller.dart';
 
 class MyProfileScreen extends StatelessWidget {
-  const MyProfileScreen({super.key});
+  final bool fromKycFlow;
+
+  const MyProfileScreen({super.key, this.fromKycFlow = false});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(MyProfileController());
-
+    log("fromKycFlow: $fromKycFlow");
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const AppbarScreen(title: "My Profile"),
@@ -112,6 +117,23 @@ class MyProfileScreen extends StatelessWidget {
 
             // Business Details Card
             const BusinessDetailsCard(),
+
+            if (fromKycFlow) ...[
+              const SizedBox(height: 20),
+              CustomButton(
+                text: "Update",
+                onPressed: () {
+                  Get.offAllNamed(AppRoute.navbarScreen);
+                },
+                height: 48,
+                width: double.infinity,
+                borderRadius: 10,
+                backgroundColor: Colors.black,
+                textColor: Colors.white,
+                fontSize: 15,
+              ),
+              const SizedBox(height: 20),
+            ],
           ],
         ),
       ),

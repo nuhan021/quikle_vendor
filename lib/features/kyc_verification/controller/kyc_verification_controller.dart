@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:quikle_vendor/routes/app_routes.dart';
 
 class KycVerificationController extends GetxController {
   /// -------------------- Observables --------------------
@@ -14,7 +15,7 @@ class KycVerificationController extends GetxController {
   var longitude = 0.0.obs;
   var address = "".obs;
   var isSubmitting = false.obs;
-  var searchAddress = "".obs; // for address search
+  var searchAddress = "".obs;
   var isSearching = false.obs;
 
   /// Map Controller
@@ -25,36 +26,39 @@ class KycVerificationController extends GetxController {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowMultiple: true,
+        allowMultiple: false, // Only one file allowed
         allowedExtensions: ['jpg', 'png', 'pdf'],
       );
 
       if (result != null && result.files.isNotEmpty) {
         kycFiles.clear();
         uploadProgress.clear();
-
-        for (final file in result.files) {
-          if (file.path != null) {
-            kycFiles.add(File(file.path!));
-            uploadProgress.add(0.0);
-          }
+        final file = result.files.first;
+        if (file.path != null) {
+          kycFiles.add(File(file.path!));
+          uploadProgress.add(0.0);
         }
-
-        /// Simulate fake upload progress (mocking real upload)
-        for (int i = 0; i < kycFiles.length; i++) {
-          for (int j = 1; j <= 10; j++) {
-            await Future.delayed(const Duration(milliseconds: 100));
-            uploadProgress[i] = j / 10;
-            uploadProgress.refresh();
-          }
+        // Simulate fake upload progress (mocking real upload)
+        for (int j = 1; j <= 10; j++) {
+          await Future.delayed(const Duration(milliseconds: 100));
+          uploadProgress[0] = j / 10;
+          uploadProgress.refresh();
         }
-
-        Get.snackbar("Uploaded", "${kycFiles.length} file(s) selected");
+        Get.snackbar("Uploaded", "1 file selected");
       } else {
-        Get.snackbar("Cancelled", "No files selected");
+        Get.snackbar("Cancelled", "No file selected");
       }
     } catch (e) {
-      Get.snackbar("Error", "Failed to pick files: $e");
+      Get.snackbar("Error", "Failed to pick file: $e");
+    }
+  }
+
+  /// -------------------- Remove File --------------------
+  void removeKycFile(int index) {
+    if (index >= 0 && index < kycFiles.length) {
+      kycFiles.removeAt(index);
+      uploadProgress.removeAt(index);
+      Get.snackbar("Removed", "File removed successfully");
     }
   }
 
@@ -208,6 +212,7 @@ class KycVerificationController extends GetxController {
       // TODO: integrate actual multipart API call
       await Future.delayed(const Duration(seconds: 2));
       Get.snackbar("Success", "KYC submitted successfully!");
+      Get.offAllNamed(AppRoute.kycApprovalScreen);
     } catch (e) {
       Get.snackbar("Error", "Submission failed: $e");
     } finally {

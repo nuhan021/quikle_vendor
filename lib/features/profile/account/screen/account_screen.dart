@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
+import 'package:quikle_vendor/core/utils/constants/image_path.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/utils/constants/icon_path.dart';
 import '../../../../routes/app_routes.dart';
@@ -40,11 +41,11 @@ class AccountScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 45,
-                    backgroundImage: AssetImage("assets/images/profile.png"),
+                    backgroundImage: AssetImage(ImagePath.shopImage),
                   ),
                   SizedBox(height: 12),
                   Text(
-                    "Vikram Rajput",
+                    "Tandoori Tarang",
                     style: getTextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
