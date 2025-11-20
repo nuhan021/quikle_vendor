@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:quikle_vendor/features/product_management/controllers/products_controller.dart';
 
-class EditProductController extends GetxController {
-  var showRemoveDiscountDialog = false.obs;
-  var showEditProductModal = false.obs;
+class AddProductController extends GetxController {
+  var showAddProductModal = false.obs;
 
   // Form Controllers
   final productNameController = TextEditingController();
@@ -13,15 +12,14 @@ class EditProductController extends GetxController {
   final weightController = TextEditingController();
   final priceController = TextEditingController();
   final stockQuantityController = TextEditingController();
+  final categoryController = TextEditingController();
+  final subCategoryController = TextEditingController();
   final discountController = TextEditingController();
 
   // Dropdown values
   late var selectedCategory;
   late var selectedSubCategory;
   var subCategorySearchText = ''.obs;
-  var selectedStockQuantity = ''.obs;
-  var productImage = ''.obs;
-  var isDiscount = false.obs;
 
   // Categories and Sub-categories
   final List<String> categories = ['Fruits', 'Vegetables', 'Dairy', 'Bakery'];
@@ -32,77 +30,7 @@ class EditProductController extends GetxController {
     'Bakery': ['Bread', 'Cake', 'Cookie', 'Pastry'],
   };
 
-  // Product data
-  var productData = {}.obs;
-  var currentProductId = ''.obs;
-  final ImagePicker _imagePicker = ImagePicker();
-
-  @override
-  void onInit() {
-    super.onInit();
-    selectedCategory = categories.first.obs;
-    selectedSubCategory = (subCategories[categories.first] ?? []).isNotEmpty
-        ? (subCategories[categories.first]![0]).obs
-        : ''.obs;
-    dynamic args = Get.arguments;
-    String? id;
-
-    if (args is Map<String, dynamic>?) {
-      id = args?['id']?.toString();
-    } else if (args is String) {
-      id = args.toString();
-    }
-
-    if (id != null) {
-      currentProductId.value = id;
-      loadProductData(id);
-    }
-  }
-
-  void loadProductData(String id) {
-    final dataController = Get.find<ProductsController>();
-    var product = dataController.getProductById(id);
-    if (product != null) {
-      productNameController.text = product['name'] ?? '';
-      descriptionController.text =
-          product['description'] ?? 'This is a dummy description';
-      weightController.text = product['pack'] ?? '';
-      priceController.text = (product['price'] ?? 0.0).toString();
-      stockQuantityController.text = (product['stock'] ?? 0).toString();
-      discountController.text = (product['discount'] ?? 0.0).toString();
-      selectedCategory.value = product['category'] ?? categories.first;
-      selectedStockQuantity.value = (product['stock'] ?? 0).toString();
-      productImage.value = product['image'] ?? '';
-      isDiscount.value = product['hasDiscount'] ?? false;
-    }
-  }
-
-  void showEditProductDialog() {
-    showEditProductModal.value = true;
-  }
-
-  void hideEditProductDialog() {
-    clearForm();
-    showEditProductModal.value = false;
-  }
-
-  void clearForm() {
-    productNameController.clear();
-    descriptionController.clear();
-    weightController.clear();
-    priceController.clear();
-    stockQuantityController.clear();
-    discountController.clear();
-    selectedCategory.value = categories.first;
-    selectedSubCategory.value =
-        (subCategories[categories.first] ?? []).isNotEmpty
-        ? subCategories[categories.first]![0]
-        : '';
-    selectedStockQuantity.value = '';
-    productImage.value = '';
-    subCategorySearchText.value = '';
-  }
-
+  // Get filtered sub-categories
   List<String> getFilteredSubCategories() {
     final allSubCats = subCategories[selectedCategory.value] ?? [];
     if (subCategorySearchText.value.isEmpty) {
@@ -117,27 +45,48 @@ class EditProductController extends GetxController {
         .toList();
   }
 
-  void showRemoveDiscountConfirmation() {
-    showRemoveDiscountDialog.value = true;
+  @override
+  void onInit() {
+    super.onInit();
+    selectedCategory = categories.first.obs;
+    selectedSubCategory = (subCategories[categories.first] ?? []).isNotEmpty
+        ? (subCategories[categories.first]![0]).obs
+        : 'All Categories'.obs;
   }
 
-  void hideRemoveDiscountConfirmation() {
-    showRemoveDiscountDialog.value = false;
+  // Product data
+  var productData = {}.obs;
+  var productImage = ''.obs;
+  final ImagePicker _imagePicker = ImagePicker();
+
+  void showAddProductDialog() {
+    showAddProductModal.value = true;
   }
 
-  void removeDiscount() {
-    isDiscount.value = false;
-    hideRemoveDiscountConfirmation();
-    Get.snackbar(
-      'Discount Removed',
-      'Discount offer has been removed from this product',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Color(0xFFEF4444),
-      colorText: Colors.white,
-    );
+  void hideAddProductDialog() {
+    clearForm();
+    showAddProductModal.value = false;
   }
 
-  void saveChanges() {
+  void clearForm() {
+    productNameController.clear();
+    descriptionController.clear();
+    weightController.clear();
+    priceController.clear();
+    stockQuantityController.clear();
+    categoryController.clear();
+    subCategoryController.clear();
+    discountController.clear();
+    selectedCategory.value = categories.first;
+    selectedSubCategory.value =
+        (subCategories[categories.first] ?? []).isNotEmpty
+        ? subCategories[categories.first]![0]
+        : '';
+    productImage.value = '';
+    subCategorySearchText.value = '';
+  }
+
+  void addProduct() {
     // Validate form
     if (productNameController.text.isEmpty) {
       Get.snackbar(
@@ -161,7 +110,7 @@ class EditProductController extends GetxController {
       return;
     }
 
-    // Update product data
+    // Create product data
     productData['name'] = productNameController.text;
     productData['description'] = descriptionController.text;
     productData['weight'] = weightController.text;
@@ -169,20 +118,26 @@ class EditProductController extends GetxController {
     productData['stock'] = int.tryParse(stockQuantityController.text) ?? 0;
     productData['discount'] = double.tryParse(discountController.text) ?? 0.0;
     productData['category'] = selectedCategory.value;
+    productData['subCategory'] = selectedSubCategory.value;
     productData['image'] = productImage.value;
 
     Get.snackbar(
-      'Changes Saved',
-      'Product has been updated successfully',
+      'Product Added',
+      'New product has been added to inventory',
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Color(0xFF10B981),
       colorText: Colors.white,
     );
 
-    // Navigate back after a delay
-    Future.delayed(Duration(seconds: 1), () {
-      Get.back();
-    });
+    hideAddProductDialog();
+  }
+
+  void changeCategory(String value) {
+    selectedCategory.value = value;
+  }
+
+  void changeSubCategory(String value) {
+    selectedSubCategory.value = value;
   }
 
   void pickProductImage() async {
@@ -205,18 +160,6 @@ class EditProductController extends GetxController {
     }
   }
 
-  void changeCategory(String value) {
-    selectedCategory.value = value;
-  }
-
-  void changeSubCategory(String value) {
-    selectedSubCategory.value = value;
-  }
-
-  void changeStockQuantity(String value) {
-    selectedStockQuantity.value = value;
-  }
-
   @override
   void onClose() {
     productNameController.dispose();
@@ -224,6 +167,8 @@ class EditProductController extends GetxController {
     weightController.dispose();
     priceController.dispose();
     stockQuantityController.dispose();
+    categoryController.dispose();
+    subCategoryController.dispose();
     discountController.dispose();
     super.onClose();
   }

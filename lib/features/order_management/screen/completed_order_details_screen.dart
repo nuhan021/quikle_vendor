@@ -5,11 +5,10 @@ import '../../appbar/screen/appbar_screen.dart';
 import '../controller/order_details_controller.dart';
 import '../widget/details/order_details_header_widget.dart';
 import '../widget/details/order_details_items_widget.dart';
-import '../widget/details/order_details_customer_info_widget.dart';
 import '../widget/details/order_details_actions_widget.dart';
 
-class OrderDetailsScreen extends StatelessWidget {
-  const OrderDetailsScreen({super.key});
+class CompletedOrderDetailsScreen extends StatelessWidget {
+  const CompletedOrderDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,12 +47,12 @@ class OrderDetailsScreen extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 /// 🔹 Customer Info
-                OrderDetailsCustomerInfoWidget(
-                  name: order['customerName'],
-                  deliveryTime: order['deliveryTime'],
-                  address: order['address'],
-                ),
-                const SizedBox(height: 30),
+                // OrderDetailsCustomerInfoWidget(
+                //   name: order['customerName'],
+                //   deliveryTime: order['deliveryTime'],
+                //   address: order['address'],
+                // ),
+                // const SizedBox(height: 30),
 
                 /// 🔹 Actions — button callbacks come from controller
                 OrderDetailsActionsWidget(

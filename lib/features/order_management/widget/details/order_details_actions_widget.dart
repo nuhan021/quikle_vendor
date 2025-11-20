@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/utils/constants/colors.dart';
+import '../../controller/order_management_controller.dart';
 
 class OrderDetailsActionsWidget extends StatelessWidget {
   final String orderId;
@@ -71,15 +73,33 @@ class OrderDetailsActionsWidget extends StatelessWidget {
                 ],
               ),
           ] else if (status == 'accepted')
-            CustomButton(
-              text: 'Mark as Prepared',
-              onPressed: () => onPrepared?.call(orderId),
-            )
+            Obx(() {
+              final controller = Get.find<OrderManagementController>();
+              final isDisabled = controller.disabledButtons.contains(orderId);
+              return CustomButton(
+                text: 'Mark as Prepared',
+                onPressed: isDisabled ? () {} : () => onPrepared?.call(orderId),
+                backgroundColor: isDisabled
+                    ? const Color(0xFFD1D5DB)
+                    : Colors.black,
+                textColor: Colors.white,
+              );
+            })
           else if (status == 'in-progress')
-            CustomButton(
-              text: 'Mark as Dispatched',
-              onPressed: () => onDispatched?.call(orderId),
-            ),
+            Obx(() {
+              final controller = Get.find<OrderManagementController>();
+              final isDisabled = controller.disabledButtons.contains(orderId);
+              return CustomButton(
+                text: 'Mark as Dispatched',
+                onPressed: isDisabled
+                    ? () {}
+                    : () => onDispatched?.call(orderId),
+                backgroundColor: isDisabled
+                    ? const Color(0xFFD1D5DB)
+                    : Colors.black,
+                textColor: Colors.white,
+              );
+            }),
         ],
       ),
     );

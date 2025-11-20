@@ -6,8 +6,8 @@ class ProductsController extends GetxController {
   var searchText = ''.obs;
   var selectedCategory = 'All Categories'.obs;
   var selectedStockStatus = 'All Status'.obs;
+  var selectedStockQuantity = '1'.obs;
 
-  var showAddProductModal = false.obs;
   var showCreateDiscountModal = false.obs;
   var showFilterProductModal = false.obs;
   var showDeleteDialog = false.obs;
@@ -61,14 +61,6 @@ class ProductsController extends GetxController {
     searchText.value = value;
   }
 
-  void showAddProductDialog() {
-    showAddProductModal.value = true;
-  }
-
-  void hideAddProductDialog() {
-    showAddProductModal.value = false;
-  }
-
   void showCreateDiscountDialog() {
     showCreateDiscountModal.value = true;
   }
@@ -112,17 +104,6 @@ class ProductsController extends GetxController {
       AppRoute.productEditScreen,
       arguments: {'id': productId.toString()},
     );
-  }
-
-  void addProduct() {
-    Get.snackbar(
-      'Product Added',
-      'New product has been added to inventory',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Color(0xFF10B981),
-      colorText: Colors.white,
-    );
-    hideAddProductDialog();
   }
 
   void addDiscount() {

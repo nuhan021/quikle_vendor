@@ -10,6 +10,9 @@ class OrderManagementController extends GetxController {
   /// -------------------- Orders (Mock Data) --------------------
   final allOrders = <Map<String, dynamic>>[].obs;
 
+  /// -------------------- Button State Management --------------------
+  final disabledButtons = <String>{}.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -125,7 +128,8 @@ class OrderManagementController extends GetxController {
           },
         ],
         'total': 17.98,
-        'specialInstructions': 'Standard delivery',
+        'specialInstructions':
+            'Please call when outside. Leave package at the door. The doorbell doesn\'t work.',
       },
     ]);
   }
@@ -146,7 +150,7 @@ class OrderManagementController extends GetxController {
 
   /// -------------------- Navigate to Details --------------------
   void navigateToOrderDetails(String orderId) {
-    Get.toNamed(AppRoute.orderDetailsScreen, arguments: orderId);
+    Get.toNamed(AppRoute.completedOrderDetailsScreen, arguments: orderId);
   }
 
   /// -------------------- Snackbar Helper --------------------
@@ -173,14 +177,19 @@ class OrderManagementController extends GetxController {
     Colors.indigo,
   );
 
-  void markAsPrepared(String orderId) => _showSnackbar(
-    'Prepared',
-    'Order $orderId marked as prepared',
-    Colors.green,
-  );
+  void markAsPrepared(String orderId) {
+    disabledButtons.add(orderId);
+    _showSnackbar(
+      'Prepared',
+      'Order $orderId marked as prepared',
+      Colors.green,
+    );
+  }
 
-  void markAsDispatched(String orderId) =>
-      _showSnackbar('Dispatched', 'Order $orderId dispatched', Colors.green);
+  void markAsDispatched(String orderId) {
+    disabledButtons.add(orderId);
+    _showSnackbar('Dispatched', 'Order $orderId dispatched', Colors.green);
+  }
 
   /// -------------------- Get Order by ID --------------------
   Map<String, dynamic>? getOrderById(String orderId) {
@@ -200,6 +209,6 @@ class OrderManagementController extends GetxController {
 
   /// -------------------- View Details --------------------
   void viewDetails(String orderId) {
-    Get.toNamed(AppRoute.orderDetailsScreen, arguments: orderId);
+    Get.toNamed(AppRoute.completedOrderDetailsScreen, arguments: orderId);
   }
 }

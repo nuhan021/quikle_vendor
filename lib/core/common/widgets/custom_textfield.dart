@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../styles/global_text_style.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -17,6 +18,7 @@ class CustomTextField extends StatelessWidget {
   final Function(String)? onChanged;
   final int maxLines;
   final double? height;
+  final List<TextInputFormatter>? inputFormatters;
 
   const CustomTextField({
     super.key,
@@ -35,6 +37,7 @@ class CustomTextField extends StatelessWidget {
     this.onChanged,
     this.maxLines = 1,
     this.height,
+    this.inputFormatters,
   });
 
   @override
@@ -62,6 +65,7 @@ class CustomTextField extends StatelessWidget {
           onTap: onTap,
           onChanged: onChanged,
           maxLines: maxLines,
+          inputFormatters: inputFormatters,
           style:
               textStyle ??
               getTextStyle(

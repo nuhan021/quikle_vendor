@@ -4,6 +4,7 @@ import 'package:quikle_vendor/features/product_management/widgets/filter_product
 import '../../../core/utils/constants/colors.dart';
 import '../../appbar/screen/appbar_screen.dart';
 import '../controllers/products_controller.dart';
+import '../controllers/add_product_controller.dart';
 import '../widgets/products_search_widget.dart';
 import '../widgets/products_action_buttons_widget.dart';
 import '../widgets/products_low_stock_alert_widget.dart';
@@ -18,6 +19,7 @@ class ProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ProductsController());
+    final addProductController = Get.put(AddProductController());
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -36,7 +38,7 @@ class ProductsScreen extends StatelessWidget {
 
             // Modals and Dialogs
             Obx(
-              () => controller.showAddProductModal.value
+              () => addProductController.showAddProductModal.value
                   ? AddProductModalWidget()
                   : Container(),
             ),

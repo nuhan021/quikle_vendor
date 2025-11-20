@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/common/widgets/custom_button.dart';
 import '../controllers/products_controller.dart';
+import '../controllers/add_product_controller.dart';
 
 class ProductsActionButtonsWidget extends StatelessWidget {
   const ProductsActionButtonsWidget({super.key});
@@ -9,6 +10,7 @@ class ProductsActionButtonsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<ProductsController>();
+    final addProductController = Get.find<AddProductController>();
 
     return Container(
       margin: EdgeInsets.all(10),
@@ -28,7 +30,7 @@ class ProductsActionButtonsWidget extends StatelessWidget {
           Expanded(
             child: CustomButton(
               text: 'Add New Product',
-              onPressed: controller.showAddProductDialog,
+              onPressed: addProductController.showAddProductDialog,
             ),
           ),
         ],

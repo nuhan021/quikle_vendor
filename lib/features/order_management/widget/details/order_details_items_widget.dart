@@ -128,9 +128,16 @@ class OrderDetailsItemsWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            specialInstructions,
-            style: getTextStyle(fontSize: 14, color: const Color(0xFF6B7280)),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0x1AB8B8B8),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              specialInstructions,
+              style: getTextStyle(fontSize: 14, color: const Color(0xFF6B7280)),
+            ),
           ),
         ],
       ),

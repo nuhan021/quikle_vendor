@@ -13,7 +13,7 @@ TextStyle getTextStyle({
   return GoogleFonts.poppins(
     fontSize: fontSize.sp,
     fontWeight: fontWeight,
-    height: lineHeight,
+    // height: lineHeight,
     color: color,
   );
 }

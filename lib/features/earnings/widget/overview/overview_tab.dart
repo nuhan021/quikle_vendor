@@ -79,7 +79,7 @@ class OverviewTab extends StatelessWidget {
             () => Container(
               height: 164,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 24),
+              padding: const EdgeInsets.symmetric(vertical: 20),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [Colors.black, Color(0xFF333333)],
@@ -89,13 +89,13 @@ class OverviewTab extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 8),
                   Text(
                     "\$ Total Earnings",
                     style: getTextStyle(color: Colors.white70, fontSize: 16),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   Text(
                     "\$${controller.totalEarnings.value.toStringAsFixed(2)}",
                     style: getTextStyle(
@@ -104,7 +104,7 @@ class OverviewTab extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   Text(
                     "Net \$${controller.netEarnings.value.toStringAsFixed(2)}",
                     style: getTextStyle(color: Colors.white70, fontSize: 14),
@@ -123,7 +123,7 @@ class OverviewTab extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
-              childAspectRatio: 1.5,
+              childAspectRatio: 2.0,
               children: [
                 StatCard(
                   "Payment Received",
