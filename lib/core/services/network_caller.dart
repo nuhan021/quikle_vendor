@@ -1,134 +1,269 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 
 import '../models/response_data.dart';
+import '../utils/logging/logger.dart';
 
 class NetworkCaller {
   final int timeoutDuration = 10;
 
-  // GET method
-  Future<ResponseData> getRequest(String url, {String? token}) async {
-    log('GET Request: $url');
-    log('GET Token: $token');
+  // GET Request
+  Future<ResponseData> getRequest(
+    String url, {
+    String? token,
+    Map<String, String>? headers,
+    Map<String, dynamic>? queryParams,
+  }) async {
+    Uri uri = Uri.parse(url);
+
+    if (queryParams != null) {
+      uri = uri.replace(
+        queryParameters: queryParams.map((k, v) => MapEntry(k, v.toString())),
+      );
+    }
+
+    final requestHeaders = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': token,
+      if (headers != null) ...headers,
+    };
+
     try {
-      final Response response = await get(
-        Uri.parse(url),
-        headers: {
-          'Authorization': token.toString(),
-          'Content-type': 'application/json',
-        },
-      ).timeout(
+      final response = await http
+          .get(uri, headers: requestHeaders)
+          .timeout(Duration(seconds: timeoutDuration));
+
+      return _handleResponse(response);
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  // POST Request (JSON or FORM)
+  Future<ResponseData> postRequest(
+    String url, {
+    Map<String, dynamic>? body,
+    String? token,
+    Map<String, String>? headers,
+    bool form = false, // <-- NEW
+  }) async {
+    final requestHeaders = {
+      if (form)
+        'Content-Type': 'application/x-www-form-urlencoded'
+      else
+        'Content-Type': 'application/json',
+      if (token != null) 'Authorization': token,
+      if (headers != null) ...headers,
+    };
+
+    try {
+      final response = await http
+          .post(
+            Uri.parse(url),
+            headers: requestHeaders,
+            body: form
+                ? body?.map((k, v) => MapEntry(k, v.toString()))
+                : jsonEncode(body ?? {}),
+          )
+          .timeout(Duration(seconds: timeoutDuration));
+
+      return _handleResponse(response);
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  // PUT Request (JSON or FORM)
+  Future<ResponseData> putRequest(
+    String url, {
+    Map<String, dynamic>? body,
+    String? token,
+    Map<String, String>? headers,
+    bool form = false,
+  }) async {
+    final requestHeaders = {
+      if (form)
+        'Content-Type': 'application/x-www-form-urlencoded'
+      else
+        'Content-Type': 'application/json',
+      if (token != null) 'Authorization': token,
+      if (headers != null) ...headers,
+    };
+
+    try {
+      final response = await http
+          .put(
+            Uri.parse(url),
+            headers: requestHeaders,
+            body: form
+                ? body?.map((k, v) => MapEntry(k, v.toString()))
+                : jsonEncode(body ?? {}),
+          )
+          .timeout(Duration(seconds: timeoutDuration));
+
+      return _handleResponse(response);
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  // DELETE Request
+  Future<ResponseData> deleteRequest(
+    String url, {
+    String? token,
+    Map<String, String>? headers,
+  }) async {
+    final requestHeaders = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': token,
+      if (headers != null) ...headers,
+    };
+
+    try {
+      final response = await http
+          .delete(Uri.parse(url), headers: requestHeaders)
+          .timeout(Duration(seconds: timeoutDuration));
+
+      return _handleResponse(response);
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  // MULTIPART Request
+  Future<ResponseData> multipartRequest(
+    String url, {
+    Map<String, String>? fields,
+    Map<String, String>? headers,
+    List<http.MultipartFile>? files,
+    String? token,
+  }) async {
+    final uri = Uri.parse(url);
+
+    final requestHeaders = {
+      if (token != null) 'Authorization': token,
+      if (headers != null) ...headers,
+    };
+
+    try {
+      final request = http.MultipartRequest('POST', uri);
+
+      request.headers.addAll(requestHeaders);
+      if (fields != null) request.fields.addAll(fields);
+      if (files != null) request.files.addAll(files);
+
+      final streamedResponse = await request.send().timeout(
         Duration(seconds: timeoutDuration),
       );
 
+      final response = await http.Response.fromStream(streamedResponse);
+
       return _handleResponse(response);
     } catch (e) {
       return _handleError(e);
     }
   }
 
-  // POST method
-  Future<ResponseData> postRequest(String url,
-      {Map<String, String>? body, String? token}) async {
-    log('POST Request: $url');
-    log('Request Body: ${jsonEncode(body)}');
+  // HANDLE SUCCESS / ERROR RESPONSE
+  ResponseData _handleResponse(Response response) {
+    AppLoggerHelper.debug('Status: ${response.statusCode}');
+    AppLoggerHelper.debug('Body: ${response.body}');
+
+    dynamic decoded;
 
     try {
-      final Response response = await post(Uri.parse(url),
-          headers: {'Content-type': 'application/json'},
-          body: jsonEncode(body))
-          .timeout(Duration(seconds: timeoutDuration));
-      return _handleResponse(response);
-    } catch (e) {
-      return _handleError(e);
+      decoded = jsonDecode(response.body);
+    } catch (_) {
+      decoded = response.body;
     }
-  }
 
-  // Handle response
-  ResponseData _handleResponse(Response response) {
-    log('Response Status: ${response.statusCode}');
-    log('Response Body: ${response.body}');
-
-    final decodedResponse = jsonDecode(response.body);
-
-    if (response.statusCode == 200) {
-      if (decodedResponse['success'] == true) {
-        return ResponseData(
-          isSuccess: true,
-          statusCode: response.statusCode,
-          responseData: decodedResponse,
-          errorMessage: '',
-        );
-      } else {
-        return ResponseData(
-          isSuccess: false,
-          statusCode: response.statusCode,
-          responseData: decodedResponse,
-          errorMessage: decodedResponse['message'] ?? 'Unknown error occurred',
-        );
-      }
-    } else if (response.statusCode == 400) {
+    // Handle success responses
+    if (response.statusCode >= 200 && response.statusCode < 300) {
       return ResponseData(
-        isSuccess: false,
+        isSuccess: true,
         statusCode: response.statusCode,
-        responseData: decodedResponse,
-        errorMessage: _extractErrorMessages(decodedResponse['errorSources']),
-      );
-    } else if (response.statusCode == 500) {
-      return ResponseData(
-        isSuccess: false,
-        statusCode: response.statusCode,
-        responseData: '',
-        errorMessage:
-        decodedResponse['message'] ?? 'An unexpected error occurred!',
-      );
-    } else {
-      return ResponseData(
-        isSuccess: false,
-        statusCode: response.statusCode,
-        responseData: decodedResponse,
-        errorMessage: decodedResponse['message'] ?? 'An unknown error occurred',
+        responseData: decoded,
+        errorMessage: (decoded is Map && decoded['message'] != null)
+            ? decoded['message']
+            : '',
       );
     }
-  }
 
-  // Extract error messages for status 400
-  String _extractErrorMessages(dynamic errorSources) {
-    if (errorSources is List) {
-      return errorSources
-          .map((error) => error['message'] ?? 'Unknown error')
-          .join(', ');
+    // Handle validation errors (400)
+    if (response.statusCode == 400) {
+      return ResponseData(
+        isSuccess: false,
+        statusCode: 400,
+        responseData: decoded,
+        errorMessage: decoded is Map && decoded['message'] != null
+            ? decoded['message']
+            : 'Bad Request',
+      );
     }
-    return 'Validation error';
-  }
 
-  // Handle errors
-  ResponseData _handleError(dynamic error) {
-    log('Request Error: $error');
+    // Unauthorized
+    if (response.statusCode == 401) {
+      return ResponseData(
+        isSuccess: false,
+        statusCode: 401,
+        responseData: decoded,
+        errorMessage: 'Unauthorized request',
+      );
+    }
 
-    if (error is ClientException) {
+    // Forbidden
+    if (response.statusCode == 403) {
+      return ResponseData(
+        isSuccess: false,
+        statusCode: 403,
+        responseData: decoded,
+        errorMessage: 'Forbidden request',
+      );
+    }
+
+    // Server error
+    if (response.statusCode == 500) {
       return ResponseData(
         isSuccess: false,
         statusCode: 500,
-        responseData: '',
-        errorMessage: 'Network error occurred. Please check your connection.',
+        responseData: decoded,
+        errorMessage: decoded is Map && decoded['message'] != null
+            ? decoded['message']
+            : 'Server error',
       );
-    } else if (error is TimeoutException) {
+    }
+
+    // Default fallback
+    return ResponseData(
+      isSuccess: false,
+      statusCode: response.statusCode,
+      responseData: decoded,
+      errorMessage: decoded is Map && decoded['message'] != null
+          ? decoded['message']
+          : 'Unknown error',
+    );
+  }
+
+  // HANDLE NETWORK ERROR
+  ResponseData _handleError(dynamic error) {
+    AppLoggerHelper.error('Request error', error);
+
+    if (error is TimeoutException) {
       return ResponseData(
         isSuccess: false,
         statusCode: 408,
         responseData: '',
-        errorMessage: 'Request timeout. Please try again later.',
-      );
-    } else {
-      return ResponseData(
-        isSuccess: false,
-        statusCode: 500,
-        responseData: '',
-        errorMessage: 'Unexpected error occurred.',
+        errorMessage: 'Request Timeout',
       );
     }
+
+    return ResponseData(
+      isSuccess: false,
+      statusCode: 500,
+      responseData: '',
+      errorMessage: error.toString(),
+    );
   }
 }

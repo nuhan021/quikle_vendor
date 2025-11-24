@@ -193,7 +193,15 @@ class KycVerificationScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 8),
+
+              /// NID Field
+              CustomTextField(
+                label: "National ID (NID)",
+                hintText: "Enter your NID number",
+                controller: controller.nidController,
+              ),
+              const SizedBox(height: 20),
 
               /// Submit Button
               CustomButton(

@@ -29,7 +29,7 @@ class CommonWidgets {
     return Container(
       width: double.infinity,
       height: 52.h,
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: ShapeDecoration(
         shape: RoundedRectangleBorder(
           side: const BorderSide(width: 1, color: Color(0xFF7C7C7C)),
@@ -71,7 +71,7 @@ class CommonWidgets {
       child: Container(
         width: double.infinity,
         height: 48.h,
-        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
+        // padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
         decoration: ShapeDecoration(
           color: const Color(0xFFFFC200),
           shape: RoundedRectangleBorder(
@@ -108,7 +108,7 @@ class CommonWidgets {
       child: Container(
         width: double.infinity,
         height: 50.h,
-        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
+        // padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
         clipBehavior: Clip.antiAlias,
         decoration: ShapeDecoration(
           color: Colors.white.withOpacity(0.05),

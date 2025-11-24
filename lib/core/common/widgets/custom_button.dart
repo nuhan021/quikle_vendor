@@ -21,8 +21,8 @@ class CustomButton extends StatelessWidget {
     required this.onPressed,
     this.width,
     this.height = 50,
-    this.backgroundColor = Colors.black,
-    this.textColor = Colors.white,
+    this.backgroundColor = const Color(0xFFFFD700),
+    this.textColor = Colors.black,
     this.fontSize = 16,
     this.fontWeight = FontWeight.w500,
     this.borderRadius = 8,
@@ -47,13 +47,15 @@ class CustomButton extends StatelessWidget {
           border: borderColor != null ? Border.all(color: borderColor!) : null,
         ),
         child: isLoading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
+            ? Text(
+                text,
+                style:
+                    style ??
+                    getTextStyle(
+                      fontSize: fontSize,
+                      fontWeight: fontWeight,
+                      color: textColor,
+                    ),
               )
             : Text(
                 text,

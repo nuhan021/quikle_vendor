@@ -1,62 +1,44 @@
-import 'package:get/get.dart';
-import '../../../core/models/response_data.dart';
-import '../../user/data/models/user_model.dart';
-import '../../user/data/services/user_service.dart';
-import '../data/services/auth_service.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_disposable.dart';
+import 'package:quikle_vendor/core/models/response_data.dart';
+import 'package:quikle_vendor/core/services/network_caller.dart';
+import 'package:quikle_vendor/core/utils/constants/api_constants.dart';
 
-class AuthController extends GetxController {
-  late final AuthService _authService;
-  late final UserService _userService;
+class AuthService extends GetxService {
+  final NetworkCaller _network = NetworkCaller();
 
-  UserModel? get currentUser => _userService.currentUser;
-  bool get isLoggedIn => _userService.isLoggedIn;
-  String? get currentUserId => _userService.currentUserId;
-  String get token => _userService.token;
-
-  @override
-  void onInit() {
-    super.onInit();
-    _authService = Get.find<AuthService>();
-    _userService = Get.find<UserService>();
+  /// Send OTP for Signup
+  Future<ResponseData> sendOtpForSignup(String phone) {
+    return _network.postRequest(
+      ApiConstants.sendOtp,
+      form: true,
+      body: {"phone": phone, "purpose": "vendor_signup"},
+    );
   }
 
-  Future<ResponseData> login(String phoneNumber) async {
-    try {
-      return await _authService.login(phoneNumber);
-    } catch (e) {
-      throw Exception('Failed to login: $e');
-    }
+  /// Send OTP for Login
+  Future<ResponseData> sendOtpForLogin(String phone) {
+    return _network.postRequest(
+      ApiConstants.sendOtp,
+      form: true,
+      body: {"phone": phone, "purpose": "vendor_login"},
+    );
   }
 
-  Future<ResponseData> register(String name, String phoneNumber) async {
-    try {
-      return await _authService.register(name, phoneNumber);
-    } catch (e) {
-      throw Exception('Failed to register: $e');
-    }
+  /// Complete Vendor Signup after OTP
+  Future<ResponseData> vendorSignup(String shopName, String phone, String otp) {
+    return _network.postRequest(
+      ApiConstants.vendorSignup,
+      form: true,
+      body: {"phone": phone, "name": shopName, "otp": otp},
+    );
   }
 
-  Future<ResponseData> verifyOtp(String phone, String otp) async {
-    try {
-      return await _authService.verifyOtp(phone, otp);
-    } catch (e) {
-      throw Exception('Failed to verify OTP: $e');
-    }
-  }
-
-  Future<ResponseData> resendOtp(String phone) async {
-    try {
-      return await _authService.resendOtp(phone);
-    } catch (e) {
-      throw Exception('Failed to resend OTP: $e');
-    }
-  }
-
-  Future<void> logout() async {
-    try {
-      await _authService.logout();
-    } catch (e) {
-      throw Exception('Failed to logout: $e');
-    }
+  /// Verify OTP for Login
+  Future<ResponseData> verifyLogin(String phone, String otp) {
+    return _network.postRequest(
+      ApiConstants.login,
+      form: true,
+      body: {"phone": phone, "otp": otp, "purpose": "vendor_login"},
+    );
   }
 }

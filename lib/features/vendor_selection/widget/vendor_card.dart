@@ -23,9 +23,9 @@ class VendorCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 28),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: isSelected ? Colors.black : Colors.white,
+          color: isSelected ? Colors.black : Colors.amber,
           border: Border.all(
-            color: isSelected ? Colors.transparent : Colors.black,
+            color: isSelected ? Colors.transparent : Colors.amber,
             width: 1.2,
           ),
           borderRadius: BorderRadius.circular(14),
@@ -59,7 +59,7 @@ class VendorCard extends StatelessWidget {
             if (isSelected)
               const Padding(
                 padding: EdgeInsets.only(top: 10),
-                child: Icon(Icons.check_circle, color: Colors.white, size: 22),
+                child: Icon(Icons.check_circle, color: Colors.amber, size: 22),
               ),
           ],
         ),

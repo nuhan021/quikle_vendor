@@ -52,26 +52,42 @@ class OrderDetailsActionsWidget extends StatelessWidget {
                 onPressed: () => onReview?.call(orderId),
               )
             else
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomButton(
-                      text: 'Reject',
-                      onPressed: () => onReject?.call(orderId),
-                      backgroundColor: Colors.white,
-                      textColor: AppColors.error,
-                      borderColor: AppColors.error,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: CustomButton(
-                      text: 'Accept',
-                      onPressed: () => onAccept?.call(orderId),
-                    ),
-                  ),
-                ],
-              ),
+              Obx(() {
+                final controller = Get.find<OrderManagementController>();
+                final isAccepted = controller.acceptedOrders.contains(orderId);
+                return isAccepted
+                    ? CustomButton(
+                        text: 'Accepted',
+                        onPressed: () {},
+                        backgroundColor: const Color(0xFFD1D5DB),
+                        textColor: Colors.black54,
+                      )
+                    : Row(
+                        children: [
+                          Expanded(
+                            child: CustomButton(
+                              text: 'Reject',
+                              onPressed: () => onReject?.call(orderId),
+                              backgroundColor: Colors.white,
+                              textColor: AppColors.error,
+                              borderColor: AppColors.error,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: CustomButton(
+                              text: 'Accept',
+                              onPressed: () {
+                                controller.acceptedOrders.add(orderId);
+                                onAccept?.call(orderId);
+                              },
+                              backgroundColor: Colors.amber,
+                              textColor: Colors.black,
+                            ),
+                          ),
+                        ],
+                      );
+              }),
           ] else if (status == 'accepted')
             Obx(() {
               final controller = Get.find<OrderManagementController>();
@@ -90,14 +106,17 @@ class OrderDetailsActionsWidget extends StatelessWidget {
               final controller = Get.find<OrderManagementController>();
               final isDisabled = controller.disabledButtons.contains(orderId);
               return CustomButton(
-                text: 'Mark as Dispatched',
+                text: isDisabled ? 'Dispatched...' : 'Mark as Dispatched',
                 onPressed: isDisabled
                     ? () {}
-                    : () => onDispatched?.call(orderId),
+                    : () {
+                        controller.disabledButtons.add(orderId);
+                        onDispatched?.call(orderId);
+                      },
                 backgroundColor: isDisabled
                     ? const Color(0xFFD1D5DB)
                     : Colors.black,
-                textColor: Colors.white,
+                textColor: isDisabled ? Colors.black54 : Colors.white,
               );
             }),
         ],

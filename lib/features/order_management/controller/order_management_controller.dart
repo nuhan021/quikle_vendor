@@ -12,6 +12,7 @@ class OrderManagementController extends GetxController {
 
   /// -------------------- Button State Management --------------------
   final disabledButtons = <String>{}.obs;
+  final acceptedOrders = <String>{}.obs;
 
   @override
   void onInit() {

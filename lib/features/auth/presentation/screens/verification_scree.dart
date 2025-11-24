@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/common/styles/global_text_style.dart';
+import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/utils/constants/colors.dart';
 import '../../../../core/utils/constants/enums.dart';
 import '../../../../core/utils/constants/image_path.dart';
@@ -54,10 +55,9 @@ class VerificationScreen extends StatelessWidget {
                     top: 24.5.h,
                     child: SizedBox(
                       width: 360.w,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                      child: Stack(
                         children: [
-                          // Back button
+                          // Back button (left)
                           GestureDetector(
                             onTap: () => Get.back(),
                             child: Container(
@@ -71,15 +71,16 @@ class VerificationScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          SizedBox(width: 135.w),
-                          // Title
-                          Text(
-                            'Verification',
-                            style: getTextStyle(
-                              font: CustomFonts.obviously,
-                              color: const Color(0xFFF8F8F8),
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.w500,
+                          // Title (centered)
+                          Center(
+                            child: Text(
+                              'Verification',
+                              style: getTextStyle(
+                                font: CustomFonts.obviously,
+                                color: const Color(0xFFF8F8F8),
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ],
@@ -231,41 +232,23 @@ class VerificationScreen extends StatelessWidget {
                           ),
 
                           SizedBox(height: 16.h),
-                          GestureDetector(
-                            onTap: controller.onTapVerify,
-                            child: Container(
-                              width: double.infinity,
+                          Obx(
+                            () => CustomButton(
+                              text: controller.isVerifying.value
+                                  ? 'Verifying…'
+                                  : 'Verify Code',
+                              onPressed: controller.onTapVerify,
+                              isLoading: controller.isVerifying.value,
+                              backgroundColor: AppColors.beakYellow,
+                              textColor: AppColors.ebonyBlack,
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w600,
                               height: 48.h,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 24.w,
-                                vertical: 14.h,
-                              ),
-                              decoration: ShapeDecoration(
-                                color: AppColors.beakYellow,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 304.w,
-                                    child: Obx(() {
-                                      return Text(
-                                        controller.isVerifying.value
-                                            ? 'Verifying…'
-                                            : 'Verify Code',
-                                        textAlign: TextAlign.center,
-                                        style: getTextStyle(
-                                          font: CustomFonts.manrope,
-                                          color: AppColors.ebonyBlack,
-                                          fontSize: 18.sp,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ],
+                              style: getTextStyle(
+                                font: CustomFonts.manrope,
+                                color: AppColors.ebonyBlack,
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),

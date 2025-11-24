@@ -10,7 +10,9 @@ import '../../controllers/register_controller.dart';
 import '../widgets/common_widgets.dart';
 
 class RegisterScreen extends GetView<RegisterController> {
-  const RegisterScreen({super.key});
+  RegisterScreen({super.key});
+
+  final controller = Get.find<RegisterController>();
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,22 @@ class RegisterScreen extends GetView<RegisterController> {
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Column(
               children: [
+                /// Back Button
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: GestureDetector(
+                    onTap: () => Get.back(),
+                    child: Container(
+                      // padding: EdgeInsets.all(8.w),
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: AppColors.eggshellWhite,
+                        size: 24.sp,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16.h),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(

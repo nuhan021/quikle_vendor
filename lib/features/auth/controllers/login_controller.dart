@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:quikle_vendor/features/auth/controllers/auth_controller.dart';
+import 'package:quikle_vendor/features/auth/presentation/screens/resgiter_screen.dart';
 
 import '../../../routes/app_routes.dart';
-import '../data/services/auth_service.dart';
 
 class LoginController extends GetxController {
   final phoneController = TextEditingController();
@@ -13,84 +18,35 @@ class LoginController extends GetxController {
 
   @override
   void onInit() {
-    super.onInit();
     _auth = Get.find<AuthService>();
+    super.onInit();
   }
 
   Future<void> onTapLogin() async {
-    if (_validatePhone()) {
-      isLoading.value = true;
-      errorMessage.value = '';
-
-      try {
-        final response = await _auth.login(phoneController.text.trim());
-
-        if (response.isSuccess) {
-          Get.toNamed(
-            AppRoute.getVerify(),
-            arguments: {'phone': phoneController.text.trim(), 'isLogin': true},
-          );
-        } else {
-          errorMessage.value = response.errorMessage;
-          Get.snackbar(
-            'Error',
-            response.errorMessage,
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.red.withValues(alpha: 0.1),
-            colorText: Colors.red,
-          );
-        }
-      } catch (e) {
-        errorMessage.value = 'Something went wrong. Please try again.';
-        Get.snackbar(
-          'Error',
-          'Something went wrong. Please try again.',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red.withValues(alpha: 0.1),
-          colorText: Colors.red,
-        );
-      } finally {
-        isLoading.value = false;
-      }
-    }
-  }
-
-  bool _validatePhone() {
     final phone = phoneController.text.trim();
-    if (phone.isEmpty) {
-      errorMessage.value = 'Please enter your phone number';
-      Get.snackbar(
-        'Validation Error',
-        'Please enter your phone number',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.orange.withValues(alpha: 0.1),
-        colorText: Colors.orange,
-      );
-      return false;
-    }
 
     if (phone.length < 10) {
-      errorMessage.value = 'Please enter a valid phone number';
-      Get.snackbar(
-        'Validation Error',
-        'Please enter a valid phone number',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.orange.withValues(alpha: 0.1),
-        colorText: Colors.orange,
-      );
-      return false;
+      errorMessage.value = "Enter valid phone";
+      return;
     }
 
-    return true;
+    isLoading.value = true;
+
+    final res = await _auth.sendOtpForLogin(phone);
+
+    if (res.isSuccess) {
+      Get.toNamed(
+        AppRoute.getVerify(),
+        arguments: {"phone": phone, "isLogin": true},
+      );
+    } else {
+      errorMessage.value = res.errorMessage;
+    }
+
+    isLoading.value = false;
   }
 
   void onTapCreateAccount() {
-    Get.toNamed(AppRoute.getRegister());
-  }
-
-  @override
-  void onClose() {
-    phoneController.dispose();
-    super.onClose();
+    Get.to(RegisterScreen());
   }
 }

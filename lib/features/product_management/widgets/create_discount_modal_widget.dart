@@ -1,20 +1,259 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/common/styles/global_text_style.dart';
-import '../controllers/products_controller.dart';
+import '../../../core/common/widgets/custom_button.dart';
+import '../../../core/common/widgets/custom_textfield.dart';
+import '../controllers/create_discount_controller.dart';
 
 class CreateDiscountModalWidget extends StatelessWidget {
-  CreateDiscountModalWidget({super.key});
+  const CreateDiscountModalWidget({super.key});
+
+  Future<void> _selectStartDateTime(
+    BuildContext context,
+    CreateDiscountController controller,
+  ) async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData(
+            useMaterial3: true,
+            scaffoldBackgroundColor: Colors.white,
+            cardColor: Colors.white,
+            dialogBackgroundColor: Colors.white,
+            colorScheme: ColorScheme.light(
+              primary: Colors.black,
+              surface: Colors.white,
+              onSurface: Colors.black,
+              outline: Colors.grey,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (date != null) {
+      final dateStr =
+          '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
+      controller.setStartDate(dateStr);
+    }
+  }
+
+  Future<void> _selectEndDateTime(
+    BuildContext context,
+    CreateDiscountController controller,
+  ) async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData(
+            useMaterial3: true,
+            scaffoldBackgroundColor: Colors.white,
+            cardColor: Colors.white,
+            dialogBackgroundColor: Colors.white,
+            colorScheme: ColorScheme.light(
+              primary: Colors.black,
+              surface: Colors.white,
+              onSurface: Colors.black,
+              outline: Colors.grey,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (date != null) {
+      final dateStr =
+          '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
+      controller.setEndDate(dateStr);
+    }
+  }
+
+  void _showProductSelectionDialog(
+    BuildContext context,
+    CreateDiscountController controller,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Select Product',
+                      style: getTextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF111827),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Icon(
+                        Icons.close,
+                        color: Color(0xFF6B7280),
+                        size: 24,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+
+                // Search Field
+                CustomTextField(
+                  controller: controller.productSearchController,
+                  label: 'Search Products',
+                  hintText: 'Search by name or category',
+                  onChanged: (value) {
+                    controller.searchProducts(value);
+                  },
+                ),
+                SizedBox(height: 16),
+
+                // Products List
+                Expanded(
+                  child: Obx(
+                    () => ListView.builder(
+                      itemCount: controller.filteredProducts.length,
+                      itemBuilder: (context, index) {
+                        final product = controller.filteredProducts[index];
+                        return GestureDetector(
+                          onTap: () {
+                            controller.setSelectedProduct(
+                              product['name'],
+                              product['id'],
+                            );
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(bottom: 12),
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Color(0xFFE5E7EB)),
+                              borderRadius: BorderRadius.circular(8),
+                              color:
+                                  controller.selectedProductId.value ==
+                                      product['id']
+                                  ? Color(0xFFFFC200).withOpacity(0.1)
+                                  : Colors.white,
+                            ),
+                            child: Row(
+                              children: [
+                                // Product Image
+                                Container(
+                                  width: 60,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    image: DecorationImage(
+                                      image: AssetImage(product['image']),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+
+                                // Product Info
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        product['name'],
+                                        style: getTextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF111827),
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            product['category'],
+                                            style: getTextStyle(
+                                              fontSize: 12,
+                                              color: Color(0xFF6B7280),
+                                            ),
+                                          ),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            '• ${product['status']}',
+                                            style: getTextStyle(
+                                              fontSize: 12,
+                                              color:
+                                                  product['status'] ==
+                                                      'In Stock'
+                                                  ? Color(0xFF10B981)
+                                                  : product['status'] ==
+                                                        'Low Stock'
+                                                  ? Color(0xFFF59E0B)
+                                                  : Color(0xFFEF4444),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                // Checkmark
+                                if (controller.selectedProductId.value ==
+                                    product['id'])
+                                  Icon(
+                                    Icons.check_circle,
+                                    color: Color(0xFFFFC200),
+                                    size: 24,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<ProductsController>();
+    final controller = Get.put(CreateDiscountController());
 
     return Container(
       color: Colors.black.withValues(alpha: 0.5),
       child: Center(
         child: Container(
-          margin: EdgeInsets.all(20),
+          margin: EdgeInsets.only(top: 40, bottom: 90, left: 20, right: 20),
           padding: EdgeInsets.all(24),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -38,7 +277,7 @@ class CreateDiscountModalWidget extends StatelessWidget {
                       ),
                     ),
                     GestureDetector(
-                      onTap: controller.hideCreateDiscountDialog,
+                      onTap: () => Get.back(),
                       child: Icon(
                         Icons.close,
                         color: Color(0xFF6B7280),
@@ -50,80 +289,26 @@ class CreateDiscountModalWidget extends StatelessWidget {
                 SizedBox(height: 24),
 
                 // Discount Name
-                Text(
-                  'Discount Name',
-                  style: getTextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF111827),
-                  ),
-                ),
-                SizedBox(height: 8),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Product Name',
-                    hintStyle: getTextStyle(color: Color(0xFF9CA3AF)),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Color(0xFF6366F1)),
-                    ),
-                  ),
+                CustomTextField(
+                  controller: controller.discountNameController,
+                  label: 'Discount Name',
+                  hintText: 'Product Name',
                 ),
                 SizedBox(height: 16),
 
                 // Discount Code
-                Text(
-                  'Discount Code',
-                  style: getTextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF111827),
-                  ),
-                ),
-                SizedBox(height: 8),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'SUMMER20',
-                    hintStyle: getTextStyle(color: Color(0xFF9CA3AF)),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Color(0xFF6366F1)),
-                    ),
-                  ),
+                CustomTextField(
+                  controller: controller.discountCodeController,
+                  label: 'Discount Code',
+                  hintText: 'SUMMER20',
                 ),
                 SizedBox(height: 16),
 
                 // Discount Value
-                Text(
-                  'Discount Value',
-                  style: getTextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF111827),
-                  ),
-                ),
-                SizedBox(height: 8),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: '\$19',
-                    hintStyle: getTextStyle(color: Color(0xFF9CA3AF)),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Color(0xFF6366F1)),
-                    ),
-                  ),
+                CustomTextField(
+                  controller: controller.discountValueController,
+                  label: 'Discount Value',
+                  hintText: '\$19',
                 ),
                 SizedBox(height: 16),
 
@@ -137,28 +322,40 @@ class CreateDiscountModalWidget extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 8),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Color(0xFFE5E7EB)),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Sweet Oranges',
-                        style: getTextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF111827),
-                        ),
+                Obx(
+                  () => GestureDetector(
+                    onTap: () =>
+                        _showProductSelectionDialog(context, controller),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 16,
                       ),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        color: Color(0xFF9CA3AF),
-                        size: 20,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xFFE5E7EB)),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                    ],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              controller.selectedProduct.value,
+                              style: getTextStyle(
+                                fontSize: 16,
+                                color: Color(0xFF111827),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Color(0xFF9CA3AF),
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(height: 16),
@@ -171,28 +368,51 @@ class CreateDiscountModalWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Start Date & Time',
+                            'Start Date',
                             style: getTextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.w500,
                               color: Color(0xFF111827),
                             ),
                           ),
                           SizedBox(height: 8),
-                          TextField(
-                            decoration: InputDecoration(
-                              hintText: 'mm/dd/yyyy --',
-                              hintStyle: getTextStyle(color: Color(0xFF9CA3AF)),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(
-                                  color: Color(0xFFE5E7EB),
+                          GestureDetector(
+                            onTap: () =>
+                                _selectStartDateTime(context, controller),
+                            child: Obx(
+                              () => Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 16,
                                 ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(
-                                  color: Color(0xFF6366F1),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Color(0xFFE5E7EB)),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        controller.startDate.value.isEmpty
+                                            ? 'mm/dd/yyyy'
+                                            : controller.startDate.value,
+                                        style: getTextStyle(
+                                          fontSize: 14,
+                                          color:
+                                              controller.startDate.value.isEmpty
+                                              ? Color(0xFF9CA3AF)
+                                              : Color(0xFF111827),
+                                        ),
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.calendar_today,
+                                      color: Color(0xFF9CA3AF),
+                                      size: 16,
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -206,28 +426,51 @@ class CreateDiscountModalWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'End Date & Time',
+                            'End Date',
                             style: getTextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.w500,
                               color: Color(0xFF111827),
                             ),
                           ),
                           SizedBox(height: 8),
-                          TextField(
-                            decoration: InputDecoration(
-                              hintText: 'mm/dd/yyyy --',
-                              hintStyle: getTextStyle(color: Color(0xFF9CA3AF)),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(
-                                  color: Color(0xFFE5E7EB),
+                          GestureDetector(
+                            onTap: () =>
+                                _selectEndDateTime(context, controller),
+                            child: Obx(
+                              () => Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 16,
                                 ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(
-                                  color: Color(0xFF6366F1),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Color(0xFFE5E7EB)),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        controller.endDate.value.isEmpty
+                                            ? 'mm/dd/yyyy'
+                                            : controller.endDate.value,
+                                        style: getTextStyle(
+                                          fontSize: 14,
+                                          color:
+                                              controller.endDate.value.isEmpty
+                                              ? Color(0xFF9CA3AF)
+                                              : Color(0xFF111827),
+                                        ),
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.calendar_today,
+                                      color: Color(0xFF9CA3AF),
+                                      size: 16,
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -239,26 +482,15 @@ class CreateDiscountModalWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 24),
 
-                // Add/Edit Discount Button
-                GestureDetector(
-                  onTap: controller.addDiscount,
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF111827),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      'Add/Edit Discount',
-                      style: getTextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+                // Add Discount Button
+                CustomButton(
+                  text: 'Add Discount',
+                  onPressed: controller.addDiscount,
+                  height: 50,
+                  backgroundColor: Color(0xFF111827),
+                  textColor: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
               ],
             ),

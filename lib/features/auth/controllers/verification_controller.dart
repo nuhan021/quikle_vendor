@@ -1,51 +1,75 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import '../../../core/models/response_data.dart';
 import '../../../routes/app_routes.dart';
-import '../data/services/auth_service.dart';
+import 'auth_controller.dart';
 
 class VerificationController extends GetxController {
-  final RxList<String> otpDigits = List.generate(6, (_) => '').obs;
-  late final String phone =
-      (Get.arguments is Map && Get.arguments['phone'] != null)
-      ? Get.arguments['phone'].toString()
-      : '+8801XXXXXXXX';
+  final otpDigits = List.generate(6, (_) => '').obs;
 
-  late final String? name =
-      (Get.arguments is Map && Get.arguments['name'] != null)
-      ? Get.arguments['name'].toString()
-      : null;
-
-  late final bool isLogin =
-      (Get.arguments is Map && Get.arguments['isLogin'] != null)
-      ? Get.arguments['isLogin'] as bool
-      : false;
-
-  final List<TextEditingController> digits = List.generate(
+  // TextEditingControllers for OTP input fields
+  late final List<TextEditingController> digits = List.generate(
     6,
     (_) => TextEditingController(),
   );
-  final List<FocusNode> focuses = List.generate(6, (_) => FocusNode());
+
+  // FocusNodes for OTP input fields
+  late final List<FocusNode> focuses = List.generate(6, (_) => FocusNode());
+
+  late final String phone = Get.arguments["phone"];
+  late final bool isLogin = Get.arguments["isLogin"] ?? false;
+  late final String? shopName = Get.arguments["shopName"];
 
   final isVerifying = false.obs;
-  final errorMessage = ''.obs;
-
-  final RxInt secondsLeft = 30.obs;
-  Timer? _timer;
 
   late final AuthService _auth;
 
   @override
   void onInit() {
-    super.onInit();
     _auth = Get.find<AuthService>();
     _startTimer();
+    super.onInit();
   }
 
+  Future<void> onTapVerify() async {
+    final otp = otpDigits.join();
+
+    if (otp.length != 6) {
+      print('❌ Verification Error: Enter 6-digit OTP');
+      return;
+    }
+
+    isVerifying.value = true;
+
+    ResponseData res;
+
+    if (isLogin) {
+      // LOGIN FLOW
+      res = await _auth.verifyLogin(phone, otp);
+    } else {
+      // SIGNUP FLOW
+      res = await _auth.vendorSignup(shopName!, phone, otp);
+    }
+
+    if (res.isSuccess) {
+      Get.offAllNamed(AppRoute.vendorSelectionScreen);
+    } else {
+      print('❌ Verification Error: ${res.errorMessage}');
+    }
+
+    isVerifying.value = false;
+  }
+
+  bool get canResend => secondsLeft.value == 0;
+
+  final secondsLeft = 30.obs;
+  Timer? _timer;
+
   void _startTimer() {
-    _timer?.cancel();
     secondsLeft.value = 30;
+    _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (secondsLeft.value > 0) {
         secondsLeft.value--;
@@ -55,132 +79,44 @@ class VerificationController extends GetxController {
     });
   }
 
-  bool get canResend => secondsLeft.value == 0;
-
-  void onDigitChanged(int index, String value) {
-    otpDigits[index] = value;
-    if (value.length == 1 && index < 5) {
-      focuses[index + 1].requestFocus();
-    } else if (value.isEmpty && index > 0) {
-      focuses[index - 1].requestFocus();
-    }
-    if (value.isNotEmpty && errorMessage.value.isNotEmpty) {
-      errorMessage.value = '';
-    }
-  }
-
-  Future<void> onTapVerify() async {
-    final code = digits.map((e) => e.text).join();
-
-    if (_validateOtp(code)) {
-      isVerifying.value = true;
-      errorMessage.value = '';
-
-      try {
-        final response = await _auth.verifyOtp(phone, code);
-
-        if (response.isSuccess) {
-          String message = 'Phone number verified successfully';
-          if (response.responseData != null &&
-              response.responseData['message'] != null) {
-            message = response.responseData['message'].toString();
-          }
-
-          Get.snackbar(
-            'Success',
-            message,
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.green.withValues(alpha: 0.1),
-            colorText: Colors.green,
-          );
-          Get.offAllNamed(AppRoute.vendorSelectionScreen);
-        } else {
-          errorMessage.value = response.errorMessage;
-          Get.snackbar(
-            'Error',
-            response.errorMessage,
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.red.withValues(alpha: 0.1),
-            colorText: Colors.red,
-          );
-        }
-      } catch (e) {
-        errorMessage.value = 'Something went wrong. Please try again.';
-        Get.snackbar(
-          'Error',
-          'Something went wrong. Please try again.',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red.withValues(alpha: 0.1),
-          colorText: Colors.red,
-        );
-      } finally {
-        isVerifying.value = false;
-      }
-    }
-  }
-
-  bool _validateOtp(String otp) {
-    if (otp.length != 6) {
-      errorMessage.value = 'Please enter complete 6-digit OTP';
-      Get.snackbar(
-        'Validation Error',
-        'Please enter complete 6-digit OTP',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.orange.withValues(alpha: 0.1),
-        colorText: Colors.orange,
-      );
-      return false;
-    }
-
-    return true;
-  }
-
   Future<void> onTapResend() async {
     if (!canResend) return;
 
-    try {
-      final response = await _auth.resendOtp(phone);
+    final res = isLogin
+        ? await _auth.sendOtpForLogin(phone)
+        : await _auth.sendOtpForSignup(phone);
 
-      if (response.isSuccess) {
-        String message = 'OTP resent successfully';
-        if (response.responseData != null &&
-            response.responseData['message'] != null) {
-          message = response.responseData['message'].toString();
-        }
-
-        Get.snackbar(
-          'Success',
-          message,
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.green.withValues(alpha: 0.1),
-          colorText: Colors.green,
-        );
-        _startTimer();
-      } else {
-        Get.snackbar(
-          'Error',
-          response.errorMessage,
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red.withValues(alpha: 0.1),
-          colorText: Colors.red,
-        );
-      }
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to resend OTP. Please try again.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.withValues(alpha: 0.1),
-        colorText: Colors.red,
-      );
+    if (res.isSuccess) {
+      _startTimer();
+    } else {
+      print('❌ Resend OTP Error: ${res.errorMessage}');
     }
   }
 
   @override
   void onClose() {
+    for (var controller in digits) {
+      controller.dispose();
+    }
+    for (var focus in focuses) {
+      focus.dispose();
+    }
     _timer?.cancel();
-    for (final c in digits) c.dispose();
-    for (final f in focuses) f.dispose();
     super.onClose();
+  }
+
+  void onDigitChanged(int index, String value) {
+    if (value.isEmpty) {
+      otpDigits[index] = '';
+      if (index > 0) {
+        focuses[index - 1].requestFocus();
+      }
+    } else if (value.length == 1) {
+      otpDigits[index] = value;
+      digits[index].text = value;
+      if (index < 5) {
+        focuses[index + 1].requestFocus();
+      }
+    }
   }
 }

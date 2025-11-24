@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:geolocator/geolocator.dart';
@@ -17,6 +18,9 @@ class KycVerificationController extends GetxController {
   var isSubmitting = false.obs;
   var searchAddress = "".obs;
   var isSearching = false.obs;
+
+  /// -------------------- TextEditingControllers --------------------
+  final nidController = TextEditingController();
 
   /// Map Controller
   late GoogleMapController mapController;
@@ -194,6 +198,11 @@ class KycVerificationController extends GetxController {
       return;
     }
 
+    if (nidController.text.isEmpty) {
+      Get.snackbar("Error", "Please enter your NID number");
+      return;
+    }
+
     try {
       isSubmitting.value = true;
 
@@ -207,6 +216,7 @@ class KycVerificationController extends GetxController {
       log('     Latitude: ${latitude.value}');
       log('     Longitude: ${longitude.value}');
       log('     Address: ${address.value}');
+      log('   NID: ${nidController.text}');
       log('   Sending to Backend...');
 
       // TODO: integrate actual multipart API call
@@ -218,5 +228,11 @@ class KycVerificationController extends GetxController {
     } finally {
       isSubmitting.value = false;
     }
+  }
+
+  @override
+  void onClose() {
+    nidController.dispose();
+    super.onClose();
   }
 }

@@ -1,127 +1,71 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import '../../../routes/app_routes.dart';
-import '../data/services/auth_service.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:quikle_vendor/core/utils/logging/logger.dart';
+import 'package:quikle_vendor/features/auth/controllers/auth_controller.dart';
+import 'package:quikle_vendor/routes/app_routes.dart';
 
 class RegisterController extends GetxController {
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
+
   final isLoading = false.obs;
-  final errorMessage = ''.obs;
 
   late final AuthService _auth;
 
   @override
   void onInit() {
-    super.onInit();
     _auth = Get.find<AuthService>();
+    super.onInit();
   }
 
   Future<void> onTapCreateAccount() async {
-    if (_validateInputs()) {
-      isLoading.value = true;
-      errorMessage.value = '';
+    if (!_validateInputs()) return;
 
-      try {
-        final response = await _auth.register(
-          nameController.text.trim(),
-          phoneController.text.trim(),
-        );
+    isLoading.value = true;
 
-        if (response.isSuccess) {
-          Get.toNamed(
-            AppRoute.getVerify(),
-            arguments: {
-              'phone': phoneController.text.trim(),
-              'name': nameController.text.trim(),
-              'isLogin': false,
-            },
-          );
-        } else {
-          errorMessage.value = response.errorMessage;
-          Get.snackbar(
-            'Error',
-            response.errorMessage,
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.red.withValues(alpha: 0.1),
-            colorText: Colors.red,
-          );
-        }
-      } catch (e) {
-        errorMessage.value = 'Something went wrong. Please try again.';
-        Get.snackbar(
-          'Error',
-          'Something went wrong. Please try again.',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red.withValues(alpha: 0.1),
-          colorText: Colors.red,
-        );
-      } finally {
-        isLoading.value = false;
-      }
+    final shopName = nameController.text.trim();
+    final phone = phoneController.text.trim();
+
+    final res = await _auth.sendOtpForSignup(phone);
+    AppLoggerHelper.info('📱 Send OTP Response: ${res.responseData}');
+
+    if (res.isSuccess) {
+      Get.toNamed(
+        AppRoute.getVerify(),
+        arguments: {"phone": phone, "shopName": shopName, "isLogin": false},
+      );
+    } else {
+      print('❌ Send OTP Error: ${res.errorMessage}');
     }
+
+    isLoading.value = false;
   }
 
   bool _validateInputs() {
-    final name = nameController.text.trim();
+    final shopName = nameController.text.trim();
     final phone = phoneController.text.trim();
 
-    if (name.isEmpty) {
-      errorMessage.value = 'Please enter your full name';
-      Get.snackbar(
-        'Validation Error',
-        'Please enter your full name',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.orange.withValues(alpha: 0.1),
-        colorText: Colors.orange,
-      );
-      return false;
-    }
-
-    if (name.length < 2) {
-      errorMessage.value = 'Name must be at least 2 characters long';
-      Get.snackbar(
-        'Validation Error',
-        'Name must be at least 2 characters long',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.orange.withValues(alpha: 0.1),
-        colorText: Colors.orange,
-      );
+    if (shopName.isEmpty) {
+      print('❌ Validation Error: Please enter shop name');
       return false;
     }
 
     if (phone.isEmpty) {
-      errorMessage.value = 'Please enter your phone number';
-      Get.snackbar(
-        'Validation Error',
-        'Please enter your phone number',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.orange.withValues(alpha: 0.1),
-        colorText: Colors.orange,
-      );
+      print('❌ Validation Error: Please enter phone number');
       return false;
     }
 
-    if (phone.length < 10) {
-      errorMessage.value = 'Please enter a valid phone number';
-      Get.snackbar(
-        'Validation Error',
-        'Please enter a valid phone number',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.orange.withValues(alpha: 0.1),
-        colorText: Colors.orange,
-      );
+    // Basic phone validation (remove spaces and dashes, check if it has digits)
+    final cleanPhone = phone.replaceAll(RegExp(r'[^\d+]'), '');
+    if (!RegExp(r'^\+?91\d{10}$|^\d{10}$').hasMatch(cleanPhone)) {
+      print('❌ Validation Error: Please enter a valid phone number');
       return false;
     }
 
     return true;
-  }
-
-  @override
-  void onClose() {
-    nameController.dispose();
-    phoneController.dispose();
-    super.onClose();
   }
 }

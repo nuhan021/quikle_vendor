@@ -17,7 +17,7 @@ class ControllerBinder extends Bindings {
     Get.put<UserService>(UserService(), permanent: true);
     Get.put<AuthService>(AuthService(), permanent: true);
     Get.put<UserController>(UserController(), permanent: true);
-    Get.put<AuthController>(AuthController(), permanent: true);
+    // Get.put<AuthController>(AuthController(), permanent: true);
 
     // Controllers
     Get.put<SplashController>(SplashController(), permanent: true);

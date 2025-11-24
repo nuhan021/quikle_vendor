@@ -77,8 +77,8 @@ class OrderActionButtonsWidget extends StatelessWidget {
         text: 'View Details',
         onPressed: () => controller.viewDetails(orderId),
         height: 50,
-        backgroundColor: const Color(0xFFE5E7EB),
-        textColor: const Color(0xFF374151),
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
         fontWeight: FontWeight.w600,
       );
     }
