@@ -35,7 +35,7 @@ class NetworkCaller {
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: timeoutDuration));
 
-      return _handleResponse(response);
+      return await _handleResponse(response);
     } catch (e) {
       return _handleError(e);
     }
@@ -69,7 +69,7 @@ class NetworkCaller {
           )
           .timeout(Duration(seconds: timeoutDuration));
 
-      return _handleResponse(response);
+      return await _handleResponse(response);
     } catch (e) {
       return _handleError(e);
     }
@@ -103,7 +103,7 @@ class NetworkCaller {
           )
           .timeout(Duration(seconds: timeoutDuration));
 
-      return _handleResponse(response);
+      return await _handleResponse(response);
     } catch (e) {
       return _handleError(e);
     }
@@ -126,7 +126,7 @@ class NetworkCaller {
           .delete(Uri.parse(url), headers: requestHeaders)
           .timeout(Duration(seconds: timeoutDuration));
 
-      return _handleResponse(response);
+      return await _handleResponse(response);
     } catch (e) {
       return _handleError(e);
     }
@@ -160,14 +160,14 @@ class NetworkCaller {
 
       final response = await http.Response.fromStream(streamedResponse);
 
-      return _handleResponse(response);
+      return await _handleResponse(response);
     } catch (e) {
       return _handleError(e);
     }
   }
 
   // HANDLE SUCCESS / ERROR RESPONSE
-  ResponseData _handleResponse(Response response) {
+  Future<ResponseData> _handleResponse(Response response) async {
     AppLoggerHelper.debug('Status: ${response.statusCode}');
     AppLoggerHelper.debug('Body: ${response.body}');
 

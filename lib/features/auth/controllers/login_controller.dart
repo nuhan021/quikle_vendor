@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/src/extension_instance.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-import 'package:quikle_vendor/features/auth/controllers/auth_controller.dart';
-import 'package:quikle_vendor/features/auth/presentation/screens/resgiter_screen.dart';
-
+import 'package:get/get.dart';
+import 'package:quikle_vendor/features/auth/data/services/auth_service.dart';
 import '../../../routes/app_routes.dart';
 
 class LoginController extends GetxController {
@@ -26,27 +20,41 @@ class LoginController extends GetxController {
     final phone = phoneController.text.trim();
 
     if (phone.length < 10) {
-      errorMessage.value = "Enter valid phone";
+      Get.snackbar(
+        '❌',
+        'Enter valid phone number',
+        snackPosition: SnackPosition.TOP,
+        colorText: Colors.white,
+        backgroundColor: Colors.red,
+      );
       return;
     }
 
     isLoading.value = true;
 
-    final res = await _auth.sendOtpForLogin(phone);
+    try {
+      final res = await _auth.sendOtpForLogin(phone);
 
-    if (res.isSuccess) {
-      Get.toNamed(
-        AppRoute.getVerify(),
-        arguments: {"phone": phone, "isLogin": true},
-      );
-    } else {
-      errorMessage.value = res.errorMessage;
+      if (res.isSuccess) {
+        Get.toNamed(
+          AppRoute.getVerify(),
+          arguments: {"phone": phone, "isLogin": true},
+        );
+      } else {
+        Get.snackbar(
+          '❌',
+          res.errorMessage,
+          snackPosition: SnackPosition.TOP,
+          colorText: Colors.white,
+          backgroundColor: Colors.red,
+        );
+      }
+    } finally {
+      isLoading.value = false;
     }
-
-    isLoading.value = false;
   }
 
   void onTapCreateAccount() {
-    Get.to(RegisterScreen());
+    Get.toNamed(AppRoute.register);
   }
 }

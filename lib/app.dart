@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           initialRoute: AppRoute.getSplashScreen(),
           getPages: AppRoute.routes,
-          initialBinding: ControllerBinder(),
+          // initialBinding: ControllerBinder(),
           themeMode: ThemeMode.light,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,

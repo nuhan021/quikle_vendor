@@ -10,7 +10,8 @@ class ApiConstants {
   static const String updateKyc = "${baseUrl}vendor/update-kyc/";
   static const String toggleActiveStatus =
       "${baseUrl}vendor/toggle-active-status/";
-  static const String vendorDetails = "${baseUrl}vendor/vendor-details/";
+  static const String vendorDetails = "${baseUrl}auth/vendor/vendor-details/";
   static const String updateVendorProfile =
       "${baseUrl}vendor/update-vendor-profile/";
+  static const String verifyToken = "${baseUrl}auth/verify-token/";
 }

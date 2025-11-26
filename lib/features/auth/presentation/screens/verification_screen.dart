@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/utils/constants/colors.dart';
@@ -15,7 +14,7 @@ class VerificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<VerificationController>();
+    final controller = Get.put(VerificationController());
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -48,7 +47,6 @@ class VerificationScreen extends StatelessWidget {
                     ),
                   ),
 
-                  // ===== Top bar: back icon space – title – invisible right icon =====
                   // ===== Top bar: back button + title =====
                   Positioned(
                     left: 16.w,
@@ -237,7 +235,9 @@ class VerificationScreen extends StatelessWidget {
                               text: controller.isVerifying.value
                                   ? 'Verifying…'
                                   : 'Verify Code',
-                              onPressed: controller.onTapVerify,
+                              onPressed: controller.isLogin
+                                  ? controller.onTapVerifyLogin
+                                  : controller.onTapVerifySignup,
                               isLoading: controller.isVerifying.value,
                               backgroundColor: AppColors.beakYellow,
                               textColor: AppColors.ebonyBlack,

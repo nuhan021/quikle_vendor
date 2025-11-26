@@ -4,12 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/features/auth/presentation/screens/login_screen.dart';
-import 'package:quikle_vendor/features/auth/presentation/screens/verification_scree.dart';
+import 'package:quikle_vendor/features/auth/presentation/screens/verification_screen.dart';
 import 'package:video_player/video_player.dart';
 import '../../controllers/splash_controller.dart';
 
-class SplashScreen extends GetView<SplashController> {
-  const SplashScreen({super.key});
+class SplashScreen extends StatelessWidget {
+  SplashScreen({super.key});
+
+  final SplashController controller = Get.put(SplashController());
 
   static const double _ellipseLeft = -158.0;
   static const double _textLeft = 59.0;

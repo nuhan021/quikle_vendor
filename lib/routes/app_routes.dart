@@ -11,7 +11,7 @@ import 'package:quikle_vendor/features/vendor_selection/screen/vendor_selection_
 
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/resgiter_screen.dart';
-import '../features/auth/presentation/screens/verification_scree.dart';
+import '../features/auth/presentation/screens/verification_screen.dart';
 import '../features/auth/presentation/screens/welcome_screen.dart';
 import '../features/earnings/screen/earnings_screen.dart';
 import '../features/order_management/screen/order_management_screen.dart';
@@ -25,10 +25,10 @@ import '../features/profile/payment_method/screen/payment_method_screen.dart';
 
 class AppRoute {
   static const String splash = '/';
-  static const String _login = '/login';
-  static const String _register = '/register';
-  static const String _verify = '/verify';
-  static const String _welcome = '/welcome';
+  static const String login = '/login';
+  static const String register = '/register';
+  static const String verify = '/verify';
+  static const String welcome = '/welcome';
   static String vendorSelectionScreen = '/vendorSelectionScreen';
   static String kycVerificationScreen = '/kycVerificationScreen';
   static String kycApprovalScreen = '/kycApprovalScreen';
@@ -44,10 +44,11 @@ class AppRoute {
   static String completedOrderDetailsScreen = '/completedOrderDetailsScreen';
   static String productManagementScreen = '/productManagementScreen';
   static String productEditScreen = '/productEditScreen';
+
   static String getSplashScreen() => splash;
-  static String getLoginScreen() => _login;
-  static String getRegister() => _register;
-  static String getVerify() => _verify;
+  static String getLoginScreen() => login;
+  static String getRegister() => register;
+  static String getVerify() => verify;
   static String getVendorSelectionScreen() => vendorSelectionScreen;
   static String getKycVerificationScreen() => kycVerificationScreen;
   static String getKycApprovalScreen() => kycApprovalScreen;
@@ -62,11 +63,11 @@ class AppRoute {
   static String getCompletedOrderDetailsScreen() => completedOrderDetailsScreen;
 
   static List<GetPage> routes = [
-    GetPage(name: splash, page: () => const SplashScreen()),
-    GetPage(name: _login, page: () => const LoginScreen()),
-    GetPage(name: _register, page: () => RegisterScreen()),
-    GetPage(name: _verify, page: () => const VerificationScreen()),
-    GetPage(name: _welcome, page: () => const WelcomeScreen()),
+    GetPage(name: splash, page: () => SplashScreen()),
+    GetPage(name: login, page: () => const LoginScreen()),
+    GetPage(name: register, page: () => RegisterScreen()),
+    GetPage(name: verify, page: () => const VerificationScreen()),
+    GetPage(name: welcome, page: () => const WelcomeScreen()),
     GetPage(name: vendorSelectionScreen, page: () => VendorSelectionScreen()),
     GetPage(name: kycVerificationScreen, page: () => KycVerificationScreen()),
     GetPage(name: kycApprovalScreen, page: () => KycApprovalScreen()),

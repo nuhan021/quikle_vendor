@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/src/extension_instance.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/logging/logger.dart';
-import 'package:quikle_vendor/features/auth/controllers/auth_controller.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
+import '../data/services/auth_service.dart';
 
 class RegisterController extends GetxController {
   final nameController = TextEditingController();
@@ -30,16 +26,22 @@ class RegisterController extends GetxController {
     final shopName = nameController.text.trim();
     final phone = phoneController.text.trim();
 
-    final res = await _auth.sendOtpForSignup(phone);
-    AppLoggerHelper.info('📱 Send OTP Response: ${res.responseData}');
+    final response = await _auth.sendOtpForSignup(phone);
+    AppLoggerHelper.info('📱 Send OTP Response: ${response.responseData}');
 
-    if (res.isSuccess) {
+    if (response.isSuccess) {
       Get.toNamed(
         AppRoute.getVerify(),
         arguments: {"phone": phone, "shopName": shopName, "isLogin": false},
       );
     } else {
-      print('❌ Send OTP Error: ${res.errorMessage}');
+      Get.snackbar(
+        '❌',
+        response.errorMessage,
+        snackPosition: SnackPosition.TOP,
+        colorText: Colors.white,
+        backgroundColor: Colors.red,
+      );
     }
 
     isLoading.value = false;
@@ -50,19 +52,37 @@ class RegisterController extends GetxController {
     final phone = phoneController.text.trim();
 
     if (shopName.isEmpty) {
-      print('❌ Validation Error: Please enter shop name');
+      Get.snackbar(
+        '❌',
+        'Please enter shop name',
+        snackPosition: SnackPosition.TOP,
+        colorText: Colors.white,
+        backgroundColor: Colors.red,
+      );
       return false;
     }
 
     if (phone.isEmpty) {
-      print('❌ Validation Error: Please enter phone number');
+      Get.snackbar(
+        '❌',
+        'Please enter phone number',
+        snackPosition: SnackPosition.TOP,
+        colorText: Colors.white,
+        backgroundColor: Colors.red,
+      );
       return false;
     }
 
     // Basic phone validation (remove spaces and dashes, check if it has digits)
     final cleanPhone = phone.replaceAll(RegExp(r'[^\d+]'), '');
     if (!RegExp(r'^\+?91\d{10}$|^\d{10}$').hasMatch(cleanPhone)) {
-      print('❌ Validation Error: Please enter a valid phone number');
+      Get.snackbar(
+        '❌',
+        'Please enter a valid phone number',
+        snackPosition: SnackPosition.TOP,
+        colorText: Colors.white,
+        backgroundColor: Colors.red,
+      );
       return false;
     }
 

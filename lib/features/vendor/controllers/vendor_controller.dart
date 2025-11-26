@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
+import '../models/vendor_model.dart';
 
-class UserController extends GetxController {
+class VendorController extends GetxController {
   // Observable for vendor details
   final vendorDetails = Rx<VendorDetailsModel?>(null);
 

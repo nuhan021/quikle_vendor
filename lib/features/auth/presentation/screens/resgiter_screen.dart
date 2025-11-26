@@ -6,16 +6,16 @@ import 'package:get/get.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/utils/constants/colors.dart';
 import '../../../../core/utils/constants/enums.dart';
+import '../../../../routes/app_routes.dart';
 import '../../controllers/register_controller.dart';
 import '../widgets/common_widgets.dart';
 
-class RegisterScreen extends GetView<RegisterController> {
-  RegisterScreen({super.key});
-
-  final controller = Get.find<RegisterController>();
+class RegisterScreen extends StatelessWidget {
+  const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(RegisterController());
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -32,7 +32,7 @@ class RegisterScreen extends GetView<RegisterController> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: GestureDetector(
-                    onTap: () => Get.back(),
+                    onTap: () => Get.offNamed(AppRoute.login),
                     child: Container(
                       // padding: EdgeInsets.all(8.w),
                       child: Icon(
