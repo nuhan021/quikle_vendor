@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:quikle_vendor/core/utils/helpers/snackbar_helper.dart';
+import 'package:quikle_vendor/features/user/controllers/user_controller.dart';
+import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
 
 class MyProfileController extends GetxController {
   // Observables for edit mode
@@ -11,33 +14,87 @@ class MyProfileController extends GetxController {
   // Profile image
   final profileImagePath = Rx<String?>(null);
 
+  // Vendor Details Observable
+  late VendorDetailsModel vendorDetails;
+
   // Observable display values
   final businessName = "Tandoori Tarang".obs;
   final address = "House 34, Road 12, Dhanmondi, Dhaka".obs;
 
   // Text Controllers - Basic Info
-  final businessNameController = TextEditingController(text: "Tandoori Tarang");
+  late TextEditingController businessNameController;
   final ownerNameController = TextEditingController(text: "Vikash Rajput");
-  final accountStatusController = TextEditingController(text: "Active");
+  late TextEditingController accountStatusController;
   final servicesController = TextEditingController(
     text: "Describe services offered",
   );
 
   // Text Controllers - Contact Info
   final contactPersonController = TextEditingController(text: "Vikram Rajput");
-  final phoneController = TextEditingController(text: "+963-172-345678");
-  final addressController = TextEditingController(
-    text: "House 34, Road 12, Dhanmondi, Dhaka",
-  );
+  late TextEditingController phoneController;
+  late TextEditingController addressController;
   final openingHoursController = TextEditingController(
     text: "9:00 AM - 8:00 PM",
   );
 
   // Text Controllers - Business Details
   final panelLicenseController = TextEditingController(text: "Not Provided");
-  final tinNumberController = TextEditingController(text: "+963-172-345678");
+  late TextEditingController tinNumberController;
 
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadVendorDetails();
+  }
+
+  /// Load vendor details from UserController
+  void _loadVendorDetails() {
+    try {
+      final userController = Get.find<UserController>();
+      final details = userController.getVendorDetails();
+
+      if (details != null) {
+        vendorDetails = details;
+
+        // Initialize controllers with vendor data
+        businessNameController = TextEditingController(
+          text: vendorDetails.shopName,
+        );
+        phoneController = TextEditingController(text: vendorDetails.phone);
+        addressController = TextEditingController(
+          text: vendorDetails.locationName ?? address.value,
+        );
+        accountStatusController = TextEditingController(
+          text: vendorDetails.isActive ? "Active" : "Inactive",
+        );
+        tinNumberController = TextEditingController(text: vendorDetails.nid);
+
+        // Update observables
+        businessName.value = vendorDetails.shopName;
+        address.value = vendorDetails.locationName ?? address.value;
+      } else {
+        // Use default values if no vendor details
+        businessNameController = TextEditingController(text: "Tandoori Tarang");
+        phoneController = TextEditingController(text: "+963-172-345678");
+        addressController = TextEditingController(
+          text: "House 34, Road 12, Dhanmondi, Dhaka",
+        );
+        accountStatusController = TextEditingController(text: "Active");
+        tinNumberController = TextEditingController(text: "+963-172-345678");
+      }
+    } catch (e) {
+      // Fallback to default values
+      businessNameController = TextEditingController(text: "Tandoori Tarang");
+      phoneController = TextEditingController(text: "+963-172-345678");
+      addressController = TextEditingController(
+        text: "House 34, Road 12, Dhanmondi, Dhaka",
+      );
+      accountStatusController = TextEditingController(text: "Active");
+      tinNumberController = TextEditingController(text: "+963-172-345678");
+    }
+  }
 
   void toggleBasicInfoEdit() {
     isBasicInfoEditing.value = !isBasicInfoEditing.value;
@@ -55,20 +112,20 @@ class MyProfileController extends GetxController {
     // TODO: Implement save logic
     businessName.value = businessNameController.text;
     isBasicInfoEditing.value = false;
-    Get.snackbar('Success', 'Basic information saved successfully');
+    SnackBarHelper.success('Basic information saved successfully');
   }
 
   void saveContactInfo() {
     // TODO: Implement save logic
     address.value = addressController.text;
     isContactInfoEditing.value = false;
-    Get.snackbar('Success', 'Contact information saved successfully');
+    SnackBarHelper.success('Contact information saved successfully');
   }
 
   void saveBusinessDetails() {
     // TODO: Implement save logic
     isBusinessDetailsEditing.value = false;
-    Get.snackbar('Success', 'Business details saved successfully');
+    SnackBarHelper.success('Business details saved successfully');
   }
 
   Future<void> pickImage() async {
@@ -85,7 +142,7 @@ class MyProfileController extends GetxController {
         // TODO: Upload image to server
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to pick image');
+      SnackBarHelper.error('Failed to pick image');
     }
   }
 

@@ -139,6 +139,7 @@ class NetworkCaller {
     Map<String, String>? headers,
     List<http.MultipartFile>? files,
     String? token,
+    String method = 'POST', // Allow POST, PUT, PATCH, etc.
   }) async {
     final uri = Uri.parse(url);
 
@@ -148,7 +149,8 @@ class NetworkCaller {
     };
 
     try {
-      final request = http.MultipartRequest('POST', uri);
+      // Create appropriate request based on method
+      final request = _createMultipartRequest(method, uri);
 
       request.headers.addAll(requestHeaders);
       if (fields != null) request.fields.addAll(fields);
@@ -163,6 +165,19 @@ class NetworkCaller {
       return await _handleResponse(response);
     } catch (e) {
       return _handleError(e);
+    }
+  }
+
+  // Helper method to create appropriate multipart request
+  http.MultipartRequest _createMultipartRequest(String method, Uri uri) {
+    switch (method.toUpperCase()) {
+      case 'PUT':
+        return http.MultipartRequest('PUT', uri);
+      case 'PATCH':
+        return http.MultipartRequest('PATCH', uri);
+      case 'POST':
+      default:
+        return http.MultipartRequest('POST', uri);
     }
   }
 

@@ -35,12 +35,12 @@ class KycApprovalScreen extends StatelessWidget {
               ),
             );
 
-          case "approved":
+          case "verified":
             return Center(
               child: StatusCard(
                 icon: Icons.verified,
                 color: Colors.green,
-                title: "KYC Approved!",
+                title: "KYC verified!",
                 subtitle:
                     "Your documents have been successfully verified.\nYou’re all set!",
                 buttonText: "Update Profile",

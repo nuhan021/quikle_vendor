@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-
+import 'package:quikle_vendor/core/utils/helpers/snackbar_helper.dart';
 import '../../../routes/app_routes.dart';
 
 class VendorSelectionController extends GetxController {
@@ -14,27 +14,13 @@ class VendorSelectionController extends GetxController {
   /// Submit selected vendor
   void submitSelection() {
     if (selectedVendor.isEmpty) {
-      Get.snackbar("Warning", "Please select a vendor type first");
+      SnackBarHelper.warning("Please select a vendor type first");
       return;
     }
 
-    // TODO: Send selected vendor type to API or save locally
-    // Example:
-    // await ApiService.saveVendorType(selectedVendor.value);
-
-    Get.offAllNamed(AppRoute.kycVerificationScreen);
-
-    Get.snackbar(
-      "Success",
-      "You joined as ${selectedVendor.value}!",
-      snackPosition: SnackPosition.BOTTOM,
+    Get.offAllNamed(
+      AppRoute.kycVerificationScreen,
+      arguments: {"vendorType": selectedVendor.value},
     );
-
-    // TODO: Navigate to respective dashboard
-    // if (selectedVendor.value == "Food Vendor") {
-    //   Get.offNamed(AppRoute.foodDashboard);
-    // } else {
-    //   Get.offNamed(AppRoute.medicineDashboard);
-    // }
   }
 }

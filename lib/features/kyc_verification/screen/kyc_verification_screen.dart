@@ -24,6 +24,40 @@ class KycVerificationScreen extends StatelessWidget {
           () => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              /// Vendor Type Display
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.blue.shade50,
+                  border: Border.all(color: Colors.blue),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.business, color: Colors.blue),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Vendor Type",
+                          style: getTextStyle(fontSize: 12, color: Colors.blue),
+                        ),
+                        Text(
+                          controller.vendorType.toUpperCase(),
+                          style: getTextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
               /// Location Section (MOVED TO TOP)
               Text(
                 "Business Location",

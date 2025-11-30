@@ -66,34 +66,12 @@ class BasicInfoCard extends StatelessWidget {
             /// Editable Fields or Display
             if (controller.isBasicInfoEditing.value) ...[
               CustomTextField(
-                label: "Business Name",
-                hintText: "Enter business name",
-                controller: controller.businessNameController,
-              ),
-              const SizedBox(height: 12),
-              CustomTextField(
                 label: "Owner Name",
                 hintText: "Enter owner name",
                 controller: controller.ownerNameController,
               ),
               const SizedBox(height: 12),
-              CustomTextField(
-                label: "Account Status",
-                hintText: "Enter account status",
-                controller: controller.accountStatusController,
-              ),
-              const SizedBox(height: 12),
-              CustomTextField(
-                label: "Services Offered",
-                hintText: "Describe services offered",
-                controller: controller.servicesController,
-                maxLines: 4,
-              ),
             ] else ...[
-              ProfileField(
-                label: "Business Name",
-                value: controller.businessNameController.text,
-              ),
               ProfileField(
                 label: "Owner Name",
                 value: controller.ownerNameController.text,

@@ -108,15 +108,12 @@ class MyProfileScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             /// Profile Info Card
-            const BasicInfoCard(),
+            // const BasicInfoCard(),
             const SizedBox(height: 20),
 
             /// Contact Info
             const ContactInfoCard(),
             const SizedBox(height: 20),
-
-            // Business Details Card
-            const BusinessDetailsCard(),
 
             if (fromKycFlow) ...[
               const SizedBox(height: 20),

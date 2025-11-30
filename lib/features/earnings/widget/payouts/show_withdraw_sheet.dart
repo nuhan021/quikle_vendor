@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/core/utils/helpers/snackbar_helper.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_textfield.dart';
@@ -95,12 +96,7 @@ void showWithdrawDialog(BuildContext context, PayoutsController controller) {
 
                         if (amount <= 0 ||
                             amount > controller.availableBalance.value) {
-                          Get.snackbar(
-                            "Error",
-                            "Invalid withdraw amount",
-                            backgroundColor: Colors.red.shade100,
-                            colorText: Colors.red.shade800,
-                          );
+                          SnackBarHelper.error("Invalid withdraw amount");
                           return;
                         }
 

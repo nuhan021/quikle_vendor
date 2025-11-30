@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
-import 'package:quikle_vendor/core/utils/logging/logger.dart';
+import 'package:quikle_vendor/core/utils/helpers/snackbar_helper.dart';
 import 'package:quikle_vendor/features/auth/data/services/auth_service.dart';
 import 'package:quikle_vendor/features/user/controllers/user_controller.dart';
 import '../../../core/models/response_data.dart';
@@ -41,13 +42,7 @@ class VerificationController extends GetxController {
     final otp = otpDigits.join();
 
     if (otp.length != 6) {
-      Get.snackbar(
-        '❌',
-        'Enter 6-digit OTP',
-        snackPosition: SnackPosition.TOP,
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
-      );
+      SnackBarHelper.error('Enter 6-digit OTP');
       return;
     }
 
@@ -56,7 +51,6 @@ class VerificationController extends GetxController {
     ResponseData response;
 
     response = await _auth.vendorLogin(phone, otp);
-    AppLoggerHelper.info('📱 Vendor Login Response: ${response.responseData}');
 
     if (response.isSuccess) {
       // Extract token and id from response
@@ -71,83 +65,70 @@ class VerificationController extends GetxController {
         // Save token and id to storage
         if (token != null) {
           await StorageService.saveToken(token, id);
-          AppLoggerHelper.info('✅ Token and ID saved to storage');
-          AppLoggerHelper.info('✅Token: $token');
-          AppLoggerHelper.info('User ID: $id');
         }
       }
 
       // Call vendor details API
-      AppLoggerHelper.debug('Token is: ${StorageService.token}');
-      AppLoggerHelper.debug('Token is: $token');
       final vendorDetailsResponse = await _auth.getVendorDetails();
-      AppLoggerHelper.debug('✅ ========== VENDOR DETAILS RESPONSE ==========');
-      AppLoggerHelper.info('Status Code: ${vendorDetailsResponse.statusCode}');
-      AppLoggerHelper.info('Is Success: ${vendorDetailsResponse.isSuccess}');
+      log('Vendor Details Response: ${vendorDetailsResponse.responseData}');
 
-      AppLoggerHelper.debug(
-        '📱 Vendor Details Response: ${vendorDetailsResponse.responseData}',
-      );
+      // Check if response data is a Map
+      if (vendorDetailsResponse.responseData is Map) {
+        final vendorData =
+            vendorDetailsResponse.responseData as Map<String, dynamic>;
 
-      // AppLoggerHelper.debug('✅ ========== VENDOR DETAILS RESPONSE ==========');
-      // AppLoggerHelper.info('Status Code: ${vendorDetailsResponse.statusCode}');
-      // AppLoggerHelper.info('Is Success: ${vendorDetailsResponse.isSuccess}');
-      // AppLoggerHelper.info(
-      //   'Full Response: ${vendorDetailsResponse.responseData}',
-      // );
-      // AppLoggerHelper.info(
-      //   'Error Message: ${vendorDetailsResponse.errorMessage}',
-      // );
+        // Handle 404: Vendor profile not found
+        if (vendorDetailsResponse.statusCode == 200 &&
+            vendorData['detail'] == 'Vendor profile not found.') {
+          isVerifying.value = false;
+          Get.offAllNamed(AppRoute.vendorSelectionScreen);
+        }
 
-      // // Store vendor details in UserController
-      // if (vendorDetailsResponse.isSuccess &&
-      //     vendorDetailsResponse.responseData is Map) {
-      //   final vendorData =
-      //       vendorDetailsResponse.responseData as Map<String, dynamic>;
-      //   AppLoggerHelper.debug('🏪 ========== VENDOR DETAILS DATA ==========');
-      //   AppLoggerHelper.info('Vendor Data Keys: ${vendorData.keys.toList()}');
-      //   vendorData.forEach((key, value) {
-      //     AppLoggerHelper.info('  $key: $value');
-      //   });
+        if (vendorDetailsResponse.statusCode == 200 &&
+            vendorData['message'] == 'Vendor profile fetched successfully' &&
+            vendorData['vendor_profile']['kyc_status'] == 'verified') {
+          isVerifying.value = false;
+          Get.offAllNamed(AppRoute.myProfileScreen);
+        }
 
-      //   if (vendorData['vendor_profile'] != null) {
-      //     final vendorProfile =
-      //         vendorData['vendor_profile'] as Map<String, dynamic>;
-      //     AppLoggerHelper.debug(
-      //       '👤 ========== VENDOR PROFILE DETAILS ==========',
-      //     );
-      //     AppLoggerHelper.info('Shop Name: ${vendorProfile['shop_name']}');
-      //     AppLoggerHelper.info('Email: ${vendorProfile['email']}');
-      //     AppLoggerHelper.info('Phone: ${vendorProfile['phone']}');
-      //     AppLoggerHelper.info('Type: ${vendorProfile['type']}');
-      //     AppLoggerHelper.info('Is Active: ${vendorProfile['is_active']}');
-      //     AppLoggerHelper.info('NID: ${vendorProfile['nid']}');
-      //     AppLoggerHelper.info('KYC Status: ${vendorProfile['kyc_status']}');
-      //     AppLoggerHelper.info('Latitude: ${vendorProfile['latitude']}');
-      //     AppLoggerHelper.info('Longitude: ${vendorProfile['longitude']}');
-      //     AppLoggerHelper.info('Location: ${vendorProfile['location_name']}');
-      //     AppLoggerHelper.debug('==========================================');
+        if (vendorDetailsResponse.statusCode == 200 &&
+            vendorData['message'] == 'Vendor profile fetched successfully' &&
+            vendorData['vendor_profile']['kyc_status'] == 'submitted') {
+          isVerifying.value = false;
+          Get.offAllNamed(
+            AppRoute.kycApprovalScreen,
+            arguments: {'kycStatus': 'submitted'},
+          );
+        }
 
-      //     Get.find<UserController>().setVendorDetails(vendorProfile);
-      //   }
-      // }
+        // Handle successful response with vendor_profile
+        if (vendorData['vendor_profile'] != null) {
+          final vendorProfile =
+              vendorData['vendor_profile'] as Map<String, dynamic>;
 
-      // Get.snackbar(
-      //   '✅',
-      //   'Login Successful',
-      //   snackPosition: SnackPosition.TOP,
-      //   colorText: Colors.white,
-      //   backgroundColor: Colors.green,
-      // );
-      Get.offAllNamed(AppRoute.vendorSelectionScreen);
+          // Store vendor details in UserController
+          Get.find<UserController>().setVendorDetails(vendorProfile);
+
+          isVerifying.value = false;
+
+          // Simple navigation: based on is_completed only
+          final isCompleted = vendorProfile['is_completed'] as bool? ?? false;
+
+          if (isCompleted) {
+            Get.offAllNamed(AppRoute.homeScreen);
+          } else {
+            // Let each screen decide based on kyc_status
+            Get.offAllNamed(AppRoute.myProfileScreen);
+          }
+          return;
+        }
+      }
+
+      // Any other error case
+      SnackBarHelper.error('Failed to fetch vendor details');
+      isVerifying.value = false;
     } else {
-      Get.snackbar(
-        '❌',
-        response.errorMessage,
-        snackPosition: SnackPosition.TOP,
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
-      );
+      SnackBarHelper.error(response.errorMessage);
       isVerifying.value = false;
     }
   }
@@ -156,13 +137,7 @@ class VerificationController extends GetxController {
     final otp = otpDigits.join();
 
     if (otp.length != 6) {
-      Get.snackbar(
-        '❌',
-        'Enter 6-digit OTP',
-        snackPosition: SnackPosition.TOP,
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
-      );
+      SnackBarHelper.error('Enter 6-digit OTP');
       return;
     }
 
@@ -173,22 +148,10 @@ class VerificationController extends GetxController {
     response = await _auth.vendorSignup(shopName!, phone, otp);
 
     if (response.isSuccess) {
-      Get.snackbar(
-        '✅',
-        'Signup Successful',
-        snackPosition: SnackPosition.TOP,
-        colorText: Colors.white,
-        backgroundColor: Colors.green,
-      );
+      SnackBarHelper.success('Signup Successful');
       Get.offAllNamed(AppRoute.login);
     } else {
-      Get.snackbar(
-        '❌',
-        response.errorMessage,
-        snackPosition: SnackPosition.TOP,
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
-      );
+      SnackBarHelper.error(response.errorMessage);
       isVerifying.value = false;
     }
   }
@@ -218,22 +181,10 @@ class VerificationController extends GetxController {
         : await _auth.sendOtpForSignup(phone);
 
     if (res.isSuccess) {
-      Get.snackbar(
-        '✅',
-        'OTP Sent Successfully',
-        snackPosition: SnackPosition.TOP,
-        colorText: Colors.white,
-        backgroundColor: Colors.green,
-      );
+      SnackBarHelper.success('OTP Sent Successfully');
       _startTimer();
     } else {
-      Get.snackbar(
-        '❌',
-        res.errorMessage,
-        snackPosition: SnackPosition.TOP,
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
-      );
+      SnackBarHelper.error(res.errorMessage);
     }
   }
 

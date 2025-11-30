@@ -66,8 +66,8 @@ class ContactInfoCard extends StatelessWidget {
             /// Editable Fields or Display
             if (controller.isContactInfoEditing.value) ...[
               CustomTextField(
-                label: "Contact Person",
-                hintText: "Enter contact person name",
+                label: "Owner Name",
+                hintText: "Enter owner name",
                 controller: controller.contactPersonController,
               ),
               const SizedBox(height: 12),
@@ -77,11 +77,11 @@ class ContactInfoCard extends StatelessWidget {
                 controller: controller.phoneController,
               ),
               const SizedBox(height: 12),
-              CustomTextField(
-                label: "Business Address",
-                hintText: "Enter business address",
-                controller: controller.addressController,
-              ),
+              // CustomTextField(
+              //   label: "Business Address",
+              //   hintText: "Enter business address",
+              //   controller: controller.addressController,
+              // ),
               const SizedBox(height: 12),
               CustomTextField(
                 label: "Opening Hours",
@@ -90,17 +90,17 @@ class ContactInfoCard extends StatelessWidget {
               ),
             ] else ...[
               ProfileField(
-                label: "Contact Person",
+                label: "Owner Name",
                 value: controller.contactPersonController.text,
               ),
               ProfileField(
                 label: "Phone Number",
                 value: controller.phoneController.text,
               ),
-              ProfileField(
-                label: "Business Address",
-                value: controller.addressController.text,
-              ),
+              // ProfileField(
+              //   label: "Business Address",
+              //   value: controller.addressController.text,
+              // ),
               ProfileField(
                 label: "Opening Hours",
                 value: controller.openingHoursController.text,

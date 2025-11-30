@@ -26,17 +26,15 @@ class VendorSelectionScreen extends StatelessWidget {
                   /// Food Vendor
                   VendorCard(
                     title: "Food Vendor",
-                    isSelected:
-                        controller.selectedVendor.value == "Food Vendor",
-                    onTap: () => controller.selectVendor("Food Vendor"),
+                    isSelected: controller.selectedVendor.value == "food",
+                    onTap: () => controller.selectVendor("food"),
                   ),
 
                   /// Medicine Vendor
                   VendorCard(
                     title: "Medicine Vendor",
-                    isSelected:
-                        controller.selectedVendor.value == "Medicine Vendor",
-                    onTap: () => controller.selectVendor("Medicine Vendor"),
+                    isSelected: controller.selectedVendor.value == "medicine",
+                    onTap: () => controller.selectVendor("medicine"),
                   ),
 
                   const SizedBox(height: 40),
