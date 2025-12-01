@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/core/common/widgets/custom_button.dart';
 
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/utils/constants/colors.dart';
@@ -78,9 +79,25 @@ class LoginScreen extends StatelessWidget {
                   keyboardType: TextInputType.phone,
                 ),
                 SizedBox(height: 24.h),
-                CommonWidgets.primaryButton(
-                  text: 'Log In',
-                  onTap: controller.onTapLogin,
+                Obx(
+                  () => CustomButton(
+                    text: controller.isLoading.value
+                        ? 'Logging In...'
+                        : 'Log In',
+                    onPressed: controller.onTapLogin,
+                    isLoading: controller.isLoading.value,
+                    backgroundColor: AppColors.beakYellow,
+                    textColor: AppColors.ebonyBlack,
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    height: 48.h,
+                    style: getTextStyle(
+                      font: CustomFonts.manrope,
+                      color: AppColors.ebonyBlack,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
                 const Spacer(),
                 SizedBox(
