@@ -22,7 +22,7 @@ class KycApprovalScreen extends StatelessWidget {
         final status = controller.kycStatus.value;
 
         switch (status) {
-          case "pending":
+          case "pending" || "submitted":
             return Center(
               child: StatusCard(
                 icon: Icons.hourglass_top,

@@ -1,7 +1,6 @@
 class ApiConstants {
   // Base URL
-  static const String baseUrl =
-      "https://adorningly-unstampeded-zetta.ngrok-free.dev/";
+  static const String baseUrl = "https://caditya619-backend.onrender.com/";
 
   static const String sendOtp = "${baseUrl}auth/send_otp/";
   static const String login = "${baseUrl}auth/login/";

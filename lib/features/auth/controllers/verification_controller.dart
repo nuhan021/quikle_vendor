@@ -77,9 +77,8 @@ class VerificationController extends GetxController {
         final vendorData =
             vendorDetailsResponse.responseData as Map<String, dynamic>;
 
-        // Handle 404: Vendor profile not found
-        if (vendorDetailsResponse.statusCode == 200 &&
-            vendorData['detail'] == 'Vendor profile not found.') {
+        // Handle: Vendor profile not found
+        if (vendorData['detail'] == 'Vendor profile not found.') {
           isVerifying.value = false;
           Get.offAllNamed(AppRoute.vendorSelectionScreen);
         }
