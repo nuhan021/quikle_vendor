@@ -87,7 +87,9 @@ class RestaurantHeaderWidget extends StatelessWidget {
               scale: 0.76,
               child: Switch(
                 value: controller.isShopOpen.value,
-                onChanged: (value) => controller.toggleRestaurantStatus(),
+                onChanged: controller.isTogglingStatus.value
+                    ? null
+                    : (value) => controller.toggleRestaurantStatus(),
                 thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
                   if (states.contains(WidgetState.selected)) {
                     return AppColors.textWhite;

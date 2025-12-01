@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/features/home/controller/rider_assignment_controller.dart';
+import 'package:quikle_vendor/features/home/services/home_service.dart';
 import 'package:quikle_vendor/features/navbar/controller/navbar_controller.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
 
 class HomeController extends GetxController {
   final controller = Get.find<NavbarController>();
+  final _homeService = HomeService();
   var selectedTab = 0.obs;
   var isShopOpen = true.obs;
+  var isTogglingStatus = false.obs;
   var riderAssignController = RiderAssignmentController();
 
   // New Orders Data
@@ -72,15 +75,55 @@ class HomeController extends GetxController {
     }
   }
 
-  void toggleRestaurantStatus() {
-    isShopOpen.value = !isShopOpen.value;
-    Get.snackbar(
-      'Restaurant Status',
-      isShopOpen.value ? 'Open' : 'Closed',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: isShopOpen.value ? Color(0xFF10B981) : Color(0xFFEF4444),
-      colorText: Colors.white,
-    );
+  Future<void> toggleRestaurantStatus() async {
+    if (isTogglingStatus.value) return; // Prevent multiple requests
+
+    try {
+      isTogglingStatus.value = true;
+      debugPrint('🔄 Toggling restaurant status...');
+      final response = await _homeService.toggleActiveStatus();
+      debugPrint(
+        '✅ API Response: Success=${response.isSuccess}, Message=${response.errorMessage}',
+      );
+
+      if (response.isSuccess) {
+        isShopOpen.value = !isShopOpen.value;
+        Get.snackbar(
+          'Restaurant Status',
+          isShopOpen.value
+              ? 'Restaurant is now Open'
+              : 'Restaurant is now Closed',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: isShopOpen.value
+              ? Color(0xFF10B981)
+              : Color(0xFFEF4444),
+          colorText: Colors.white,
+          duration: Duration(seconds: 2),
+        );
+      } else {
+        Get.snackbar(
+          'Error',
+          response.errorMessage.isNotEmpty
+              ? response.errorMessage
+              : 'Failed to update restaurant status',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Color(0xFFEF4444),
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Error toggling status: $e');
+      Get.snackbar(
+        'Error',
+        'Something went wrong: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+    } finally {
+      isTogglingStatus.value = false;
+      debugPrint('✨ Toggle complete, isTogglingStatus set to false');
+    }
   }
 
   void acceptOrder(String orderId) {

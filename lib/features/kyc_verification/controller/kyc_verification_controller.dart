@@ -21,6 +21,15 @@ class KycVerificationController extends GetxController {
   var searchAddress = "".obs;
   var isSearching = false.obs;
   late final String vendorType;
+  var nidText = "".obs; // Observable to track NID text changes
+
+  /// Check if all required fields are completed
+  bool get isFormComplete {
+    return kycFiles.isNotEmpty &&
+        latitude.value != 0.0 &&
+        longitude.value != 0.0 &&
+        nidText.value.trim().isNotEmpty;
+  }
 
   /// -------------------- TextEditingControllers --------------------
   final nidController = TextEditingController();
@@ -37,6 +46,11 @@ class KycVerificationController extends GetxController {
     // Get vendor type from arguments
     vendorType = Get.arguments?["vendorType"] ?? "";
     log('✅ Vendor Type Received: $vendorType');
+
+    // Listen to NID text changes to trigger UI updates
+    nidController.addListener(() {
+      nidText.value = nidController.text;
+    });
   }
 
   /// -------------------- Pick Multiple Files --------------------

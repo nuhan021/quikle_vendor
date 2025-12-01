@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../core/common/styles/global_text_style.dart';
-import '../../../../core/common/widgets/custom_button.dart';
 
 class StatusCard extends StatelessWidget {
   final IconData icon;
@@ -58,16 +57,16 @@ class StatusCard extends StatelessWidget {
           ),
           if (buttonText != null && onButtonTap != null) ...[
             const SizedBox(height: 28),
-            CustomButton(
-              text: buttonText!,
-              onPressed: onButtonTap!,
-              height: 48,
-              width: 200,
-              borderRadius: 10,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-              fontSize: 15,
-            ),
+            // CustomButton(
+            //   text: buttonText!,
+            //   onPressed: onButtonTap!,
+            //   height: 48,
+            //   width: 200,
+            //   borderRadius: 10,
+            //   backgroundColor: Colors.black,
+            //   textColor: Colors.white,
+            //   fontSize: 15,
+            // ),
           ],
         ],
       ),
