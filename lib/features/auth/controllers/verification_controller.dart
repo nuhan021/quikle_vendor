@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/core/utils/helpers/snackbar_helper.dart';
 import 'package:quikle_vendor/features/auth/data/services/auth_service.dart';
-import 'package:quikle_vendor/features/user/controllers/user_controller.dart';
 import '../../../core/models/response_data.dart';
 import '../../../routes/app_routes.dart';
 
@@ -77,6 +75,31 @@ class VerificationController extends GetxController {
         final vendorData =
             vendorDetailsResponse.responseData as Map<String, dynamic>;
 
+        // // Handle successful response with vendor_profile
+        // if (vendorData['vendor_profile'] != null) {
+        //   final vendorProfile =
+        //       vendorData['vendor_profile'] as Map<String, dynamic>;
+
+        //   // Store vendor details in UserController
+        //   Get.find<UserController>().setVendorDetails(vendorProfile);
+
+        //   isVerifying.value = false;
+
+        //   // Simple navigation: based on is_completed only
+        //   final isCompleted = vendorProfile['is_completed'] as bool? ?? false;
+
+        //   if (isCompleted) {
+        //     Get.offAllNamed(AppRoute.homeScreen);
+        //   }
+        // }
+
+        if (vendorData['vendor_profile'] ==
+                'Vendor profile fetched successfully' &&
+            vendorData['vendor_profile']['is_completed'] == true) {
+          isVerifying.value = false;
+          Get.offAllNamed(AppRoute.navbarScreen);
+        }
+
         // Handle: Vendor profile not found
         if (vendorData['detail'] == 'Vendor profile not found.') {
           isVerifying.value = false;
@@ -87,7 +110,11 @@ class VerificationController extends GetxController {
             vendorData['message'] == 'Vendor profile fetched successfully' &&
             vendorData['vendor_profile']['kyc_status'] == 'verified') {
           isVerifying.value = false;
-          Get.offAllNamed(AppRoute.myProfileScreen);
+          Get.offAllNamed(
+            AppRoute.navbarScreen,
+            // AppRoute.kycApprovalScreen,
+            // arguments: {'kycStatus': 'verified'},
+          );
         }
 
         if (vendorDetailsResponse.statusCode == 200 &&
@@ -100,26 +127,14 @@ class VerificationController extends GetxController {
           );
         }
 
-        // Handle successful response with vendor_profile
-        if (vendorData['vendor_profile'] != null) {
-          final vendorProfile =
-              vendorData['vendor_profile'] as Map<String, dynamic>;
-
-          // Store vendor details in UserController
-          Get.find<UserController>().setVendorDetails(vendorProfile);
-
+        if (vendorDetailsResponse.statusCode == 200 &&
+            vendorData['message'] == 'Vendor profile fetched successfully' &&
+            vendorData['vendor_profile']['kyc_status'] == 'rejected') {
           isVerifying.value = false;
-
-          // Simple navigation: based on is_completed only
-          final isCompleted = vendorProfile['is_completed'] as bool? ?? false;
-
-          if (isCompleted) {
-            Get.offAllNamed(AppRoute.homeScreen);
-          } else {
-            // Let each screen decide based on kyc_status
-            Get.offAllNamed(AppRoute.myProfileScreen);
-          }
-          return;
+          Get.offAllNamed(
+            AppRoute.kycApprovalScreen,
+            arguments: {'kycStatus': 'rejected'},
+          );
         }
       }
 

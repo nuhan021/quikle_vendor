@@ -1,17 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/core/utils/constants/image_path.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/utils/constants/icon_path.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../appbar/screen/appbar_screen.dart';
+import '../controller/account_controller.dart';
 import '../widget/account_items.dart';
 import '../widget/language_dialog.dart';
 
-class AccountScreen extends StatelessWidget {
+class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
+
+  @override
+  State<AccountScreen> createState() => _AccountScreenState();
+}
+
+class _AccountScreenState extends State<AccountScreen> {
+  late final AccountController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = Get.put(AccountController());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +137,7 @@ class AccountScreen extends StatelessWidget {
                   "text": "Sign out",
                   "textColor": Colors.red,
                   "onTap": () {
-                    // TODO: sign out logic
+                    _controller.signOut();
                   },
                 },
               ],

@@ -27,8 +27,7 @@ class StorageService {
 
   // Remove the token and user ID from local storage (for logout)
   static Future<void> logoutUser() async {
-    await _preferences?.remove(_tokenKey);
-    await _preferences?.remove(_idKey);
+    await _preferences?.clear();
     // Navigate to the login screen
     // Get.offAllNamed('/login');
   }
