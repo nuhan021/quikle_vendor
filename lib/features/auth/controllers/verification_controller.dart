@@ -111,9 +111,9 @@ class VerificationController extends GetxController {
             vendorData['vendor_profile']['kyc_status'] == 'verified') {
           isVerifying.value = false;
           Get.offAllNamed(
-            AppRoute.navbarScreen,
-            // AppRoute.kycApprovalScreen,
-            // arguments: {'kycStatus': 'verified'},
+            // AppRoute.navbarScreen,
+            AppRoute.kycApprovalScreen,
+            arguments: {'kycStatus': 'verified'},
           );
         }
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quikle_vendor/core/utils/helpers/snackbar_helper.dart';
-import 'package:quikle_vendor/features/user/controllers/user_controller.dart';
+import 'package:quikle_vendor/features/vendor/controllers/vendor_controller.dart';
 import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
 
 class MyProfileController extends GetxController {
@@ -18,11 +18,11 @@ class MyProfileController extends GetxController {
   late VendorDetailsModel vendorDetails;
 
   // Observable display values
-  final businessName = "Tandoori Tarang".obs;
+  final shopName = "Tandoori Tarang".obs;
   final address = "House 34, Road 12, Dhanmondi, Dhaka".obs;
 
   // Text Controllers - Basic Info
-  late TextEditingController businessNameController;
+  late TextEditingController shopNameController;
   final ownerNameController = TextEditingController(text: "Vikash Rajput");
   late TextEditingController accountStatusController;
   final servicesController = TextEditingController(
@@ -49,17 +49,17 @@ class MyProfileController extends GetxController {
     _loadVendorDetails();
   }
 
-  /// Load vendor details from UserController
+  /// Load vendor details from VendorController
   void _loadVendorDetails() {
     try {
-      final userController = Get.find<UserController>();
-      final details = userController.getVendorDetails();
+      final vendorController = Get.find<VendorController>();
+      final details = vendorController.getVendorDetails();
 
       if (details != null) {
         vendorDetails = details;
 
         // Initialize controllers with vendor data
-        businessNameController = TextEditingController(
+        shopNameController = TextEditingController(
           text: vendorDetails.shopName,
         );
         phoneController = TextEditingController(text: vendorDetails.phone);
@@ -71,12 +71,17 @@ class MyProfileController extends GetxController {
         );
         tinNumberController = TextEditingController(text: vendorDetails.nid);
 
+        // Set owner name if available
+        if (vendorDetails.ownerName != null) {
+          ownerNameController.text = vendorDetails.ownerName!;
+        }
+
         // Update observables
-        businessName.value = vendorDetails.shopName;
+        shopName.value = vendorDetails.shopName;
         address.value = vendorDetails.locationName ?? address.value;
       } else {
         // Use default values if no vendor details
-        businessNameController = TextEditingController(text: "Tandoori Tarang");
+        shopNameController = TextEditingController(text: "Tandoori Tarang");
         phoneController = TextEditingController(text: "+963-172-345678");
         addressController = TextEditingController(
           text: "House 34, Road 12, Dhanmondi, Dhaka",
@@ -86,7 +91,7 @@ class MyProfileController extends GetxController {
       }
     } catch (e) {
       // Fallback to default values
-      businessNameController = TextEditingController(text: "Tandoori Tarang");
+      shopNameController = TextEditingController(text: "Tandoori Tarang");
       phoneController = TextEditingController(text: "+963-172-345678");
       addressController = TextEditingController(
         text: "House 34, Road 12, Dhanmondi, Dhaka",
@@ -110,7 +115,7 @@ class MyProfileController extends GetxController {
 
   void saveBasicInfo() {
     // TODO: Implement save logic
-    businessName.value = businessNameController.text;
+    shopName.value = shopNameController.text;
     isBasicInfoEditing.value = false;
     SnackBarHelper.success('Basic information saved successfully');
   }
@@ -148,7 +153,7 @@ class MyProfileController extends GetxController {
 
   @override
   void onClose() {
-    businessNameController.dispose();
+    shopNameController.dispose();
     ownerNameController.dispose();
     accountStatusController.dispose();
     servicesController.dispose();
