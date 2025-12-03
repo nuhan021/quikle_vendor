@@ -45,7 +45,8 @@ class KycApprovalScreen extends StatelessWidget {
                     "Your documents have been successfully verified.\nYou’re all set!",
                 buttonText: "Update Profile",
                 onButtonTap: () {
-                  Get.offAll(MyProfileScreen(fromKycFlow: true));
+                  // Get.offAll(MyProfileScreen(fromKycFlow: true));
+                  controller.goNavbar();
                 },
               ),
             );

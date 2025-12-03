@@ -71,12 +71,12 @@ class ContactInfoCard extends StatelessWidget {
                 controller: controller.contactPersonController,
               ),
               const SizedBox(height: 12),
-              CustomTextField(
-                label: "Phone Number",
-                hintText: "Enter phone number",
-                controller: controller.phoneController,
-              ),
-              const SizedBox(height: 12),
+              // CustomTextField(
+              //   label: "Phone Number",
+              //   hintText: "Enter phone number",
+              //   controller: controller.phoneController,
+              // ),
+              // const SizedBox(height: 12),
               // CustomTextField(
               //   label: "Business Address",
               //   hintText: "Enter business address",
@@ -93,10 +93,10 @@ class ContactInfoCard extends StatelessWidget {
                 label: "Owner Name",
                 value: controller.contactPersonController.text,
               ),
-              ProfileField(
-                label: "Phone Number",
-                value: controller.phoneController.text,
-              ),
+              // ProfileField(
+              //   label: "Phone Number",
+              //   value: controller.phoneController.text,
+              // ),
               // ProfileField(
               //   label: "Business Address",
               //   value: controller.addressController.text,

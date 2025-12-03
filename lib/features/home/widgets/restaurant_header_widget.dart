@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/core/utils/constants/image_path.dart';
+import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
 import '../../../core/common/styles/global_text_style.dart';
 import '../../../core/utils/constants/icon_path.dart';
 import '../controller/home_controller.dart';
@@ -12,6 +14,10 @@ class RestaurantHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<HomeController>();
+    final vendorData = StorageService.getVendorDetails();
+    final vendorDetails = vendorData != null
+        ? VendorDetailsModel.fromJson(vendorData)
+        : null;
 
     return Container(
       padding: EdgeInsets.all(16),
@@ -40,7 +46,7 @@ class RestaurantHeaderWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tandoori Tarang',
+                  vendorDetails?.shopName ?? 'Tandoori Tarang',
                   style: getTextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -87,7 +93,7 @@ class RestaurantHeaderWidget extends StatelessWidget {
               scale: 0.76,
               child: Switch(
                 value: controller.isShopOpen.value,
-                onChanged: (value) => controller.toggleRestaurantStatus(),
+                onChanged: (value) => controller.toggleShopStatus(),
                 thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
                   if (states.contains(WidgetState.selected)) {
                     return AppColors.textWhite;

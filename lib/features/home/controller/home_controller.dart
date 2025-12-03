@@ -1,14 +1,56 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/features/home/controller/rider_assignment_controller.dart';
+import 'package:quikle_vendor/features/home/services/home_services.dart';
 import 'package:quikle_vendor/features/navbar/controller/navbar_controller.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
+
+import '../../../core/services/storage_service.dart';
 
 class HomeController extends GetxController {
   final controller = Get.find<NavbarController>();
   var selectedTab = 0.obs;
-  var isShopOpen = true.obs;
+  var isShopOpen = false.obs;
   var riderAssignController = RiderAssignmentController();
+  late final HomeServices _homeServices;
+  late final RiderAssignmentController _riderAssignController;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _homeServices = Get.put(HomeServices());
+    _riderAssignController = Get.put(RiderAssignmentController());
+    loadShopStatus();
+  }
+
+  void loadShopStatus() {
+    final vendorData = StorageService.getVendorDetails();
+    if (vendorData != null) {
+      final isActive = vendorData['is_active'] as bool? ?? true;
+      isShopOpen.value = isActive;
+      log('Shop status loaded from vendor details: $isActive');
+    }
+  }
+
+  void toggleShopStatus() async {
+    final response = await _homeServices.toggleActiveStatus();
+
+    if (response.isSuccess) {
+      bool newStatus = response.responseData["status"];
+      log('Shop status updated: $newStatus');
+      isShopOpen.value = newStatus;
+      // Update vendor details with new status
+      final vendorData = StorageService.getVendorDetails();
+      if (vendorData != null) {
+        vendorData['is_active'] = newStatus;
+        await StorageService.saveVendorDetails(vendorData);
+      }
+    } else {
+      log('Error: ${response.errorMessage}');
+    }
+  }
 
   // New Orders Data
   var newOrders = [
@@ -109,9 +151,9 @@ class HomeController extends GetxController {
     Get.toNamed(AppRoute.orderManagementScreen);
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-    riderAssignController = Get.put(RiderAssignmentController());
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   riderAssignController = Get.put(RiderAssignmentController());
+  // }
 }

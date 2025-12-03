@@ -1,7 +1,7 @@
 class VendorDetailsModel {
   final int id;
   final String shopName;
-  final String email;
+  final String? email;
   final String phone;
   final String? photo;
   final String? ownerName;
@@ -20,7 +20,7 @@ class VendorDetailsModel {
   VendorDetailsModel({
     required this.id,
     required this.shopName,
-    required this.email,
+    this.email,
     required this.phone,
     this.photo,
     this.ownerName,
@@ -42,7 +42,7 @@ class VendorDetailsModel {
     return VendorDetailsModel(
       id: json['id'] as int,
       shopName: json['shop_name'] as String,
-      email: json['email'] as String,
+      email: json['email'] as String?,
       phone: json['phone'] as String,
       photo: json['photo'] as String?,
       ownerName: json['owner_name'] as String?,

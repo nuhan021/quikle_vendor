@@ -47,4 +47,8 @@ class KycApprovalController extends GetxController {
     // Navigate to my profile screen
     Get.offAllNamed(AppRoute.myProfileScreen);
   }
+
+  Future<void> goNavbar() async {
+    await Get.offAllNamed(AppRoute.navbarScreen);
+  }
 }

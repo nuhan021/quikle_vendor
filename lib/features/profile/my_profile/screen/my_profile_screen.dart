@@ -7,9 +7,12 @@ import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/features/profile/my_profile/widget/basic_information_widget.dart';
 import 'package:quikle_vendor/features/profile/my_profile/widget/business_details_widget.dart';
 import 'package:quikle_vendor/features/profile/my_profile/widget/contactInfoCard.dart';
+import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
+import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../appbar/screen/appbar_screen.dart';
+import '../../../auth/data/services/auth_service.dart';
 import '../controller/my_profile_controller.dart';
 
 class MyProfileScreen extends StatelessWidget {
@@ -20,6 +23,12 @@ class MyProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(MyProfileController());
+    final vendorData = StorageService.getVendorDetails();
+    final vendorDetails = vendorData != null
+        ? VendorDetailsModel.fromJson(vendorData)
+        : null;
+    log('vendorDetails: $vendorDetails');
+
     log("fromKycFlow: $fromKycFlow");
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -85,22 +94,18 @@ class MyProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Obx(
-                    () => Text(
-                      controller.businessName.value,
-                      style: getTextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
+                  Text(
+                    vendorDetails?.shopName ?? '',
+                    style: getTextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Obx(
-                    () => Text(
-                      controller.address.value,
-                      style: getTextStyle(fontSize: 14, color: Colors.black54),
-                    ),
+                  Text(
+                    vendorDetails?.locationName ?? '',
+                    style: getTextStyle(fontSize: 14, color: Colors.black54),
                   ),
                 ],
               ),
