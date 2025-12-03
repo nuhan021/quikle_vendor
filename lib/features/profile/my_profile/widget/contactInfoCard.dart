@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/features/profile/edit_profile/screen/edit_profile_screen.dart';
 import 'package:quikle_vendor/features/profile/my_profile/widget/profile_field.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
@@ -45,15 +46,15 @@ class ContactInfoCard extends StatelessWidget {
                 CustomButton(
                   width: controller.isContactInfoEditing.value ? 56 : 50,
                   height: 26,
-                  text: controller.isContactInfoEditing.value ? "Save" : "Edit",
+                  text: "Edit",
                   style: getTextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
                     color: Colors.white,
                   ),
-                  onPressed: controller.isContactInfoEditing.value
-                      ? controller.saveContactInfo
-                      : controller.toggleContactInfoEdit,
+                  onPressed: () {
+                    Get.to(EditProfileScreen());
+                  },
                   backgroundColor: Colors.black,
                   textColor: Colors.white,
                   fontSize: 14,
@@ -101,11 +102,11 @@ class ContactInfoCard extends StatelessWidget {
               //   label: "Business Address",
               //   value: controller.addressController.text,
               // ),
-              ProfileField(
-                label: "Opening Hours",
-                value: controller.openingHoursController.text,
-                showDivider: false,
-              ),
+              // ProfileField(
+              //   label: "Opening Hours",
+              //   value: controller.openingHoursController.text,
+              //   showDivider: false,
+              // ),
             ],
           ],
         ),

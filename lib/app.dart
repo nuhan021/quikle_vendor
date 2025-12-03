@@ -2,7 +2,6 @@ import 'package:quikle_vendor/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'core/bindings/controller_binder.dart';
 import 'core/utils/theme/theme.dart';
 
 class MyApp extends StatelessWidget {
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
       builder: (_, child) {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
-          initialRoute: AppRoute.getSplashScreen(),
+          initialRoute: AppRoute.getMyProfileScreen(),
           getPages: AppRoute.routes,
           // initialBinding: ControllerBinder(),
           themeMode: ThemeMode.light,

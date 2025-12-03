@@ -1,11 +1,15 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quikle_vendor/core/utils/helpers/snackbar_helper.dart';
 import 'package:quikle_vendor/features/user/controllers/user_controller.dart';
-import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
+import '../model/my_profile_model.dart';
 
 class MyProfileController extends GetxController {
+  // Profile Model
+  final profileModel = Rx<MyProfileModel?>(null);
+
   // Observables for edit mode
   final isBasicInfoEditing = false.obs;
   final isContactInfoEditing = false.obs;
@@ -13,9 +17,7 @@ class MyProfileController extends GetxController {
 
   // Profile image
   final profileImagePath = Rx<String?>(null);
-
-  // Vendor Details Observable
-  late VendorDetailsModel vendorDetails;
+  final selectedImage = Rx<File?>(null);
 
   // Observable display values
   final businessName = "Tandoori Tarang".obs;
@@ -56,44 +58,67 @@ class MyProfileController extends GetxController {
       final details = userController.getVendorDetails();
 
       if (details != null) {
-        vendorDetails = details;
+        // Create model from vendor details
+        profileModel.value = MyProfileModel.fromVendorDetails(details.toJson());
+        final model = profileModel.value!;
 
-        // Initialize controllers with vendor data
-        businessNameController = TextEditingController(
-          text: vendorDetails.shopName,
-        );
-        phoneController = TextEditingController(text: vendorDetails.phone);
-        addressController = TextEditingController(
-          text: vendorDetails.locationName ?? address.value,
-        );
+        // Initialize controllers with model data
+        businessNameController = TextEditingController(text: model.shopName);
+        phoneController = TextEditingController(text: model.phone);
+        addressController = TextEditingController(text: model.address);
         accountStatusController = TextEditingController(
-          text: vendorDetails.isActive ? "Active" : "Inactive",
+          text: model.accountStatus,
         );
-        tinNumberController = TextEditingController(text: vendorDetails.nid);
+        tinNumberController = TextEditingController(text: model.tinNumber);
+        ownerNameController.text = model.ownerName;
+        servicesController.text = model.servicesOffered;
+        contactPersonController.text = model.contactPerson;
+        openingHoursController.text = model.openingHours;
+        panelLicenseController.text = model.panelLicense;
 
         // Update observables
-        businessName.value = vendorDetails.shopName;
-        address.value = vendorDetails.locationName ?? address.value;
+        businessName.value = model.shopName;
+        address.value = model.address;
+
+        // Load image if exists
+        if (model.photo != null && model.photo!.isNotEmpty) {
+          profileImagePath.value = model.photo;
+          final file = File(model.photo!);
+          if (file.existsSync()) {
+            selectedImage.value = file;
+          }
+        }
       } else {
-        // Use default values if no vendor details
-        businessNameController = TextEditingController(text: "Tandoori Tarang");
-        phoneController = TextEditingController(text: "+963-172-345678");
-        addressController = TextEditingController(
-          text: "House 34, Road 12, Dhanmondi, Dhaka",
-        );
-        accountStatusController = TextEditingController(text: "Active");
-        tinNumberController = TextEditingController(text: "+963-172-345678");
+        _setDefaultValues();
       }
     } catch (e) {
-      // Fallback to default values
-      businessNameController = TextEditingController(text: "Tandoori Tarang");
-      phoneController = TextEditingController(text: "+963-172-345678");
-      addressController = TextEditingController(
-        text: "House 34, Road 12, Dhanmondi, Dhaka",
-      );
-      accountStatusController = TextEditingController(text: "Active");
-      tinNumberController = TextEditingController(text: "+963-172-345678");
+      print('Error loading vendor details: $e');
+      _setDefaultValues();
     }
+  }
+
+  void _setDefaultValues() {
+    profileModel.value = MyProfileModel(
+      shopName: 'Tandoori Tarang',
+      ownerName: 'Vikash Rajput',
+      email: '',
+      phone: '+963-172-345678',
+      address: 'House 34, Road 12, Dhanmondi, Dhaka',
+      accountStatus: 'Active',
+      servicesOffered: 'Describe services offered',
+      contactPerson: 'Vikram Rajput',
+      openingHours: '9:00 AM - 8:00 PM',
+      panelLicense: 'Not Provided',
+      tinNumber: '+963-172-345678',
+      isActive: true,
+    );
+
+    final model = profileModel.value!;
+    businessNameController = TextEditingController(text: model.shopName);
+    phoneController = TextEditingController(text: model.phone);
+    addressController = TextEditingController(text: model.address);
+    accountStatusController = TextEditingController(text: model.accountStatus);
+    tinNumberController = TextEditingController(text: model.tinNumber);
   }
 
   void toggleBasicInfoEdit() {
@@ -109,41 +134,125 @@ class MyProfileController extends GetxController {
   }
 
   void saveBasicInfo() {
-    // TODO: Implement save logic
-    businessName.value = businessNameController.text;
-    isBasicInfoEditing.value = false;
-    SnackBarHelper.success('Basic information saved successfully');
+    try {
+      if (profileModel.value != null) {
+        // Update model
+        profileModel.value = profileModel.value!.copyWith(
+          shopName: businessNameController.text,
+          ownerName: ownerNameController.text,
+        );
+
+        // Update UserController
+        final userController = Get.find<UserController>();
+        final currentVendor = userController.getVendorDetails();
+        if (currentVendor != null) {
+          final updatedJson = {
+            ...currentVendor.toJson(),
+            'shop_name': businessNameController.text.trim(),
+            'owner_name': ownerNameController.text.trim(),
+          };
+          userController.setVendorDetails(updatedJson);
+        }
+
+        businessName.value = businessNameController.text;
+        isBasicInfoEditing.value = false;
+        SnackBarHelper.success('Basic information saved successfully');
+      }
+    } catch (e) {
+      print('Error saving basic info: $e');
+      SnackBarHelper.error('Failed to save basic information');
+    }
   }
 
   void saveContactInfo() {
-    // TODO: Implement save logic
-    address.value = addressController.text;
-    isContactInfoEditing.value = false;
-    SnackBarHelper.success('Contact information saved successfully');
+    try {
+      if (profileModel.value != null) {
+        // Update model
+        profileModel.value = profileModel.value!.copyWith(
+          phone: phoneController.text,
+          address: addressController.text,
+          contactPerson: contactPersonController.text,
+          openingHours: openingHoursController.text,
+        );
+
+        // Update UserController
+        final userController = Get.find<UserController>();
+        final currentVendor = userController.getVendorDetails();
+        if (currentVendor != null) {
+          final updatedJson = {
+            ...currentVendor.toJson(),
+            'phone': phoneController.text.trim(),
+            'location_name': addressController.text.trim(),
+          };
+          userController.setVendorDetails(updatedJson);
+        }
+
+        address.value = addressController.text;
+        isContactInfoEditing.value = false;
+        SnackBarHelper.success('Contact information saved successfully');
+      }
+    } catch (e) {
+      print('Error saving contact info: $e');
+      SnackBarHelper.error('Failed to save contact information');
+    }
   }
 
   void saveBusinessDetails() {
-    // TODO: Implement save logic
-    isBusinessDetailsEditing.value = false;
-    SnackBarHelper.success('Business details saved successfully');
+    try {
+      if (profileModel.value != null) {
+        // Update model
+        profileModel.value = profileModel.value!.copyWith(
+          tinNumber: tinNumberController.text,
+          panelLicense: panelLicenseController.text,
+        );
+
+        // Update UserController
+        final userController = Get.find<UserController>();
+        final currentVendor = userController.getVendorDetails();
+        if (currentVendor != null) {
+          final updatedJson = {
+            ...currentVendor.toJson(),
+            'nid': tinNumberController.text.trim(),
+          };
+          userController.setVendorDetails(updatedJson);
+        }
+
+        isBusinessDetailsEditing.value = false;
+        SnackBarHelper.success('Business details saved successfully');
+      }
+    } catch (e) {
+      print('Error saving business details: $e');
+      SnackBarHelper.error('Failed to save business details');
+    }
   }
 
   Future<void> pickImage() async {
     try {
-      final XFile? image = await _picker.pickImage(
+      final XFile? picked = await _picker.pickImage(
         source: ImageSource.gallery,
-        maxWidth: 512,
-        maxHeight: 512,
-        imageQuality: 75,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 80,
       );
 
-      if (image != null) {
-        profileImagePath.value = image.path;
-        // TODO: Upload image to server
+      if (picked != null) {
+        selectedImage.value = File(picked.path);
+        profileImagePath.value = picked.path;
+
+        // Update model
+        if (profileModel.value != null) {
+          profileModel.value = profileModel.value!.copyWith(photo: picked.path);
+        }
+
+        SnackBarHelper.success('Profile image updated');
       }
     } catch (e) {
       SnackBarHelper.error('Failed to pick image');
     }
+  }
+
+  void refreshProfile() {
+    _loadVendorDetails();
   }
 
   @override

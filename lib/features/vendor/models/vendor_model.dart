@@ -39,26 +39,42 @@ class VendorDetailsModel {
 
   /// Convert JSON to Model
   factory VendorDetailsModel.fromJson(Map<String, dynamic> json) {
+    int parseInt(dynamic v) {
+      if (v is int) return v;
+      return int.tryParse(v?.toString() ?? '') ?? 0;
+    }
+
+    bool parseBool(dynamic v) {
+      if (v is bool) return v;
+      if (v is num) return v != 0;
+      final s = v?.toString().toLowerCase();
+      if (s == 'true') return true;
+      if (s == 'false') return false;
+      return false;
+    }
+
+    double? parseDouble(dynamic v) {
+      if (v == null) return null;
+      if (v is num) return v.toDouble();
+      return double.tryParse(v.toString());
+    }
+
     return VendorDetailsModel(
-      id: json['id'] as int,
-      shopName: json['shop_name'] as String,
+      id: parseInt(json['id'] ?? json['user_id'] ?? json['vendor_id']),
+      shopName: (json['shop_name'] ?? json['shopName'] ?? '').toString(),
       email: json['email'] as String,
-      phone: json['phone'] as String,
+      phone: (json['phone'] ?? '').toString(),
       photo: json['photo'] as String?,
       ownerName: json['owner_name'] as String?,
-      type: json['type'] as String,
-      isActive: json['is_active'] as bool,
+      type: (json['type'] ?? '').toString(),
+      isActive: parseBool(json['is_active']),
       openTime: json['open_time'] as String?,
       closeTime: json['close_time'] as String?,
-      isCompleted: json['is_completed'] as bool,
-      latitude: json['latitude'] != null
-          ? (json['latitude'] as num).toDouble()
-          : null,
-      longitude: json['longitude'] != null
-          ? (json['longitude'] as num).toDouble()
-          : null,
+      isCompleted: parseBool(json['is_completed']),
+      latitude: parseDouble(json['latitude']),
+      longitude: parseDouble(json['longitude']),
       locationName: json['location_name'] as String?,
-      nid: json['nid'] as String,
+      nid: (json['nid'] ?? '').toString(),
       kycDocument: json['kyc_document'] as String?,
       kycStatus: json['kyc_status'] as String?,
     );

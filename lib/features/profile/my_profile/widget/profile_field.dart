@@ -30,7 +30,7 @@ class ProfileField extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(value, style: getTextStyle(fontSize: 14, color: Colors.black54)),
-          if (showDivider) const Divider(height: 20),
+          // if (showDivider) const Divider(height: 20),
         ],
       ),
     );
