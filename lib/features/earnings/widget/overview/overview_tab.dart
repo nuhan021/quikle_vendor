@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../controller/overview_controller.dart';
@@ -77,7 +78,7 @@ class OverviewTab extends StatelessWidget {
           /// Earnings Card
           Obx(
             () => Container(
-              height: 164,
+              height: 164.h,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 20),
               decoration: BoxDecoration(
@@ -107,7 +108,7 @@ class OverviewTab extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     "Net \$${controller.netEarnings.value.toStringAsFixed(2)}",
-                    style: getTextStyle(color: Colors.white70, fontSize: 14),
+                    style: getTextStyle(color: Colors.white70, fontSize: 14.sp),
                   ),
                 ],
               ),

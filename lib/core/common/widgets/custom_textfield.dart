@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../styles/global_text_style.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -49,7 +50,7 @@ class CustomTextField extends StatelessWidget {
           Text(
             label,
             style: getTextStyle(
-              fontSize: 14,
+              fontSize: 14.sp,
               fontWeight: FontWeight.w500,
               color: Colors.black87,
             ),
@@ -69,7 +70,7 @@ class CustomTextField extends StatelessWidget {
           style:
               textStyle ??
               getTextStyle(
-                fontSize: 14,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
                 color: Colors.black87,
               ),

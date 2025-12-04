@@ -61,6 +61,7 @@ class EditProfileController extends GetxController {
           email: vd.email,
           phone: vd.phone,
           address: vd.locationName ?? '',
+          shopAddress: vd.locationName ?? '',
           openingHours: _formatOpeningHours(vd.openTime, vd.closeTime),
           photoPath: vd.photo,
           businessType: vd.type,
@@ -74,7 +75,8 @@ class EditProfileController extends GetxController {
           ownerNameController.text = model.ownerName ?? '';
           emailController.text = model.email ?? '';
           phoneController.text = model.phone ?? '';
-          addressController.text = model.address ?? '';
+          // populate address controller with shopAddress if available
+          addressController.text = model.shopAddress ?? model.address ?? '';
           openingHoursController.text =
               model.openingHours ?? '9:00 AM - 8:00 PM';
           businessTypeController.text = model.businessType ?? '';
@@ -167,7 +169,10 @@ class EditProfileController extends GetxController {
         email: emailController.text.trim(),
         phone: phoneController.text.trim(),
         address: addressController.text.trim(),
-        openingHours: openingHoursController.text.trim(),
+        shopAddress: addressController.text.trim(),
+        openingHours: openingHoursController.text.trim().isEmpty
+            ? '9:00 AM - 8:00 PM'
+            : openingHoursController.text.trim(),
         photoPath: selectedImage.value?.path,
         businessType: businessTypeController.text.trim(),
         description: descriptionController.text.trim(),
@@ -186,6 +191,8 @@ class EditProfileController extends GetxController {
           'email': updatedModel.email,
           'phone': updatedModel.phone,
           'location_name': updatedModel.address,
+          'shop_address': updatedModel.shopAddress,
+          'opening_hours': updatedModel.openingHours,
           'type': updatedModel.businessType,
         };
 

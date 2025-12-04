@@ -114,12 +114,16 @@ class MyProfileScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Text(
-                    //   (vendorData != null && vendorData['opening_hours'] != null)
-                    //       ? vendorData['opening_hours'] as String
-                    //       : 'Not set',
-                    //   style: getTextStyle(fontSize: 14, color: Colors.black87),
-                    // ),
+                    Obx(
+                      () => Text(
+                        controller.profileModel.value?.openingHours ??
+                            'Not set',
+                        style: getTextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

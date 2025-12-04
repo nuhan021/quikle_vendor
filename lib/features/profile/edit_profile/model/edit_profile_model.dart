@@ -4,6 +4,7 @@ class EditProfileModel {
   final String? email;
   final String? phone;
   final String? address;
+  final String? shopAddress;
   final String? openingHours;
   final String? photoPath;
   final String? businessType;
@@ -17,6 +18,7 @@ class EditProfileModel {
     this.address,
     this.openingHours,
     this.photoPath,
+    this.shopAddress,
     this.businessType,
     this.description,
   });
@@ -29,7 +31,9 @@ class EditProfileModel {
       email: json['email'] as String?,
       phone: json['phone'] as String?,
       address: json['location_name'] as String?,
-      openingHours: json['opening_hours'] as String?,
+      shopAddress:
+          json['shop_address'] as String? ?? json['location_name'] as String?,
+      openingHours: (json['opening_hours'] as String?) ?? '9:00 AM - 8:00 PM',
       photoPath: json['photo'] as String?,
       businessType: json['type'] as String?,
       description: json['description'] as String?,
@@ -44,6 +48,7 @@ class EditProfileModel {
       'email': email,
       'phone': phone,
       'location_name': address,
+      'shop_address': shopAddress,
       'opening_hours': openingHours,
       'photo': photoPath,
       'type': businessType,
@@ -60,6 +65,7 @@ class EditProfileModel {
     String? address,
     String? openingHours,
     String? photoPath,
+    String? shopAddress,
     String? businessType,
     String? description,
   }) {
@@ -71,6 +77,7 @@ class EditProfileModel {
       address: address ?? this.address,
       openingHours: openingHours ?? this.openingHours,
       photoPath: photoPath ?? this.photoPath,
+      shopAddress: shopAddress ?? this.shopAddress,
       businessType: businessType ?? this.businessType,
       description: description ?? this.description,
     );

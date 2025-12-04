@@ -76,6 +76,27 @@ class EditProfileScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
+
+                    // Shop name and address fields under the avatar (minimal UI change)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: CustomTextField(
+                        label: "Shop Name",
+                        hintText: "Enter shop name",
+                        controller: controller.shopNameController,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: CustomTextField(
+                        label: "Shop Address",
+                        hintText: "Enter shop address",
+                        controller: controller.addressController,
+                        // maxLines: 2,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
                   ],
                 ),
               ),
@@ -108,16 +129,12 @@ class EditProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    
-
                     CustomTextField(
                       label: "Owner Name",
                       hintText: "Enter owner name",
                       controller: controller.ownerNameController,
                     ),
                     const SizedBox(height: 12),
-
-                    
 
                     Text(
                       "Opening Hours",
