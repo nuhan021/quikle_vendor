@@ -9,8 +9,6 @@ import '../widgets/products_search_widget.dart';
 import '../widgets/products_action_buttons_widget.dart';
 import '../widgets/products_low_stock_alert_widget.dart';
 import '../widgets/products_list_widget.dart';
-import '../widgets/add_product_modal_widget.dart';
-import '../widgets/create_discount_modal_widget.dart';
 import '../widgets/delete_product_dialog_widget.dart';
 
 class ProductsScreen extends StatelessWidget {
@@ -38,20 +36,8 @@ class ProductsScreen extends StatelessWidget {
 
             // Modals and Dialogs
             Obx(
-              () => addProductController.showAddProductModal.value
-                  ? AddProductModalWidget()
-                  : Container(),
-            ),
-
-            Obx(
               () => controller.showFilterProductModal.value
                   ? FilterProductWidget()
-                  : Container(),
-            ),
-
-            Obx(
-              () => controller.showCreateDiscountModal.value
-                  ? CreateDiscountModalWidget()
                   : Container(),
             ),
 

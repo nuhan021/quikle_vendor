@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 
@@ -49,29 +50,66 @@ class NetworkCaller {
     Map<String, String>? headers,
     bool form = false, // <-- NEW
   }) async {
-    final requestHeaders = {
-      if (form)
-        'Content-Type': 'application/x-www-form-urlencoded'
-      else
+    // Check if body contains File objects for multipart upload
+    final hasFiles = body?.values.any((value) => value is File) ?? false;
+
+    if (hasFiles || (form && body != null)) {
+      // Use MultipartRequest for file uploads or form data
+      final request = http.MultipartRequest('POST', Uri.parse(url));
+
+      if (token != null) {
+        request.headers['Authorization'] = token;
+      }
+      if (headers != null) {
+        request.headers.addAll(headers);
+      }
+
+      if (body != null) {
+        body.forEach((key, value) {
+          if (value is File) {
+            request.files.add(
+              http.MultipartFile.fromBytes(
+                key,
+                value.readAsBytesSync(),
+                filename: value.path.split('/').last,
+              ),
+            );
+          } else {
+            request.fields[key] = value.toString();
+          }
+        });
+      }
+
+      try {
+        final streamedResponse = await request.send().timeout(
+          Duration(seconds: timeoutDuration),
+        );
+        final response = await http.Response.fromStream(streamedResponse);
+        return await _handleResponse(response);
+      } catch (e) {
+        return _handleError(e);
+      }
+    } else {
+      // Use regular POST for JSON
+      final requestHeaders = {
         'Content-Type': 'application/json',
-      if (token != null) 'Authorization': token,
-      if (headers != null) ...headers,
-    };
+        if (token != null) 'Authorization': token,
+        if (headers != null) ...headers,
+      };
 
-    try {
-      final response = await http
-          .post(
-            Uri.parse(url),
-            headers: requestHeaders,
-            body: form
-                ? body?.map((k, v) => MapEntry(k, v.toString()))
-                : jsonEncode(body ?? {}),
-          )
-          .timeout(Duration(seconds: timeoutDuration));
+      try {
+        final response = await http
+            .post(
+              Uri.parse(url),
+              headers: requestHeaders,
+              body: jsonEncode(body ?? {}),
+            )
+            .timeout(Duration(seconds: timeoutDuration));
 
-      return await _handleResponse(response);
-    } catch (e) {
-      return _handleError(e);
+        return await _handleResponse(response);
+      } catch (e) {
+        return _handleError(e);
+      }
     }
   }
 

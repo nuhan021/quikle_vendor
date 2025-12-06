@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/features/home/controller/rider_assignment_controller.dart';
@@ -28,7 +27,7 @@ class HomeController extends GetxController {
   void loadShopStatus() {
     final vendorData = StorageService.getVendorDetails();
     if (vendorData != null) {
-      final isActive = vendorData['is_active'] as bool? ?? true;
+      final isActive = vendorData['is_active'] as bool? ?? false;
       isShopOpen.value = isActive;
       log('Shop status loaded from vendor details: $isActive');
     }

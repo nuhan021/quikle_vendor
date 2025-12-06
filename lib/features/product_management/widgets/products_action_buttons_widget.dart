@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/common/widgets/custom_button.dart';
+import 'package:quikle_vendor/features/product_management/widgets/create_discount_modal_widget.dart';
 import '../controllers/products_controller.dart';
 import '../controllers/add_product_controller.dart';
 
@@ -20,7 +21,9 @@ class ProductsActionButtonsWidget extends StatelessWidget {
           Expanded(
             child: CustomButton(
               text: 'Add Discount',
-              onPressed: controller.showCreateDiscountDialog,
+              onPressed: () {
+                controller.showCreateDiscountDialog();
+              },
               textColor: Colors.black,
               backgroundColor: Colors.white,
               borderColor: Colors.black,

@@ -77,7 +77,7 @@ class OverviewTab extends StatelessWidget {
           /// Earnings Card
           Obx(
             () => Container(
-              height: 164,
+              height: 172,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 20),
               decoration: BoxDecoration(

@@ -23,7 +23,6 @@ class CreateDiscountModalWidget extends StatelessWidget {
             useMaterial3: true,
             scaffoldBackgroundColor: Colors.white,
             cardColor: Colors.white,
-            dialogBackgroundColor: Colors.white,
             colorScheme: ColorScheme.light(
               primary: Colors.black,
               surface: Colors.white,
@@ -57,7 +56,6 @@ class CreateDiscountModalWidget extends StatelessWidget {
             useMaterial3: true,
             scaffoldBackgroundColor: Colors.white,
             cardColor: Colors.white,
-            dialogBackgroundColor: Colors.white,
             colorScheme: ColorScheme.light(
               primary: Colors.black,
               surface: Colors.white,
@@ -156,7 +154,7 @@ class CreateDiscountModalWidget extends StatelessWidget {
                               color:
                                   controller.selectedProductId.value ==
                                       product['id']
-                                  ? Color(0xFFFFC200).withOpacity(0.1)
+                                  ? Color(0xFFFFC200).withAlpha(25)
                                   : Colors.white,
                             ),
                             child: Row(
@@ -249,251 +247,245 @@ class CreateDiscountModalWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(CreateDiscountController());
 
-    return Container(
-      color: Colors.black.withValues(alpha: 0.5),
-      child: Center(
-        child: Container(
-          margin: EdgeInsets.only(top: 40, bottom: 90, left: 20, right: 20),
-          padding: EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Create Discount Section
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Create Discount',
-                      style: getTextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF111827),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Get.back(),
-                      child: Icon(
-                        Icons.close,
-                        color: Color(0xFF6B7280),
-                        size: 24,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24),
-
-                // Discount Name
-                CustomTextField(
-                  controller: controller.discountNameController,
-                  label: 'Discount Name',
-                  hintText: 'Product Name',
-                ),
-                SizedBox(height: 16),
-
-                // Discount Code
-                CustomTextField(
-                  controller: controller.discountCodeController,
-                  label: 'Discount Code',
-                  hintText: 'SUMMER20',
-                ),
-                SizedBox(height: 16),
-
-                // Discount Value
-                CustomTextField(
-                  controller: controller.discountValueController,
-                  label: 'Discount Value',
-                  hintText: '\$19',
-                ),
-                SizedBox(height: 16),
-
-                // Choose Product
-                Text(
-                  'Choose Product',
-                  style: getTextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF111827),
-                  ),
-                ),
-                SizedBox(height: 8),
-                Obx(
-                  () => GestureDetector(
-                    onTap: () =>
-                        _showProductSelectionDialog(context, controller),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Color(0xFFE5E7EB)),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              controller.selectedProduct.value,
-                              style: getTextStyle(
-                                fontSize: 16,
-                                color: Color(0xFF111827),
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Icon(
-                            Icons.keyboard_arrow_down,
-                            color: Color(0xFF9CA3AF),
-                            size: 20,
-                          ),
-                        ],
-                      ),
+    return Dialog(
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        padding: EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Create Discount Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Create Discount',
+                    style: getTextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF111827),
                     ),
                   ),
-                ),
-                SizedBox(height: 16),
-
-                // Start Date & Time and End Date & Time
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Start Date',
-                            style: getTextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF111827),
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          GestureDetector(
-                            onTap: () =>
-                                _selectStartDateTime(context, controller),
-                            child: Obx(
-                              () => Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 16,
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Color(0xFFE5E7EB)),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        controller.startDate.value.isEmpty
-                                            ? 'mm/dd/yyyy'
-                                            : controller.startDate.value,
-                                        style: getTextStyle(
-                                          fontSize: 14,
-                                          color:
-                                              controller.startDate.value.isEmpty
-                                              ? Color(0xFF9CA3AF)
-                                              : Color(0xFF111827),
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.calendar_today,
-                                      color: Color(0xFF9CA3AF),
-                                      size: 16,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                  GestureDetector(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: Icon(
+                      Icons.close,
+                      color: Color(0xFF6B7280),
+                      size: 24,
                     ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'End Date',
-                            style: getTextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF111827),
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          GestureDetector(
-                            onTap: () =>
-                                _selectEndDateTime(context, controller),
-                            child: Obx(
-                              () => Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 16,
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Color(0xFFE5E7EB)),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        controller.endDate.value.isEmpty
-                                            ? 'mm/dd/yyyy'
-                                            : controller.endDate.value,
-                                        style: getTextStyle(
-                                          fontSize: 14,
-                                          color:
-                                              controller.endDate.value.isEmpty
-                                              ? Color(0xFF9CA3AF)
-                                              : Color(0xFF111827),
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.calendar_today,
-                                      color: Color(0xFF9CA3AF),
-                                      size: 16,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24),
+                  ),
+                ],
+              ),
+              SizedBox(height: 24),
 
-                // Add Discount Button
-                CustomButton(
-                  text: 'Add Discount',
-                  onPressed: controller.addDiscount,
-                  height: 50,
-                  backgroundColor: Color(0xFF111827),
-                  textColor: Colors.white,
+              // Discount Name
+              CustomTextField(
+                controller: controller.discountNameController,
+                label: 'Discount Name',
+                hintText: 'Product Name',
+              ),
+              SizedBox(height: 16),
+
+              // Discount Code
+              CustomTextField(
+                controller: controller.discountCodeController,
+                label: 'Discount Code',
+                hintText: 'SUMMER20',
+              ),
+              SizedBox(height: 16),
+
+              // Discount Value
+              CustomTextField(
+                controller: controller.discountValueController,
+                label: 'Discount Value',
+                hintText: '\$19',
+              ),
+              SizedBox(height: 16),
+
+              // Choose Product
+              Text(
+                'Choose Product',
+                style: getTextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF111827),
                 ),
-              ],
-            ),
+              ),
+              SizedBox(height: 8),
+              Obx(
+                () => GestureDetector(
+                  onTap: () => _showProductSelectionDialog(context, controller),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Color(0xFFE5E7EB)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            controller.selectedProduct.value,
+                            style: getTextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF111827),
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Color(0xFF9CA3AF),
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+
+              // Start Date & Time and End Date & Time
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Start Date',
+                          style: getTextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF111827),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: () =>
+                              _selectStartDateTime(context, controller),
+                          child: Obx(
+                            () => Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Color(0xFFE5E7EB)),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      controller.startDate.value.isEmpty
+                                          ? 'mm/dd/yyyy'
+                                          : controller.startDate.value,
+                                      style: getTextStyle(
+                                        fontSize: 14,
+                                        color:
+                                            controller.startDate.value.isEmpty
+                                            ? Color(0xFF9CA3AF)
+                                            : Color(0xFF111827),
+                                      ),
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.calendar_today,
+                                    color: Color(0xFF9CA3AF),
+                                    size: 16,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'End Date',
+                          style: getTextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF111827),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: () => _selectEndDateTime(context, controller),
+                          child: Obx(
+                            () => Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Color(0xFFE5E7EB)),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      controller.endDate.value.isEmpty
+                                          ? 'mm/dd/yyyy'
+                                          : controller.endDate.value,
+                                      style: getTextStyle(
+                                        fontSize: 14,
+                                        color: controller.endDate.value.isEmpty
+                                            ? Color(0xFF9CA3AF)
+                                            : Color(0xFF111827),
+                                      ),
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.calendar_today,
+                                    color: Color(0xFF9CA3AF),
+                                    size: 16,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 24),
+
+              // Add Discount Button
+              CustomButton(
+                text: 'Add Discount',
+                onPressed: controller.addDiscount,
+                height: 50,
+                backgroundColor: Color(0xFF111827),
+                textColor: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ],
           ),
         ),
       ),
