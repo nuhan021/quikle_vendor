@@ -43,11 +43,7 @@ class AddProductModalWidget extends StatelessWidget {
                       ),
                     ),
                     GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        print('X button tapped');
-                        Get.back();
-                      },
+                      onTap: controller.hideAddProductDialog,
                       child: Icon(
                         Icons.close,
                         color: Color(0xFF6B7280),
