@@ -1,9 +1,18 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
 import '../widgets/create_discount_modal_widget.dart';
+import '../services/get_product_services.dart';
+import '../model/products_model.dart';
+import '../../../core/services/storage_service.dart';
 
 class ProductsController extends GetxController {
+  final vendorData = StorageService.getVendorDetails();
+  late final String vendorType = vendorData != null
+      ? vendorData!['type'] ?? 'food'
+      : 'food';
   var searchText = ''.obs;
   var selectedCategory = 'All Categories'.obs;
   var selectedStockStatus = 'All Status'.obs;
@@ -12,49 +21,100 @@ class ProductsController extends GetxController {
   var showFilterProductModal = false.obs;
   var showDeleteDialog = false.obs;
   var productToDelete = ''.obs;
+  var isLoading = true.obs;
+  var isLoadingMore = false.obs;
+  var total = 0.obs;
+  int offset = 0;
+  final int limit = 20;
 
-  // Products Data
-  var products = [
-    {
-      'id': '1',
-      'name': 'Organic Green Apples',
-      'rating': 4.8,
-      'pack': '1kg Pack',
-      'price': 12.00,
-      'stock': 200,
-      'status': 'In Stock',
-      'image': 'assets/images/green_apple.png',
-      'category': 'Fruits',
-      'hasDiscount': true,
-    },
-    {
-      'id': '2',
-      'name': 'Sweet Oranges',
-      'rating': 4.8,
-      'pack': '1kg Pack',
-      'price': 12.00,
-      'stock': 15,
-      'status': 'Low Stock',
-      'image': 'assets/images/orange.png',
-      'category': 'Fruits',
-      'hasDiscount': false,
-    },
-    {
-      'id': '3',
-      'name': 'Fresh Tomatoes',
-      'rating': 4.8,
-      'pack': '1kg Pack',
-      'price': 12.00,
-      'stock': 0,
-      'status': 'Out of Stock',
-      'image': 'assets/images/tomato.png',
-      'category': 'Vegetables',
-      'hasDiscount': true,
-    },
-  ].obs;
+  var products = <Product>[].obs;
 
-  Map<String, dynamic>? getProductById(String id) {
-    return products.firstWhereOrNull((product) => product['id'] == id);
+  final GetProductServices _productServices = GetProductServices();
+  final ScrollController scrollController = ScrollController();
+
+  @override
+  void onReady() {
+    super.onReady();
+    fetchProducts();
+    scrollController.addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
+      loadMore();
+    }
+  }
+
+  //fetch products from api and call get product services
+  Future<void> fetchProducts({bool isLoadMore = false}) async {
+    if (isLoadMore) {
+      isLoadingMore.value = true;
+    } else {
+      isLoading.value = true;
+      offset = 0;
+    }
+    try {
+      log(
+        '🔄 Fetching products: isLoadMore=$isLoadMore, offset=$offset, vendorType=$vendorType',
+      );
+      final response = await _productServices.getMedicineProducts(
+        vendorType: vendorType,
+        offset: offset,
+        limit: limit,
+      );
+      log('✅ API Response received: ${response.keys}');
+      final List<dynamic> data = response['data'] ?? [];
+      total.value = response['total'] ?? 0;
+      log(
+        '📊 Total products in API: ${total.value}, Current batch: ${data.length}',
+      );
+      final productList = data
+          .whereType<Map<String, dynamic>>()
+          .map((json) => Product.fromJson(json))
+          .toList();
+      log('🏃 Mapped products: ${productList.length}');
+      if (isLoadMore) {
+        products.addAll(productList);
+        offset += limit;
+        log(
+          '➕ Load more complete. New offset: $offset, Total products: ${products.length}',
+        );
+      } else {
+        products.assignAll(productList);
+        log('🆕 Initial load complete. Total products: ${products.length}');
+      }
+      if (isLoadMore) {
+        isLoadingMore.value = false;
+      } else {
+        isLoading.value = false;
+      }
+    } catch (e) {
+      log('Error fetching products: $e');
+      if (isLoadMore) {
+        isLoadingMore.value = false;
+      } else {
+        isLoading.value = false;
+      }
+      // Handle error, e.g., show snackbar
+      Get.snackbar(
+        'Error',
+        'Failed to fetch products: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  void loadMore() {
+    if (!isLoadingMore.value && products.length < total.value) {
+      fetchProducts(isLoadMore: true);
+    }
+  }
+
+  Product? getProductById(String id) {
+    return products.firstWhereOrNull((product) => product.id.toString() == id);
   }
 
   void onSearchChanged(String value) {
@@ -66,6 +126,7 @@ class ProductsController extends GetxController {
       CreateDiscountModalWidget(),
       barrierDismissible: true,
       barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: Duration.zero,
     );
   }
 
@@ -88,7 +149,9 @@ class ProductsController extends GetxController {
   }
 
   void deleteProduct() {
-    products.removeWhere((product) => product['id'] == productToDelete.value);
+    products.removeWhere(
+      (product) => product.id.toString() == productToDelete.value,
+    );
     hideDeleteConfirmation();
     Get.snackbar(
       'Product Deleted',
@@ -139,11 +202,7 @@ class ProductsController extends GetxController {
 
   int get lowStockCount {
     return products
-        .where(
-          (product) =>
-              product['status'] == 'Low Stock' ||
-              product['status'] == 'Out of Stock',
-        )
+        .where((product) => !product.isInStock || product.stock <= 20)
         .length;
   }
 }

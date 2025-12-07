@@ -17,4 +17,7 @@ class ApiConstants {
   static const String subcategories =
       "${baseUrl}items/subcategories/?category_id={categoryId}";
   static const String addProductMedicine = "${baseUrl}items/medicine/";
+  static const String addProductFood = "${baseUrl}items/food/";
+  static const String getMedicineProducts = "${baseUrl}items/medicine/";
+  static const String getFoodProducts = "${baseUrl}items/food/";
 }

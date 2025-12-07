@@ -12,9 +12,15 @@ class ProductsListWidget extends StatelessWidget {
 
     return Obx(
       () => ListView.builder(
+        controller: controller.scrollController,
         padding: EdgeInsets.symmetric(horizontal: 12),
-        itemCount: controller.products.length,
+        itemCount:
+            controller.products.length +
+            (controller.isLoadingMore.value ? 1 : 0),
         itemBuilder: (context, index) {
+          if (index == controller.products.length) {
+            return const Center(child: CircularProgressIndicator());
+          }
           final product = controller.products[index];
           return ProductCardWidget(product: product);
         },

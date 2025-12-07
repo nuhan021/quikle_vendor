@@ -101,12 +101,16 @@ class AddProductController extends GetxController {
   final ImagePicker _imagePicker = ImagePicker();
 
   void showAddProductDialog() {
-    Get.dialog(AddProductModalWidget(), barrierDismissible: false);
+    Get.dialog(
+      AddProductModalWidget(),
+      barrierDismissible: false,
+      transitionDuration: Duration.zero,
+    );
   }
 
   void hideAddProductDialog() {
     clearForm();
-    Get.back();
+    Navigator.of(Get.context!).pop();
   }
 
   void clearForm() {
@@ -125,40 +129,22 @@ class AddProductController extends GetxController {
         : '';
     productImage.value = '';
     subCategorySearchText.value = '';
+    selectedSubCategoryId.value = 0;
+    selectedSubCategoryName.value = '';
+    isOtc.value = false;
   }
 
   void addProduct() async {
     // ========== FORM VALIDATION ==========
     if (productNameController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter product name',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
       return;
     }
 
     if (priceController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter product price',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
       return;
     }
 
     if (selectedSubCategoryId.value == 0) {
-      Get.snackbar(
-        'Error',
-        'Please select a sub category',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
       return;
     }
 
@@ -168,59 +154,37 @@ class AddProductController extends GetxController {
       barrierDismissible: false,
     );
 
-    try {
-      final success = await AddProductServices().addProduct(
-        title: productNameController.text,
-        description: descriptionController.text,
-        subcategoryId: selectedSubCategoryId.value,
-        price: double.tryParse(priceController.text) ?? 0.0,
-        discount: int.tryParse(discountController.text) ?? 0,
-        stock: int.tryParse(stockQuantityController.text) ?? 0,
-        isOTC: vendorType == "medicine"
-            ? isOtc.value
-            : true, // only for medicine
-        weight: double.tryParse(weightController.text) ?? 0.0,
-        image: productImage.value.isNotEmpty ? File(productImage.value) : null,
-      );
-
-      // Close loading dialog
-      Get.back();
-
-      if (success) {
-        hideAddProductDialog(); // close modal & clear form first
-
-        Future.delayed(Duration(milliseconds: 100), () {
-          Get.snackbar(
-            'Success',
-            'Product added successfully!',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Color(0xFF10B981),
-            colorText: Colors.white,
-          );
-        });
-      } else {
-        Future.delayed(Duration(milliseconds: 100), () {
-          Get.snackbar(
-            'Error',
-            'Failed to add product. Please try again.',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Color(0xFFEF4444),
-            colorText: Colors.white,
-          );
-        });
-      }
-    } catch (e) {
-      Get.back(); // close loading
-      Future.delayed(Duration(milliseconds: 100), () {
-        Get.snackbar(
-          'Error',
-          'Something went wrong: $e',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Color(0xFFEF4444),
-          colorText: Colors.white,
+    if (vendorType == 'medicine') {
+      try {
+        final success = await AddMedicineProductServices().addProduct(
+          title: productNameController.text,
+          description: descriptionController.text,
+          subcategoryId: selectedSubCategoryId.value,
+          price: double.tryParse(priceController.text) ?? 0.0,
+          discount: int.tryParse(discountController.text) ?? 0,
+          stock: int.tryParse(stockQuantityController.text) ?? 0,
+          isOTC: vendorType == "medicine"
+              ? isOtc.value
+              : true, // only for medicine
+          weight: double.tryParse(weightController.text) ?? 0.0,
+          image: productImage.value.isNotEmpty
+              ? File(productImage.value)
+              : null,
         );
-      });
-    }
+
+        // Close loading dialog
+        Navigator.of(Get.context!).pop();
+
+        if (success) {
+          hideAddProductDialog(); // close modal & clear form first
+        } else {
+          // Handle failure case without snackbar
+        }
+      } catch (e) {
+        Navigator.of(Get.context!).pop(); // close loading
+        // Handle error case without snackbar
+      }
+    } else {}
   }
 
   void changeCategory(String value) {
@@ -241,13 +205,7 @@ class AddProductController extends GetxController {
         productImage.value = pickedFile.path;
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to pick image: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
+      // Handle error case without snackbar
     }
   }
 

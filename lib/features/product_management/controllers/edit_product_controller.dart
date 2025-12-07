@@ -1,9 +1,18 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quikle_vendor/features/product_management/controllers/products_controller.dart';
+import 'package:quikle_vendor/features/product_management/model/subcategory_model.dart';
+import 'package:quikle_vendor/features/product_management/services/subcategory_services.dart';
+
+import '../../../core/services/storage_service.dart';
+import '../../../core/utils/logging/logger.dart';
 
 class EditProductController extends GetxController {
+  final vendorData = StorageService.getVendorDetails();
+  late final String vendorType = vendorData!['type'];
   var showRemoveDiscountDialog = false.obs;
   var showEditProductModal = false.obs;
 
@@ -18,19 +27,24 @@ class EditProductController extends GetxController {
   // Dropdown values
   late var selectedCategory;
   late var selectedSubCategory;
+  var selectedSubCategoryId = 0.obs;
   var subCategorySearchText = ''.obs;
   var selectedStockQuantity = ''.obs;
   var productImage = ''.obs;
   var isDiscount = false.obs;
+  var isOtc = false.obs;
 
-  // Categories and Sub-categories
-  final List<String> categories = ['Fruits', 'Vegetables', 'Dairy', 'Bakery'];
-  final Map<String, List<String>> subCategories = {
-    'Fruits': ['Apple', 'Orange', 'Banana', 'Mango'],
-    'Vegetables': ['Tomato', 'Carrot', 'Cucumber', 'Onion'],
-    'Dairy': ['Milk', 'Cheese', 'Yogurt', 'Butter'],
-    'Bakery': ['Bread', 'Cake', 'Cookie', 'Pastry'],
-  };
+  // Categories and Sub-categories (dynamic from API)
+  final List<Map<String, dynamic>> categories = [
+    {'id': 1, 'name': 'Fruits'},
+    {'id': 2, 'name': 'Vegetables'},
+    {'id': 6, 'name': 'Medicine'},
+  ];
+  var subCategories = <SubcategoryModel>[].obs;
+  var isLoadingSubcategories = false.obs;
+
+  // Services
+  final SubcategoryServices subcategoryServices = SubcategoryServices();
 
   // Product data
   var productData = {}.obs;
@@ -40,10 +54,12 @@ class EditProductController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    selectedCategory = categories.first.obs;
-    selectedSubCategory = (subCategories[categories.first] ?? []).isNotEmpty
-        ? (subCategories[categories.first]![0]).obs
-        : ''.obs;
+    selectedCategory = (categories.first['id'] as int).toString().obs;
+    selectedSubCategory = ''.obs;
+
+    // Load subcategories for the default category
+    getSubcategories();
+
     dynamic args = Get.arguments;
     String? id;
 
@@ -59,21 +75,58 @@ class EditProductController extends GetxController {
     }
   }
 
+  // Get sub-categories from subcategory services
+  Future<void> getSubcategories() async {
+    try {
+      int categoryId;
+
+      // Determine category ID based on vendor type
+      if (vendorType == 'medicine') {
+        categoryId = 6;
+      } else if (vendorType == 'food') {
+        categoryId = 1;
+      } else {
+        AppLoggerHelper.debug("Unknown vendor type: $vendorType");
+        return;
+      }
+      final subcategories = await subcategoryServices.getSubcategories(
+        categoryId,
+      );
+      subCategories.value = subcategories;
+
+      // Set the selected subcategory name if we have a selected ID
+      if (selectedSubCategoryId.value > 0) {
+        final selectedSub = subcategories.firstWhereOrNull(
+          (sub) => sub.id == selectedSubCategoryId.value,
+        );
+        if (selectedSub != null) {
+          selectedSubCategory.value = selectedSub.name;
+        }
+      }
+    } catch (e) {
+      log('Error loading subcategories: $e');
+    }
+  }
+
   void loadProductData(String id) {
     final dataController = Get.find<ProductsController>();
     var product = dataController.getProductById(id);
     if (product != null) {
-      productNameController.text = product['name'] ?? '';
-      descriptionController.text =
-          product['description'] ?? 'This is a dummy description';
-      weightController.text = product['pack'] ?? '';
-      priceController.text = (product['price'] ?? 0.0).toString();
-      stockQuantityController.text = (product['stock'] ?? 0).toString();
-      discountController.text = (product['discount'] ?? 0.0).toString();
-      selectedCategory.value = product['category'] ?? categories.first;
-      selectedStockQuantity.value = (product['stock'] ?? 0).toString();
-      productImage.value = product['image'] ?? '';
-      isDiscount.value = product['hasDiscount'] ?? false;
+      productNameController.text = product.title;
+      descriptionController.text = product.description;
+      weightController.text = product.weight.toString();
+      priceController.text = product.sellPrice;
+      stockQuantityController.text = product.stock.toString();
+      discountController.text = product.discount.toString();
+      selectedCategory.value = product.categoryId.toString();
+      selectedSubCategoryId.value = product.subcategoryId;
+      selectedStockQuantity.value = product.stock.toString();
+      productImage.value = product.image;
+      isDiscount.value = product.discount > 0;
+      isOtc.value = product.isOTC;
+
+      // Load subcategories for the product's category
+      getSubcategories();
     }
   }
 
@@ -93,24 +146,20 @@ class EditProductController extends GetxController {
     priceController.clear();
     stockQuantityController.clear();
     discountController.clear();
-    selectedCategory.value = categories.first;
-    selectedSubCategory.value =
-        (subCategories[categories.first] ?? []).isNotEmpty
-        ? subCategories[categories.first]![0]
-        : '';
+    selectedCategory.value = (categories.first['id'] as int).toString();
+    selectedSubCategory.value = '';
     selectedStockQuantity.value = '';
     productImage.value = '';
     subCategorySearchText.value = '';
   }
 
-  List<String> getFilteredSubCategories() {
-    final allSubCats = subCategories[selectedCategory.value] ?? [];
+  List<SubcategoryModel> getFilteredSubCategories() {
     if (subCategorySearchText.value.isEmpty) {
-      return allSubCats;
+      return subCategories;
     }
-    return allSubCats
+    return subCategories
         .where(
-          (item) => item.toLowerCase().contains(
+          (item) => item.name.toLowerCase().contains(
             subCategorySearchText.value.toLowerCase(),
           ),
         )
@@ -207,6 +256,7 @@ class EditProductController extends GetxController {
 
   void changeCategory(String value) {
     selectedCategory.value = value;
+    selectedSubCategory.value = ''; // Reset subcategory when category changes
   }
 
   void changeSubCategory(String value) {
@@ -215,6 +265,10 @@ class EditProductController extends GetxController {
 
   void changeStockQuantity(String value) {
     selectedStockQuantity.value = value;
+  }
+
+  void toggleOtc(bool value) {
+    isOtc.value = value;
   }
 
   @override
