@@ -62,6 +62,7 @@ class AddFoodProductServices {
     bool freeDelivery = false,
     bool hotDeals = false,
     bool flashSale = false,
+    double? weight,
     File? image,
   }) async {
     final response = await networkCaller.postRequest(
@@ -79,6 +80,7 @@ class AddFoodProductServices {
         'free_delivery': freeDelivery,
         'hot_deals': hotDeals,
         'flash_sale': flashSale,
+        'weight': weight,
         'image': image,
       },
     );

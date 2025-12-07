@@ -58,7 +58,7 @@ class ProductsController extends GetxController {
       log(
         '🔄 Fetching products: isLoadMore=$isLoadMore, offset=$offset, vendorType=$vendorType',
       );
-      final response = await _productServices.getMedicineProducts(
+      final response = await _productServices.getProducts(
         vendorType: vendorType,
         offset: offset,
         limit: limit,
@@ -97,13 +97,17 @@ class ProductsController extends GetxController {
         isLoading.value = false;
       }
       // Handle error, e.g., show snackbar
-      Get.snackbar(
-        'Error',
-        'Failed to fetch products: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      try {
+        Get.snackbar(
+          'Error',
+          'Failed to fetch products: $e',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      } catch (overlayError) {
+        log('Could not show snackbar due to overlay error: $overlayError');
+      }
     }
   }
 
@@ -125,7 +129,7 @@ class ProductsController extends GetxController {
     Get.dialog(
       CreateDiscountModalWidget(),
       barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.5),
+      barrierColor: Colors.black.withValues(alpha: 0.5),
       transitionDuration: Duration.zero,
     );
   }

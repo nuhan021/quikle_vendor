@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quikle_vendor/core/utils/logging/logger.dart';
 import 'package:quikle_vendor/features/product_management/services/add_product_services.dart';
@@ -42,8 +41,8 @@ class AddProductController extends GetxController {
   final discountController = TextEditingController();
 
   // Dropdown values
-  late var selectedCategory;
-  late var selectedSubCategory;
+  late RxString selectedCategory;
+  late RxString selectedSubCategory;
   var subCategorySearchText = ''.obs;
 
   // Categories and Sub-categories
@@ -144,6 +143,10 @@ class AddProductController extends GetxController {
       return;
     }
 
+    if (stockQuantityController.text.isEmpty) {
+      return;
+    }
+
     if (selectedSubCategoryId.value == 0) {
       return;
     }
@@ -165,8 +168,10 @@ class AddProductController extends GetxController {
           stock: int.tryParse(stockQuantityController.text) ?? 0,
           isOTC: vendorType == "medicine"
               ? isOtc.value
-              : true, // only for medicine
-          weight: double.tryParse(weightController.text) ?? 0.0,
+              : false, // only for medicine
+          weight: weightController.text.isNotEmpty
+              ? double.tryParse(weightController.text)
+              : null,
           image: productImage.value.isNotEmpty
               ? File(productImage.value)
               : null,
@@ -184,7 +189,36 @@ class AddProductController extends GetxController {
         Navigator.of(Get.context!).pop(); // close loading
         // Handle error case without snackbar
       }
-    } else {}
+    } else if (vendorType == 'food') {
+      try {
+        final success = await AddFoodProductServices().addProduct(
+          title: productNameController.text,
+          description: descriptionController.text,
+          subcategoryId: selectedSubCategoryId.value,
+          price: double.tryParse(priceController.text) ?? 0.0,
+          discount: int.tryParse(discountController.text) ?? 0,
+          stock: int.tryParse(stockQuantityController.text) ?? 0,
+          weight: weightController.text.isNotEmpty
+              ? double.tryParse(weightController.text)
+              : null,
+          image: productImage.value.isNotEmpty
+              ? File(productImage.value)
+              : null,
+        );
+
+        // Close loading dialog
+        Navigator.of(Get.context!).pop();
+
+        if (success) {
+          hideAddProductDialog(); // close modal & clear form first
+        } else {
+          // Handle failure case without snackbar
+        }
+      } catch (e) {
+        Navigator.of(Get.context!).pop(); // close loading
+        // Handle error case without snackbar
+      }
+    }
   }
 
   void changeCategory(String value) {
