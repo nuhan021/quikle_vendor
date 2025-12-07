@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/features/earnings/screen/earnings_screen.dart';
+import 'package:quikle_vendor/features/product_management/controllers/products_controller.dart';
 import '../../../core/utils/constants/colors.dart';
 import '../../../core/utils/constants/icon_path.dart';
 import '../../../core/utils/constants/image_path.dart';
@@ -33,7 +34,7 @@ class _NavbarScreenState extends State<NavbarScreen>
     const HomeScreen(),
     const OrderManagementScreen(),
     const EarningsScreen(),
-    const ProductsScreen(),
+    const ProductsScreen(onInit: true),
     const AccountScreen(),
   ];
 
@@ -45,6 +46,12 @@ class _NavbarScreenState extends State<NavbarScreen>
       duration: const Duration(milliseconds: 500),
       value: 1.0,
     );
+
+    // Set callback for Products tab
+    controller.onProductsTabSelected = () {
+      final productsController = Get.find<ProductsController>();
+      productsController.fetchProducts();
+    };
   }
 
   @override

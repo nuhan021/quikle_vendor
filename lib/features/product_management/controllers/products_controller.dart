@@ -33,8 +33,8 @@ class ProductsController extends GetxController {
   final ScrollController scrollController = ScrollController();
 
   @override
-  void onReady() {
-    super.onReady();
+  void onInit() {
+    super.onInit();
     fetchProducts();
     scrollController.addListener(_scrollListener);
   }

@@ -12,12 +12,18 @@ import '../widgets/products_list_widget.dart';
 import '../widgets/delete_product_dialog_widget.dart';
 
 class ProductsScreen extends StatelessWidget {
-  const ProductsScreen({super.key});
+  final bool onInit;
+
+  const ProductsScreen({super.key, this.onInit = false});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ProductsController());
     final addProductController = Get.put(AddProductController());
+
+    if (onInit) {
+      controller.fetchProducts();
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background,
