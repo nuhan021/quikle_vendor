@@ -30,7 +30,11 @@ class ProductsScreen extends StatelessWidget {
                 ProductsSearchWidget(),
                 ProductsActionButtonsWidget(),
                 ProductsLowStockAlertWidget(),
-                Expanded(child: ProductsListWidget()),
+                Obx(
+                  () => controller.isLoading.value
+                      ? const Center(child: CircularProgressIndicator())
+                      : Expanded(child: ProductsListWidget()),
+                ),
               ],
             ),
 

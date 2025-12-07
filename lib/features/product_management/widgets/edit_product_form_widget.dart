@@ -119,54 +119,6 @@ class EditProductFormWidget extends StatelessWidget {
               FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
             ],
           ),
-          SizedBox(height: 16),
-
-          // Category
-          Text(
-            'Category',
-            style: getTextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF111827),
-            ),
-          ),
-          SizedBox(height: 8),
-          Obx(
-            () => Container(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Color(0xFFE5E7EB)),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: DropdownButton<String>(
-                dropdownColor: Colors.white,
-                value:
-                    controller.categories.contains(
-                      controller.selectedCategory.value,
-                    )
-                    ? controller.selectedCategory.value
-                    : controller.categories.first,
-                isExpanded: true,
-                underline: SizedBox(),
-                items: controller.categories
-                    .map(
-                      (category) => DropdownMenuItem(
-                        value: category,
-                        child: Text(category),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    controller.changeCategory(value);
-                  }
-                },
-              ),
-            ),
-          ),
-          SizedBox(height: 24),
-
           // Sub Category
           Text(
             'Sub Category',
@@ -178,34 +130,127 @@ class EditProductFormWidget extends StatelessWidget {
           ),
           SizedBox(height: 8),
           Obx(
-            () => GestureDetector(
-              onTap: () {
-                _showSubCategoryDropdown(context, controller);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Color(0xFFE5E7EB)),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      controller.selectedSubCategory.value,
-                      style: getTextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF111827),
+            () => controller.isLoadingSubcategories.value
+                ? Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Color(0xFFE5E7EB)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        SizedBox(width: 12),
+                        Text(
+                          'Loading subcategories...',
+                          style: getTextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF6B7280),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : GestureDetector(
+                    onTap: () {
+                      _showSubCategoryDropdown(context, controller);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Color(0xFFE5E7EB)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            controller.selectedSubCategory.value.isEmpty
+                                ? 'Select Sub Category'
+                                : controller.selectedSubCategory.value,
+                            style: getTextStyle(
+                              fontSize: 14,
+                              color:
+                                  controller.selectedSubCategory.value.isEmpty
+                                  ? Color(0xFF9CA3AF)
+                                  : Color(0xFF111827),
+                            ),
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Color(0xFF9CA3AF),
+                          ),
+                        ],
                       ),
                     ),
-                    Icon(Icons.keyboard_arrow_down, color: Color(0xFF9CA3AF)),
+                  ),
+          ),
+          SizedBox(height: 24),
+
+          if (controller.vendorType == 'medicine') ...[
+            // Medicine Type
+            Text(
+              'Medicine Type',
+              style: getTextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF111827),
+              ),
+            ),
+            SizedBox(height: 8),
+
+            Obx(
+              () => Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Color(0xFFE5E7EB)),
+                ),
+                child: Column(
+                  children: [
+                    // OTC Option
+                    GestureDetector(
+                      onTap: () =>
+                          controller.toggleOtc(!controller.isOtc.value),
+                      child: Row(
+                        children: [
+                          Icon(
+                            controller.isOtc.value
+                                ? Icons.check_box
+                                : Icons.check_box_outline_blank,
+                            color: controller.isOtc.value
+                                ? Color(0xFFFFC200)
+                                : Color(0xFF9CA3AF),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              "OTC (Over-the-counter)",
+                              style: getTextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF111827),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 24),
+            SizedBox(height: 16),
+          ],
 
           // Save Changes Button
           GestureDetector(
@@ -296,7 +341,9 @@ class EditProductFormWidget extends StatelessWidget {
                                 .map(
                                   (subCategory) => GestureDetector(
                                     onTap: () {
-                                      controller.changeSubCategory(subCategory);
+                                      controller.changeSubCategory(
+                                        subCategory.name,
+                                      );
                                       controller.subCategorySearchText.value =
                                           '';
                                       Navigator.pop(context);
@@ -315,7 +362,7 @@ class EditProductFormWidget extends StatelessWidget {
                                               controller
                                                       .selectedSubCategory
                                                       .value ==
-                                                  subCategory
+                                                  subCategory.name
                                               ? Colors.black.withValues(
                                                   alpha: 0.5,
                                                 )
@@ -323,14 +370,14 @@ class EditProductFormWidget extends StatelessWidget {
                                         ),
                                       ),
                                       child: Text(
-                                        subCategory,
+                                        subCategory.name,
                                         style: getTextStyle(
                                           fontSize: 14,
                                           fontWeight:
                                               controller
                                                       .selectedSubCategory
                                                       .value ==
-                                                  subCategory
+                                                  subCategory.name
                                               ? FontWeight.w600
                                               : FontWeight.w400,
                                           color: Color(0xFF111827),

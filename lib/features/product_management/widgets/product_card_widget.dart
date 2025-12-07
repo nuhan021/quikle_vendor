@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/common/styles/global_text_style.dart';
 import '../controllers/products_controller.dart';
+import '../model/products_model.dart';
 
 class ProductCardWidget extends StatelessWidget {
-  final Map<String, dynamic> product;
+  final Product product;
 
   const ProductCardWidget({super.key, required this.product});
 
@@ -35,18 +36,18 @@ class ProductCardWidget extends StatelessWidget {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: _getImageBackgroundColor(product['status']),
+                  color: _getImageBackgroundColor(_getStatusText()),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
-                    product['image'],
+                    product.image,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
-                        color: _getImageBackgroundColor(product['status']),
-                        child: Image.asset(product['image']),
+                        color: _getImageBackgroundColor(_getStatusText()),
+                        child: Icon(Icons.image, size: 40, color: Colors.grey),
                       );
                     },
                   ),
@@ -64,7 +65,7 @@ class ProductCardWidget extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            product['name'],
+                            product.title,
                             style: getTextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -75,9 +76,8 @@ class ProductCardWidget extends StatelessWidget {
                         Row(
                           children: [
                             GestureDetector(
-                              onTap: () => controller.editProduct(
-                                product['id'].toString(),
-                              ),
+                              onTap: () =>
+                                  controller.editProduct(product.id.toString()),
                               child: Icon(
                                 Icons.edit_outlined,
                                 color: Color(0xFF6B7280),
@@ -87,7 +87,7 @@ class ProductCardWidget extends StatelessWidget {
                             SizedBox(width: 12),
                             GestureDetector(
                               onTap: () => controller.showDeleteConfirmation(
-                                product['id'],
+                                product.id.toString(),
                               ),
                               child: Icon(
                                 Icons.delete_outline,
@@ -105,7 +105,7 @@ class ProductCardWidget extends StatelessWidget {
                         Icon(Icons.star, color: Color(0xFFFBBF24), size: 16),
                         SizedBox(width: 4),
                         Text(
-                          '${product['rating']}',
+                          '${product.ratings.toStringAsFixed(1)}',
                           style: getTextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -114,7 +114,7 @@ class ProductCardWidget extends StatelessWidget {
                         ),
                         SizedBox(width: 8),
                         Text(
-                          '• ${product['pack']}',
+                          '• ${product.weight}kg',
                           style: getTextStyle(
                             fontSize: 12,
                             color: Color(0xFF6B7280),
@@ -122,18 +122,18 @@ class ProductCardWidget extends StatelessWidget {
                         ),
                         Spacer(),
                         Text(
-                          product['status'],
+                          _getStatusText(),
                           style: getTextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: _getStatusColor(product['status']),
+                            color: _getStatusColor(_getStatusText()),
                           ),
                         ),
                       ],
                     ),
                     SizedBox(height: 8),
                     Text(
-                      '\$${product['price'].toStringAsFixed(2)}',
+                      '\$${double.tryParse(product.sellPrice)?.toStringAsFixed(2) ?? product.sellPrice}',
                       style: getTextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -153,7 +153,7 @@ class ProductCardWidget extends StatelessWidget {
               Icon(Icons.inventory, color: Colors.black, size: 16),
               SizedBox(width: 8),
               Text(
-                '${product['stock']} units',
+                '${product.stock} units',
                 style: getTextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -170,10 +170,10 @@ class ProductCardWidget extends StatelessWidget {
                 ),
                 child: FractionallySizedBox(
                   alignment: Alignment.centerLeft,
-                  widthFactor: _getStockProgress(product['stock']),
+                  widthFactor: _getStockProgress(product.stock),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: _getProgressColor(product['status']),
+                      color: _getProgressColor(_getStatusText()),
                       borderRadius: BorderRadius.circular(3),
                     ),
                   ),
@@ -184,6 +184,12 @@ class ProductCardWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _getStatusText() {
+    if (!product.isInStock) return 'Out of Stock';
+    if (product.stock <= 10) return 'Low Stock';
+    return 'In Stock';
   }
 
   Color _getImageBackgroundColor(String status) {

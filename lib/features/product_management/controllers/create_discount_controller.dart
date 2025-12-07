@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'products_controller.dart';
+import '../model/products_model.dart';
 
 class CreateDiscountController extends GetxController {
   final discountNameController = TextEditingController();
@@ -14,7 +15,7 @@ class CreateDiscountController extends GetxController {
   var selectedProductId = '2'.obs;
   var startDate = ''.obs;
   var endDate = ''.obs;
-  var filteredProducts = <Map<String, dynamic>>[].obs;
+  var filteredProducts = <Product>[].obs;
 
   late ProductsController productsController;
 
@@ -43,12 +44,8 @@ class CreateDiscountController extends GetxController {
       filteredProducts.value = productsController.products
           .where(
             (product) =>
-                product['name'].toString().toLowerCase().contains(
-                  query.toLowerCase(),
-                ) ||
-                product['category'].toString().toLowerCase().contains(
-                  query.toLowerCase(),
-                ),
+                product.title.toLowerCase().contains(query.toLowerCase()) ||
+                product.description.toLowerCase().contains(query.toLowerCase()),
           )
           .toList();
     }
@@ -136,11 +133,8 @@ class CreateDiscountController extends GetxController {
       colorText: Colors.white,
     );
 
-    // Clear all fields
-    clearFields();
-
-    // Close dialog
-    Get.back();
+    // Clear all fields and close dialog
+    closeDiscountDialog();
   }
 
   void clearFields() {
@@ -155,5 +149,10 @@ class CreateDiscountController extends GetxController {
     selectedProduct.value = 'Sweet Oranges';
     selectedProductId.value = '2';
     filteredProducts.value = productsController.products;
+  }
+
+  void closeDiscountDialog() {
+    clearFields();
+    Navigator.of(Get.context!).pop();
   }
 }

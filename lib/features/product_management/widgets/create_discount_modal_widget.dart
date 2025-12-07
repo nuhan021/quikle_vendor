@@ -4,6 +4,7 @@ import '../../../core/common/styles/global_text_style.dart';
 import '../../../core/common/widgets/custom_button.dart';
 import '../../../core/common/widgets/custom_textfield.dart';
 import '../controllers/create_discount_controller.dart';
+import '../model/products_model.dart';
 
 class CreateDiscountModalWidget extends StatelessWidget {
   const CreateDiscountModalWidget({super.key});
@@ -140,8 +141,8 @@ class CreateDiscountModalWidget extends StatelessWidget {
                         return GestureDetector(
                           onTap: () {
                             controller.setSelectedProduct(
-                              product['name'],
-                              product['id'],
+                              product.title,
+                              product.id.toString(),
                             );
                             Navigator.pop(context);
                           },
@@ -153,7 +154,7 @@ class CreateDiscountModalWidget extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                               color:
                                   controller.selectedProductId.value ==
-                                      product['id']
+                                      product.id.toString()
                                   ? Color(0xFFFFC200).withAlpha(25)
                                   : Colors.white,
                             ),
@@ -166,7 +167,7 @@ class CreateDiscountModalWidget extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
                                     image: DecorationImage(
-                                      image: AssetImage(product['image']),
+                                      image: NetworkImage(product.image),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -180,7 +181,7 @@ class CreateDiscountModalWidget extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        product['name'],
+                                        product.title,
                                         style: getTextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
@@ -192,7 +193,7 @@ class CreateDiscountModalWidget extends StatelessWidget {
                                       Row(
                                         children: [
                                           Text(
-                                            product['category'],
+                                            'Category ${product.categoryId}',
                                             style: getTextStyle(
                                               fontSize: 12,
                                               color: Color(0xFF6B7280),
@@ -200,14 +201,14 @@ class CreateDiscountModalWidget extends StatelessWidget {
                                           ),
                                           SizedBox(width: 8),
                                           Text(
-                                            '• ${product['status']}',
+                                            '• ${_getStatusText(product)}',
                                             style: getTextStyle(
                                               fontSize: 12,
                                               color:
-                                                  product['status'] ==
+                                                  _getStatusText(product) ==
                                                       'In Stock'
                                                   ? Color(0xFF10B981)
-                                                  : product['status'] ==
+                                                  : _getStatusText(product) ==
                                                         'Low Stock'
                                                   ? Color(0xFFF59E0B)
                                                   : Color(0xFFEF4444),
@@ -221,7 +222,7 @@ class CreateDiscountModalWidget extends StatelessWidget {
 
                                 // Checkmark
                                 if (controller.selectedProductId.value ==
-                                    product['id'])
+                                    product.id.toString())
                                   Icon(
                                     Icons.check_circle,
                                     color: Color(0xFFFFC200),
@@ -274,9 +275,7 @@ class CreateDiscountModalWidget extends StatelessWidget {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      Get.back();
-                    },
+                    onTap: controller.closeDiscountDialog,
                     child: Icon(
                       Icons.close,
                       color: Color(0xFF6B7280),
@@ -490,5 +489,11 @@ class CreateDiscountModalWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getStatusText(Product product) {
+    if (!product.isInStock) return 'Out of Stock';
+    if (product.stock <= 10) return 'Low Stock';
+    return 'In Stock';
   }
 }
