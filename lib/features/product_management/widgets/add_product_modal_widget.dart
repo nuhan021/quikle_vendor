@@ -56,8 +56,10 @@ class AddProductModalWidget extends StatelessWidget {
 
                 // Product Name
                 CustomTextField(
-                  label: 'Product Name',
-                  hintText: controller.vendorType,
+                  label: 'Category',
+                  hintText: controller.vendorType == 'medicine'
+                      ? 'Medicine'
+                      : 'Food',
                   readOnly: true,
                   controller: controller.productNameController,
                 ),
