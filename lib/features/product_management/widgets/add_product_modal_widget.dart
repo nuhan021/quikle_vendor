@@ -61,7 +61,6 @@ class AddProductModalWidget extends StatelessWidget {
                       ? 'Medicine'
                       : 'Food',
                   readOnly: true,
-                  controller: controller.productNameController,
                 ),
                 SizedBox(height: 16),
 

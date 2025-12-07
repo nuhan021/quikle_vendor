@@ -7,7 +7,7 @@ import '../../../core/utils/constants/api_constants.dart';
 class GetProductServices {
   final NetworkCaller networkCaller = NetworkCaller();
 
-  Future<Map<String, dynamic>> getMedicineProducts({
+  Future<Map<String, dynamic>> getProducts({
     required String vendorType,
     int offset = 0,
     int limit = 20,
