@@ -15,221 +15,273 @@ class AddProductModalWidget extends StatelessWidget {
     final controller = Get.find<AddProductController>();
 
     return Dialog(
-      insetPadding: EdgeInsets.zero,
-      backgroundColor: Colors.transparent,
-      child: Container(
-        color: Colors.black.withValues(alpha: 0.5),
-        child: Center(
-          child: Container(
-            margin: EdgeInsets.only(bottom: 100, left: 20, right: 20, top: 20),
-            padding: EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Add New Product',
-                        style: getTextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF111827),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: controller.hideAddProductDialog,
-                        child: Icon(
-                          Icons.close,
-                          color: Color(0xFF6B7280),
-                          size: 24,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 24),
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Center(
+        child: Container(
+          margin: EdgeInsets.all(20),
 
-                  // Product Image
-                  Text(
-                    'Product Image',
-                    style: getTextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF111827),
+          // padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Add New Product',
+                      style: getTextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF111827),
+                      ),
                     ),
+                    GestureDetector(
+                      onTap: controller.hideAddProductDialog,
+                      child: Icon(
+                        Icons.close,
+                        color: Color(0xFF6B7280),
+                        size: 24,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 24),
+
+                // Product Name
+                CustomTextField(
+                  label: 'Product Name',
+                  hintText: controller.vendorType,
+                  readOnly: true,
+                  controller: controller.productNameController,
+                ),
+                SizedBox(height: 16),
+
+                // Product Image
+                Text(
+                  'Product Image',
+                  style: getTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF111827),
                   ),
-                  SizedBox(height: 8),
-                  Obx(
-                    () => GestureDetector(
-                      onTap: controller.pickProductImage,
-                      child: Container(
-                        width: double.infinity,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: Color(0xFFF9FAFB),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: Color(0xFFE5E7EB),
-                            width: 1,
-                          ),
-                        ),
-                        child: controller.productImage.value.isEmpty
-                            ? Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.camera_alt_outlined,
+                ),
+                SizedBox(height: 8),
+                Obx(
+                  () => GestureDetector(
+                    onTap: controller.pickProductImage,
+                    child: Container(
+                      width: double.infinity,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: Color(0xFFF9FAFB),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Color(0xFFE5E7EB), width: 1),
+                      ),
+                      child: controller.productImage.value.isEmpty
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.camera_alt_outlined,
+                                  color: Color(0xFF9CA3AF),
+                                  size: 32,
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Tap to upload image',
+                                  style: getTextStyle(
+                                    fontSize: 14,
                                     color: Color(0xFF9CA3AF),
-                                    size: 32,
                                   ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Tap to upload image',
-                                    style: getTextStyle(
-                                      fontSize: 14,
-                                      color: Color(0xFF9CA3AF),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : Image.file(
-                                File(controller.productImage.value),
-                                fit: BoxFit.cover,
-                              ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-
-                  // Product Name
-                  CustomTextField(
-                    label: 'Product Name',
-                    hintText: 'Product Name',
-                    controller: controller.productNameController,
-                  ),
-                  SizedBox(height: 16),
-
-                  // Description
-                  CustomTextField(
-                    label: 'Description',
-                    hintText: 'Please describe your issue in detail...',
-                    maxLines: 4,
-                    controller: controller.descriptionController,
-                  ),
-                  SizedBox(height: 16),
-
-                  // Product Weight/Quantity
-                  CustomTextField(
-                    label: 'Product Weight/Quantity',
-                    hintText: '1kg',
-                    controller: controller.weightController,
-                  ),
-                  SizedBox(height: 16),
-
-                  // Price and Stock Quantity
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomTextField(
-                          label: 'Price (\$)',
-                          hintText: 'Product Price',
-                          controller: controller.priceController,
-                          keyboardType: TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'[0-9.]'),
+                                ),
+                              ],
+                            )
+                          : Image.file(
+                              File(controller.productImage.value),
+                              fit: BoxFit.cover,
                             ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: CustomTextField(
-                          label: 'Stock Quantity',
-                          hintText: 'Enter quantity',
-                          controller: controller.stockQuantityController,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-
-                  // Discount
-                  CustomTextField(
-                    label: 'Discount (%)',
-                    hintText: 'Enter discount percentage',
-                    controller: controller.discountController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-
-                  // Category
-                  Text(
-                    'Category',
-                    style: getTextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF111827),
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Obx(
-                    () => Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12),
+                ),
+                SizedBox(height: 16),
+
+                // Product Name
+                CustomTextField(
+                  label: 'Product Name',
+                  hintText: 'Product Name',
+                  controller: controller.productNameController,
+                ),
+                SizedBox(height: 16),
+
+                // Description
+                CustomTextField(
+                  label: 'Description',
+                  hintText: 'Please describe your issue in detail...',
+                  maxLines: 4,
+                  controller: controller.descriptionController,
+                ),
+                SizedBox(height: 16),
+
+                // Product Weight/Quantity
+                CustomTextField(
+                  label: 'Product Weight/Quantity',
+                  hintText: '1kg',
+                  controller: controller.weightController,
+                ),
+                SizedBox(height: 16),
+
+                // Price and Stock Quantity
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        label: 'Price (\$)',
+                        hintText: 'Product Price',
+                        controller: controller.priceController,
+                        keyboardType: TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: CustomTextField(
+                        label: 'Stock Quantity',
+                        hintText: 'Enter quantity',
+                        controller: controller.stockQuantityController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+
+                // Discount
+                CustomTextField(
+                  label: 'Discount (%)',
+                  hintText: 'Enter discount percentage',
+                  controller: controller.discountController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ],
+                ),
+                SizedBox(height: 16),
+
+                // // Category
+                // Text(
+                //   'Category',
+                //   style: getTextStyle(
+                //     fontSize: 14,
+                //     fontWeight: FontWeight.w500,
+                //     color: Color(0xFF111827),
+                //   ),
+                // ),
+                // SizedBox(height: 8),
+                // Obx(
+                //   () => Container(
+                //     padding: EdgeInsets.symmetric(horizontal: 12),
+                //     decoration: BoxDecoration(
+                //       border: Border.all(color: Color(0xFFE5E7EB)),
+                //       borderRadius: BorderRadius.circular(8),
+                //     ),
+                //     child: DropdownButton<String>(
+                //       value:
+                //           controller.categories.contains(
+                //             controller.selectedCategory.value,
+                //           )
+                //           ? controller.selectedCategory.value
+                //           : controller.categories.first,
+                //       isExpanded: true,
+                //       underline: SizedBox(),
+                //       items: controller.categories
+                //           .map(
+                //             (category) => DropdownMenuItem(
+                //               value: category,
+                //               child: Text(category),
+                //             ),
+                //           )
+                //           .toList(),
+                //       onChanged: (value) {
+                //         if (value != null) {
+                //           controller.changeCategory(value);
+                //           if (controller.subCategories[value] != null &&
+                //               controller.subCategories[value]!.isNotEmpty) {
+                //             controller.selectedSubCategory.value =
+                //                 controller.subCategories[value]![0];
+                //           }
+                //         }
+                //       },
+                //     ),
+                //   ),
+                // ),
+                // SizedBox(height: 16),
+
+                // Sub Category
+                Text(
+                  'Sub Category',
+                  style: getTextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF111827),
+                  ),
+                ),
+                SizedBox(height: 8),
+                Obx(
+                  () => GestureDetector(
+                    onTap: () {
+                      _showSubCategoryDropdown(context, controller);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 14,
+                      ),
                       decoration: BoxDecoration(
                         border: Border.all(color: Color(0xFFE5E7EB)),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: DropdownButton<String>(
-                        value:
-                            controller.categories.contains(
-                              controller.selectedCategory.value,
-                            )
-                            ? controller.selectedCategory.value
-                            : controller.categories.first,
-                        isExpanded: true,
-                        underline: SizedBox(),
-                        items: controller.categories
-                            .map(
-                              (category) => DropdownMenuItem(
-                                value: category,
-                                child: Text(category),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            controller.changeCategory(value);
-                            if (controller.subCategories[value] != null &&
-                                controller.subCategories[value]!.isNotEmpty) {
-                              controller.selectedSubCategory.value =
-                                  controller.subCategories[value]![0];
-                            }
-                          }
-                        },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            controller.selectedSubCategoryName.value.isEmpty
+                                ? 'Select Sub Category'
+                                : controller.selectedSubCategoryName.value,
+
+                            style: getTextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF111827),
+                            ),
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Color(0xFF9CA3AF),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  SizedBox(height: 16),
+                ),
+                SizedBox(height: 16),
 
-                  // Sub Category
+                if (controller.vendorType == 'medicine') ...[
+                  // Medicine Type
                   Text(
-                    'Sub Category',
+                    'Medicine Type',
                     style: getTextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -237,48 +289,58 @@ class AddProductModalWidget extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 8),
+
                   Obx(
-                    () => GestureDetector(
-                      onTap: () {
-                        _showSubCategoryDropdown(context, controller);
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 14,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Color(0xFFE5E7EB)),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              controller.selectedSubCategory.value,
-                              style: getTextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF111827),
-                              ),
+                    () => Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Color(0xFFE5E7EB)),
+                      ),
+                      child: Column(
+                        children: [
+                          // OTC Option
+                          GestureDetector(
+                            onTap: () =>
+                                controller.toggleOtc(!controller.isOtc.value),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  controller.isOtc.value
+                                      ? Icons.check_box
+                                      : Icons.check_box_outline_blank,
+                                  color: controller.isOtc.value
+                                      ? Color(0xFFFFC200)
+                                      : Color(0xFF9CA3AF),
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    "OTC (Over-the-counter)",
+                                    style: getTextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xFF111827),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Icon(
-                              Icons.keyboard_arrow_down,
-                              color: Color(0xFF9CA3AF),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                   SizedBox(height: 16),
-
-                  // Add Product Button
-                  CustomButton(
-                    text: 'Add Product',
-                    onPressed: controller.addProduct,
-                  ),
                 ],
-              ),
+
+                // Add Product Button
+                CustomButton(
+                  text: 'Add Product',
+                  onPressed: controller.addProduct,
+                ),
+                // SizedBox(height: 24),
+              ],
             ),
           ),
         ),
@@ -326,7 +388,7 @@ class AddProductModalWidget extends StatelessWidget {
                 // Sub Categories List
                 Expanded(
                   child: Obx(() {
-                    final filtered = controller.getFilteredSubCategories();
+                    final filtered = controller.subCategoriesList;
                     return ListView(
                       children: filtered.isEmpty
                           ? [
@@ -348,7 +410,10 @@ class AddProductModalWidget extends StatelessWidget {
                                 .map(
                                   (subCategory) => GestureDetector(
                                     onTap: () {
-                                      controller.changeSubCategory(subCategory);
+                                      controller.selectedSubCategoryName.value =
+                                          subCategory.name;
+                                      controller.selectedSubCategoryId.value =
+                                          subCategory.id; // IMPORTANT
                                       controller.subCategorySearchText.value =
                                           '';
                                       Navigator.pop(context);
@@ -375,7 +440,7 @@ class AddProductModalWidget extends StatelessWidget {
                                         ),
                                       ),
                                       child: Text(
-                                        subCategory,
+                                        subCategory.name,
                                         style: getTextStyle(
                                           fontSize: 14,
                                           fontWeight:

@@ -1,7 +1,6 @@
 class ApiConstants {
   // Base URL
-  static const String baseUrl =
-      "https://reprehensibly-unexhorted-ranae.ngrok-free.dev/";
+  static const String baseUrl = "https://quikle-u4dv.onrender.com/";
 
   static const String sendOtp = "${baseUrl}auth/send_otp/";
   static const String login = "${baseUrl}auth/login/";
@@ -15,4 +14,7 @@ class ApiConstants {
   static const String updateVendorProfile =
       "${baseUrl}vendor/update-vendor-profile/";
   static const String verifyToken = "${baseUrl}auth/verify-token/";
+  static const String subcategories =
+      "${baseUrl}items/subcategories/?category_id={categoryId}";
+  static const String addProductMedicine = "${baseUrl}items/medicine/";
 }

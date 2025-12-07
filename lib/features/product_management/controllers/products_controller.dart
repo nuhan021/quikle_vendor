@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
+import '../widgets/create_discount_modal_widget.dart';
 
 class ProductsController extends GetxController {
   var searchText = ''.obs;
@@ -8,7 +9,6 @@ class ProductsController extends GetxController {
   var selectedStockStatus = 'All Status'.obs;
   var selectedStockQuantity = '1'.obs;
 
-  var showCreateDiscountModal = false.obs;
   var showFilterProductModal = false.obs;
   var showDeleteDialog = false.obs;
   var productToDelete = ''.obs;
@@ -54,7 +54,7 @@ class ProductsController extends GetxController {
   ].obs;
 
   Map<String, dynamic>? getProductById(String id) {
-    return products.firstWhere((product) => product['id'] == id);
+    return products.firstWhereOrNull((product) => product['id'] == id);
   }
 
   void onSearchChanged(String value) {
@@ -62,15 +62,15 @@ class ProductsController extends GetxController {
   }
 
   void showCreateDiscountDialog() {
-    showCreateDiscountModal.value = true;
+    Get.dialog(
+      CreateDiscountModalWidget(),
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.5),
+    );
   }
 
   void showFilterProductDialog() {
     showFilterProductModal.value = true;
-  }
-
-  void hideCreateDiscountDialog() {
-    showCreateDiscountModal.value = false;
   }
 
   void hideFilterProductDialog() {
@@ -114,7 +114,7 @@ class ProductsController extends GetxController {
       backgroundColor: Color(0xFF10B981),
       colorText: Colors.white,
     );
-    hideCreateDiscountDialog();
+    Get.back();
   }
 
   void viewLowStockProducts() {
