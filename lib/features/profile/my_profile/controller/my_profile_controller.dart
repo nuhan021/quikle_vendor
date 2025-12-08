@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quikle_vendor/core/utils/helpers/snackbar_helper.dart';
-import 'package:quikle_vendor/features/vendor/controllers/vendor_controller.dart';
+import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
 
 class MyProfileController extends GetxController {
@@ -36,6 +36,8 @@ class MyProfileController extends GetxController {
   final openingHoursController = TextEditingController(
     text: "9:00 AM - 8:00 PM",
   );
+  final openingTimeController = TextEditingController(text: "9:00 AM");
+  final closingTimeController = TextEditingController(text: "8:00 PM");
 
   // Text Controllers - Business Details
   final panelLicenseController = TextEditingController(text: "Not Provided");
@@ -49,11 +51,13 @@ class MyProfileController extends GetxController {
     _loadVendorDetails();
   }
 
-  /// Load vendor details from VendorController
+  /// Load vendor details from StorageService
   void _loadVendorDetails() {
     try {
-      final vendorController = Get.find<VendorController>();
-      final details = vendorController.getVendorDetails();
+      final vendorData = StorageService.getVendorDetails();
+      final details = vendorData != null
+          ? VendorDetailsModel.fromJson(vendorData)
+          : null;
 
       if (details != null) {
         vendorDetails = details;
@@ -71,9 +75,29 @@ class MyProfileController extends GetxController {
         );
         tinNumberController = TextEditingController(text: vendorDetails.nid);
 
-        // Set owner name if available
-        if (vendorDetails.ownerName != null) {
+        // Set owner name from storage service
+        if (vendorDetails.ownerName != null &&
+            vendorDetails.ownerName!.isNotEmpty) {
           ownerNameController.text = vendorDetails.ownerName!;
+        }
+
+        // Set opening hours from storage service
+        final openingHours = _formatOpeningHours(
+          vendorDetails.openTime,
+          vendorDetails.closeTime,
+        );
+        if (openingHours.isNotEmpty) {
+          openingHoursController.text = openingHours;
+        }
+
+        // Set individual opening and closing times
+        if (vendorDetails.openTime != null &&
+            vendorDetails.openTime!.isNotEmpty) {
+          openingTimeController.text = vendorDetails.openTime!;
+        }
+        if (vendorDetails.closeTime != null &&
+            vendorDetails.closeTime!.isNotEmpty) {
+          closingTimeController.text = vendorDetails.closeTime!;
         }
 
         // Update observables
@@ -99,6 +123,14 @@ class MyProfileController extends GetxController {
       accountStatusController = TextEditingController(text: "Active");
       tinNumberController = TextEditingController(text: "+963-172-345678");
     }
+  }
+
+  /// Format opening and closing times into a readable string
+  String _formatOpeningHours(String? openTime, String? closeTime) {
+    if (openTime == null || closeTime == null) {
+      return "9:00 AM - 8:00 PM"; // Default fallback
+    }
+    return "$openTime - $closeTime";
   }
 
   void toggleBasicInfoEdit() {
@@ -151,6 +183,40 @@ class MyProfileController extends GetxController {
     }
   }
 
+  Future<void> pickOpeningTime(BuildContext context) async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (pickedTime != null) {
+      final formattedTime = pickedTime.format(context);
+      openingTimeController.text = formattedTime;
+      _updateOpeningHours();
+    }
+  }
+
+  Future<void> pickClosingTime(BuildContext context) async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (pickedTime != null) {
+      final formattedTime = pickedTime.format(context);
+      closingTimeController.text = formattedTime;
+      _updateOpeningHours();
+    }
+  }
+
+  void _updateOpeningHours() {
+    if (openingTimeController.text.isNotEmpty &&
+        closingTimeController.text.isNotEmpty) {
+      openingHoursController.text =
+          "${openingTimeController.text} - ${closingTimeController.text}";
+    }
+  }
+
   @override
   void onClose() {
     shopNameController.dispose();
@@ -161,6 +227,8 @@ class MyProfileController extends GetxController {
     phoneController.dispose();
     addressController.dispose();
     openingHoursController.dispose();
+    openingTimeController.dispose();
+    closingTimeController.dispose();
     panelLicenseController.dispose();
     tinNumberController.dispose();
     super.onClose();

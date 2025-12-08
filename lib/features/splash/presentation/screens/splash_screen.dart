@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/features/auth/presentation/screens/login_screen.dart';
-import 'package:quikle_vendor/features/auth/presentation/screens/verification_screen.dart';
 import 'package:video_player/video_player.dart';
 import '../../controllers/splash_controller.dart';
 

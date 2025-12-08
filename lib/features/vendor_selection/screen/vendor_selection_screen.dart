@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../controller/vendor_selection_controller.dart';
 import '../widget/vendor_card.dart';

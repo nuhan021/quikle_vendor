@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:http/http.dart';
 import 'package:quikle_vendor/core/services/network_caller.dart';
 import 'package:quikle_vendor/core/utils/constants/api_constants.dart';
 import 'package:quikle_vendor/core/utils/logging/logger.dart';

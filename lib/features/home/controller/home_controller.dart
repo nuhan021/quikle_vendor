@@ -14,13 +14,12 @@ class HomeController extends GetxController {
   var isShopOpen = false.obs;
   var riderAssignController = RiderAssignmentController();
   late final HomeServices _homeServices;
-  late final RiderAssignmentController _riderAssignController;
 
   @override
   void onInit() {
     super.onInit();
     _homeServices = Get.put(HomeServices());
-    _riderAssignController = Get.put(RiderAssignmentController());
+    Get.put(RiderAssignmentController());
     loadShopStatus();
   }
 

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/features/profile/edit_profile/screen/edit_profile_screen.dart';
 import 'package:quikle_vendor/features/profile/my_profile/widget/profile_field.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
-import '../../../../core/common/widgets/custom_textfield.dart';
 import '../controller/my_profile_controller.dart';
 
 class ContactInfoCard extends StatelessWidget {
@@ -45,15 +46,13 @@ class ContactInfoCard extends StatelessWidget {
                 CustomButton(
                   width: controller.isContactInfoEditing.value ? 56 : 50,
                   height: 26,
-                  text: controller.isContactInfoEditing.value ? "Save" : "Edit",
+                  text: "Edit",
                   style: getTextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
                     color: Colors.white,
                   ),
-                  onPressed: controller.isContactInfoEditing.value
-                      ? controller.saveContactInfo
-                      : controller.toggleContactInfoEdit,
+                  onPressed: () => Get.to(EditProfileScreen()),
                   backgroundColor: Colors.black,
                   textColor: Colors.white,
                   fontSize: 14,
@@ -63,50 +62,50 @@ class ContactInfoCard extends StatelessWidget {
             ),
             const Divider(height: 24, thickness: 0.8),
 
-            /// Editable Fields or Display
-            if (controller.isContactInfoEditing.value) ...[
-              CustomTextField(
-                label: "Owner Name",
-                hintText: "Enter owner name",
-                controller: controller.contactPersonController,
-              ),
-              const SizedBox(height: 12),
-              // CustomTextField(
-              //   label: "Phone Number",
-              //   hintText: "Enter phone number",
-              //   controller: controller.phoneController,
-              // ),
-              // const SizedBox(height: 12),
-              // CustomTextField(
-              //   label: "Business Address",
-              //   hintText: "Enter business address",
-              //   controller: controller.addressController,
-              // ),
-              const SizedBox(height: 12),
-              CustomTextField(
-                label: "Opening Hours",
-                hintText: "Enter opening hours",
-                controller: controller.openingHoursController,
-              ),
-            ] else ...[
-              ProfileField(
-                label: "Owner Name",
-                value: controller.contactPersonController.text,
-              ),
-              // ProfileField(
-              //   label: "Phone Number",
-              //   value: controller.phoneController.text,
-              // ),
-              // ProfileField(
-              //   label: "Business Address",
-              //   value: controller.addressController.text,
-              // ),
-              ProfileField(
-                label: "Opening Hours",
-                value: controller.openingHoursController.text,
-                showDivider: false,
-              ),
-            ],
+            ProfileField(
+              label: "Owner Name",
+              value: controller.ownerNameController.text,
+            ),
+
+            // ProfileField(
+            //   label: "Phone Number",
+            //   value: controller.phoneController.text,
+            // ),
+            // ProfileField(
+            //   label: "Business Address",
+            //   value: controller.addressController.text,
+            // ),
+            ProfileField(
+              label: "Vendor Type",
+              value: controller.vendorDetails.type.toString(),
+              showDivider: false,
+            ),
+            Divider(height: 20.h),
+
+            ProfileField(
+              label: "Active Status",
+              value: controller.accountStatusController.text,
+              showDivider: false,
+            ),
+            Divider(height: 20.h),
+
+            ProfileField(
+              label: "Phone Number",
+              value: controller.phoneController.text,
+              showDivider: false,
+            ),
+            Divider(height: 20.h),
+            ProfileField(
+              label: "NID Number",
+              value: controller.tinNumberController.text,
+              showDivider: false,
+            ),
+            Divider(height: 20.h),
+            ProfileField(
+              label: "Opening Hours",
+              value: controller.openingHoursController.text,
+              showDivider: false,
+            ),
           ],
         ),
       ),
