@@ -37,7 +37,6 @@ class WelcomeController extends GetxController {
           Get.offAllNamed(AppRoute.navbarScreen);
           return;
         }
-
         // Case 2: Vendor profile not found
         if (vendorData['detail'] == 'Vendor profile not found.') {
           log('📋 Navigating to Vendor Selection');

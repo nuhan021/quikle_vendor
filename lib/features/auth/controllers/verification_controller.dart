@@ -75,6 +75,13 @@ class VerificationController extends GetxController {
         final vendorData =
             vendorDetailsResponse.responseData as Map<String, dynamic>;
 
+        // Save vendor details to SharedPreferences
+        if (vendorData['vendor_profile'] != null) {
+          await StorageService.saveVendorDetails(
+            vendorData['vendor_profile'] as Map<String, dynamic>,
+          );
+        }
+
         // // Handle successful response with vendor_profile
         // if (vendorData['vendor_profile'] != null) {
         //   final vendorProfile =
