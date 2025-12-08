@@ -33,7 +33,12 @@ class _AccountScreenState extends State<AccountScreen> {
       backgroundColor: AppColors.background,
       appBar: const AppbarScreen(title: "Account"),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.only(
+          top: 16,
+          left: 16,
+          right: 16,
+          bottom: 80,
+        ),
         child: Column(
           children: [
             /// Profile Card
@@ -67,12 +72,15 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                   ),
                   SizedBox(height: 4),
-                  Text(
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    _controller.vendorDetails.value?.locationName ?? '',
-                    style: getTextStyle(fontSize: 14, color: Colors.black54),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      _controller.vendorDetails.value?.locationName ?? '',
+                      style: getTextStyle(fontSize: 14, color: Colors.black54),
+                    ),
                   ),
                   // Text(
                   //   "vikramrajput@gmail.com",

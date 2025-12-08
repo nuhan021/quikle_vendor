@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
@@ -95,12 +96,15 @@ class EditProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    vendorDetails?.locationName ?? '',
-                    textAlign: TextAlign.center,
-                    style: getTextStyle(fontSize: 14, color: Colors.black54),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: Text(
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      vendorDetails?.locationName ?? '',
+                      textAlign: TextAlign.center,
+                      style: getTextStyle(fontSize: 14, color: Colors.black54),
+                    ),
                   ),
                 ],
               ),
@@ -142,19 +146,19 @@ class EditProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  /// Owner Name
-                  CustomTextField(
-                    label: "NID Number",
-                    hintText: "Enter NID number",
-                    // controller: nidNumberController,
-                  ),
-                  const SizedBox(height: 12),
-                  CustomTextField(
-                    label: "Phone Number",
-                    hintText: "Enter Phone number",
-                    // controller: nidNumberController,
-                  ),
-                  const SizedBox(height: 12),
+                  // /// Owner Name
+                  // CustomTextField(
+                  //   label: "NID Number",
+                  //   hintText: "Enter NID number",
+                  //   // controller: nidNumberController,
+                  // ),
+                  // const SizedBox(height: 12),
+                  // CustomTextField(
+                  //   label: "Phone Number",
+                  //   hintText: "Enter Phone number",
+                  //   // controller: nidNumberController,
+                  // ),
+                  // const SizedBox(height: 12),
 
                   /// Opening & Closing Time (combined display)
                   AbsorbPointer(
@@ -168,7 +172,7 @@ class EditProfileScreen extends StatelessWidget {
                       // ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
 
                   /// Time Picker Actions
                   Row(

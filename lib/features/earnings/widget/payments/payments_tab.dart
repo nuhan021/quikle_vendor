@@ -68,6 +68,7 @@ class PaymentsTab extends StatelessWidget {
         Expanded(
           child: Obx(
             () => ListView.builder(
+              padding: EdgeInsets.only(bottom: 80),
               itemCount: controller.transactions.length,
               itemBuilder: (context, index) {
                 final tx = controller.transactions[index];

@@ -112,6 +112,15 @@ class _NavbarScreenState extends State<NavbarScreen>
               ),
             ),
 
+            /// Background color extension for SafeArea bottom padding
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: MediaQuery.of(context).padding.bottom,
+              child: Container(color: Colors.black87),
+            ),
+
             Positioned(
               left: 0,
               right: 0,
@@ -125,63 +134,68 @@ class _NavbarScreenState extends State<NavbarScreen>
                   child: KeyedSubtree(
                     key: _navKey,
                     child: Obx(
-                      () => Container(
-                        // remove SafeArea from here
-                        height: 90.h,
-                        decoration: BoxDecoration(
-                          color: Colors.black87,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(28),
-                            topRight: Radius.circular(28),
+                      () => SafeArea(
+                        child: Container(
+                          // remove SafeArea from here
+                          height: 83.h,
+                          decoration: BoxDecoration(
+                            color: Colors.black87,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(28),
+                              topRight: Radius.circular(28),
+                            ),
+                            border: Border(
+                              top: BorderSide(
+                                color: AppColors.primary,
+                                width: 2,
+                              ),
+                            ),
                           ),
-                          border: Border(
-                            top: BorderSide(color: AppColors.primary, width: 2),
+                          // ✅ use padding to compensate manually if needed
+                          padding: EdgeInsets.only(
+                            top: 5,
+                            bottom: MediaQuery.of(context).padding.bottom > 0
+                                ? 10
+                                : 15, // keep consistency
                           ),
-                        ),
-                        // ✅ use padding to compensate manually if needed
-                        padding: EdgeInsets.only(
-                          top: 5,
-                          bottom: MediaQuery.of(context).padding.bottom > 0
-                              ? 10
-                              : 15, // keep consistency
-                        ),
-                        child: SafeArea(
-                          top: false,
-                          bottom: false, // ❌ disable bottom padding here
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              NavbarItems(
-                                iconPath: IconPath.home,
-                                label: 'Home',
-                                selected: controller.currentIndex.value == 0,
-                                onTap: () => controller.changeTab(0),
-                              ),
-                              NavbarItems(
-                                iconPath: IconPath.order,
-                                label: 'All Orders',
-                                selected: controller.currentIndex.value == 1,
-                                onTap: () => controller.changeTab(1),
-                              ),
-                              NavbarItems(
-                                iconPath: IconPath.earning,
-                                label: 'Earnings',
-                                selected: controller.currentIndex.value == 2,
-                                onTap: () => controller.changeTab(2),
-                              ),
-                              NavbarItems(
-                                iconPath: IconPath.product,
-                                label: 'Products',
-                                selected: controller.currentIndex.value == 3,
-                                onTap: () => controller.changeTab(3),
-                              ),
-                              ProfileNavbarItem(
-                                imagePath: ImagePath.profile,
-                                label: 'Ananya',
-                                selected: controller.currentIndex.value == 4,
-                                onTap: () => controller.changeTab(4),
-                              ),
-                            ],
+                          child: SafeArea(
+                            top: false,
+                            bottom: false, // ❌ disable bottom padding here
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                NavbarItems(
+                                  iconPath: IconPath.home,
+                                  label: 'Home',
+                                  selected: controller.currentIndex.value == 0,
+                                  onTap: () => controller.changeTab(0),
+                                ),
+                                NavbarItems(
+                                  iconPath: IconPath.order,
+                                  label: 'All Orders',
+                                  selected: controller.currentIndex.value == 1,
+                                  onTap: () => controller.changeTab(1),
+                                ),
+                                NavbarItems(
+                                  iconPath: IconPath.earning,
+                                  label: 'Earnings',
+                                  selected: controller.currentIndex.value == 2,
+                                  onTap: () => controller.changeTab(2),
+                                ),
+                                NavbarItems(
+                                  iconPath: IconPath.product,
+                                  label: 'Products',
+                                  selected: controller.currentIndex.value == 3,
+                                  onTap: () => controller.changeTab(3),
+                                ),
+                                ProfileNavbarItem(
+                                  imagePath: ImagePath.profile,
+                                  label: 'Ananya',
+                                  selected: controller.currentIndex.value == 4,
+                                  onTap: () => controller.changeTab(4),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

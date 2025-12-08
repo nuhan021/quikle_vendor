@@ -12,7 +12,7 @@ class InvoicesTab extends StatelessWidget {
 
     return Obx(
       () => ListView.builder(
-        padding: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.only(bottom: 80),
         itemCount: controller.invoices.length,
         itemBuilder: (context, index) {
           final invoice = controller.invoices[index];
