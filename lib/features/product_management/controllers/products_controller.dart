@@ -26,6 +26,7 @@ class ProductsController extends GetxController {
   var isLoading = true.obs;
   var isLoadingMore = false.obs;
   var total = 0.obs;
+  static bool _isDataInitialized = false; // Static flag - persists across controller recreations
   int offset = 0;
   final int limit = 20;
   final int searchLimit = 100; // Load more products for search
@@ -43,6 +44,7 @@ class ProductsController extends GetxController {
   late final DeleteFoodProductServices deleteFoodProductServices;
   final ScrollController scrollController = ScrollController();
   Timer? _searchDebounceTimer;
+  Timer? _autoLoadTimer;
 
   @override
   void onInit() {
@@ -52,7 +54,18 @@ class ProductsController extends GetxController {
     deleteMedicineProductServices = DeleteMedicineProductServices();
     deleteFoodProductServices = DeleteFoodProductServices();
 
-    fetchProducts();
+    // Only fetch products on first time initialization
+    if (!_isDataInitialized) {
+      fetchProducts();
+      _isDataInitialized = true;
+      
+      // Start auto-load timer after initial fetch
+      _startAutoLoadTimer();
+    } else {
+      // Data already loaded, just restart the auto-load timer
+      _startAutoLoadTimer();
+    }
+    
     scrollController.addListener(_scrollListener);
   }
 
@@ -234,6 +247,22 @@ class ProductsController extends GetxController {
     }
   }
 
+  void _startAutoLoadTimer() {
+    // Cancel existing timer if any
+    _autoLoadTimer?.cancel();
+    
+    // Start a periodic timer to auto-load more products every 3 seconds
+    _autoLoadTimer = Timer.periodic(Duration(seconds: 3), (_) {
+      // Only auto-load if not searching and there are more products
+      if (searchText.value.isEmpty && 
+          !isLoadingMore.value && 
+          products.length < total.value) {
+        log('⏱️ Auto-loading next batch...');
+        loadMore();
+      }
+    });
+  }
+
   //fetch products from api and call get product services
   Future<void> fetchProducts({bool isLoadMore = false}) async {
     if (isLoadMore) {
@@ -382,6 +411,7 @@ class ProductsController extends GetxController {
   @override
   void onClose() {
     _searchDebounceTimer?.cancel();
+    _autoLoadTimer?.cancel();
     scrollController.dispose();
     super.onClose();
   }
