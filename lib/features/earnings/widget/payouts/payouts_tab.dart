@@ -241,6 +241,8 @@ class PayoutsTab extends StatelessWidget {
                 ],
               ),
             ),
+
+            SizedBox(height: 80.h),
           ],
         ),
       ),

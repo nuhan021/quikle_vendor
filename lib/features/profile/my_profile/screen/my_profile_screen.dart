@@ -100,12 +100,15 @@ class MyProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    vendorDetails?.locationName ?? '',
-                    textAlign: TextAlign.center,
-                    style: getTextStyle(fontSize: 14, color: Colors.black54),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      vendorDetails?.locationName ?? '',
+                      textAlign: TextAlign.center,
+                      style: getTextStyle(fontSize: 14, color: Colors.black54),
+                    ),
                   ),
                 ],
               ),
