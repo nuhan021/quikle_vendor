@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
-import 'package:quikle_vendor/features/home/services/home_services.dart';
 import 'package:quikle_vendor/features/home/widgets/rider_assign/rider_assignment_dialogs_widget.dart';
 import '../../appbar/screen/appbar_screen.dart';
 import '../controller/home_controller.dart';
@@ -16,7 +15,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(HomeController());
+    Get.put(HomeController());
 
     return Scaffold(
       backgroundColor: AppColors.background,

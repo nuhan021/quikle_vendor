@@ -1,24 +1,26 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
+import 'package:quikle_vendor/core/services/storage_service.dart';
+import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_textfield.dart';
 import '../../../appbar/screen/appbar_screen.dart';
+import '../../my_profile/controller/my_profile_controller.dart';
 
 class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final businessNameController = TextEditingController(
-      text: "Tandoori Tarang",
-    );
+    final controller = Get.find<MyProfileController>();
+    final vendorData = StorageService.getVendorDetails();
+    final vendorDetails = vendorData != null
+        ? VendorDetailsModel.fromJson(vendorData)
+        : null;
     final ownerNameController = TextEditingController(text: "Vikash Rajput");
-    final accountStatusController = TextEditingController(text: "Active");
-    final servicesController = TextEditingController(
-      text: "Describe services offered",
-    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -43,13 +45,63 @@ class EditProfileScreen extends StatelessWidget {
                 ],
               ),
               child: Column(
-                children: const [
-                  CircleAvatar(
-                    radius: 45,
-                    backgroundImage: AssetImage("assets/images/profile.png"),
+                children: [
+                  Obx(
+                    () => Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 45,
+                          backgroundImage:
+                              controller.profileImagePath.value != null
+                              ? FileImage(
+                                  File(controller.profileImagePath.value!),
+                                )
+                              : const AssetImage("assets/images/profile.png")
+                                    as ImageProvider,
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: controller.pickImage,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  SizedBox(height: 12),
-                  // Optionally display the business name here
+                  const SizedBox(height: 12),
+                  Text(
+                    vendorDetails?.shopName ?? '',
+                    style: getTextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    vendorDetails?.locationName ?? '',
+                    textAlign: TextAlign.center,
+                    style: getTextStyle(fontSize: 14, color: Colors.black54),
+                  ),
                 ],
               ),
             ),
@@ -82,14 +134,6 @@ class EditProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  /// Business Name
-                  CustomTextField(
-                    label: "Business Name",
-                    hintText: "Enter business name",
-                    controller: businessNameController,
-                  ),
-                  const SizedBox(height: 12),
-
                   /// Owner Name
                   CustomTextField(
                     label: "Owner Name",
@@ -98,22 +142,63 @@ class EditProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  /// Account Status
+                  /// Owner Name
                   CustomTextField(
-                    label: "Account Status",
-                    hintText: "Enter account status",
-                    controller: accountStatusController,
+                    label: "NID Number",
+                    hintText: "Enter NID number",
+                    // controller: nidNumberController,
+                  ),
+                  const SizedBox(height: 12),
+                  CustomTextField(
+                    label: "Phone Number",
+                    hintText: "Enter Phone number",
+                    // controller: nidNumberController,
                   ),
                   const SizedBox(height: 12),
 
-                  /// Services Offered
-                  CustomTextField(
-                    label: "Services Offered",
-                    hintText: "Describe services offered",
-                    controller: servicesController,
-                    maxLines: 4, // allows multiline input
+                  /// Opening & Closing Time (combined display)
+                  AbsorbPointer(
+                    child: CustomTextField(
+                      label: "Opening & Closing Time",
+                      hintText: "Select opening & closing time",
+                      controller: controller.openingHoursController,
+                      // suffixIcon: const Icon(
+                      //   Icons.access_time,
+                      //   color: Colors.grey,
+                      // ),
+                    ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
+
+                  /// Time Picker Actions
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomButton(
+                          text: "Set Opening",
+                          fontSize: 14,
+                          height: 44,
+                          borderRadius: 8,
+                          backgroundColor: Colors.black,
+                          textColor: Colors.white,
+                          onPressed: () => controller.pickOpeningTime(context),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: CustomButton(
+                          text: "Set Closing",
+                          fontSize: 14,
+                          height: 44,
+                          borderRadius: 8,
+                          backgroundColor: Colors.black,
+                          textColor: Colors.white,
+                          onPressed: () => controller.pickClosingTime(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
 
                   /// Save Button
                   CustomButton(

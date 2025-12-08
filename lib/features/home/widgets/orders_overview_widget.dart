@@ -158,6 +158,8 @@ class OrdersOverviewWidget extends StatelessWidget {
 
         CustomButton(
           text: 'View All Orders',
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
           onPressed: controller.viewAllOrders,
         ),
       ],

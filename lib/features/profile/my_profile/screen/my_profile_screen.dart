@@ -4,15 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/common/widgets/custom_button.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
-import 'package:quikle_vendor/features/profile/my_profile/widget/basic_information_widget.dart';
-import 'package:quikle_vendor/features/profile/my_profile/widget/business_details_widget.dart';
 import 'package:quikle_vendor/features/profile/my_profile/widget/contactInfoCard.dart';
 import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../appbar/screen/appbar_screen.dart';
-import '../../../auth/data/services/auth_service.dart';
 import '../controller/my_profile_controller.dart';
 
 class MyProfileScreen extends StatelessWidget {
@@ -67,29 +64,29 @@ class MyProfileScreen extends StatelessWidget {
                               : const AssetImage("assets/images/profile.png")
                                     as ImageProvider,
                         ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: GestureDetector(
-                            onTap: controller.pickImage,
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 2,
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.camera_alt,
-                                color: Colors.white,
-                                size: 16,
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Positioned(
+                        //   bottom: 0,
+                        //   right: 0,
+                        //   child: GestureDetector(
+                        //     onTap: controller.pickImage,
+                        //     child: Container(
+                        //       padding: const EdgeInsets.all(6),
+                        //       decoration: BoxDecoration(
+                        //         color: Colors.black,
+                        //         shape: BoxShape.circle,
+                        //         border: Border.all(
+                        //           color: Colors.white,
+                        //           width: 2,
+                        //         ),
+                        //       ),
+                        //       child: const Icon(
+                        //         Icons.camera_alt,
+                        //         color: Colors.white,
+                        //         size: 16,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -104,7 +101,10 @@ class MyProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     vendorDetails?.locationName ?? '',
+                    textAlign: TextAlign.center,
                     style: getTextStyle(fontSize: 14, color: Colors.black54),
                   ),
                 ],

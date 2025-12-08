@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
@@ -14,7 +15,6 @@ class PayoutsTab extends StatelessWidget {
     final controller = Get.put(PayoutsController());
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: 16),
       child: Obx(
         () => Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/utils/constants/colors.dart';
+import '../../../../core/services/storage_service.dart';
+import '../../../vendor/models/vendor_model.dart';
 import '../../controller/order_management_controller.dart';
 
 class OrderDetailsActionsWidget extends StatelessWidget {
@@ -30,10 +32,29 @@ class OrderDetailsActionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Check if vendor type is medicine
+    final vendorData = StorageService.getVendorDetails();
+    final vendorDetails = vendorData != null
+        ? VendorDetailsModel.fromJson(vendorData)
+        : null;
+    final isMedicineVendor = vendorDetails?.type == 'medicine';
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
+          // Show View Prescription button for medicine vendors
+          if (isMedicineVendor) ...[
+            CustomButton(
+              text: 'View Prescription',
+              onPressed: () => onViewPrescription?.call(orderId),
+              backgroundColor: AppColors.backgroundLight,
+              textColor: AppColors.backgroundDark,
+              borderColor: AppColors.textSecondary,
+            ),
+            const SizedBox(height: 10),
+          ],
+
           if (requiresPrescription) ...[
             CustomButton(
               text: 'View Prescription',
@@ -81,8 +102,8 @@ class OrderDetailsActionsWidget extends StatelessWidget {
                                 controller.acceptedOrders.add(orderId);
                                 onAccept?.call(orderId);
                               },
-                              backgroundColor: Colors.amber,
-                              textColor: Colors.black,
+                              backgroundColor: Colors.black,
+                              textColor: Colors.white,
                             ),
                           ),
                         ],

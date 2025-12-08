@@ -59,7 +59,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                   SizedBox(height: 12),
                   Text(
-                    "Tandoori Tarang",
+                    _controller.vendorDetails.value?.shopName ?? '',
                     style: getTextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -68,9 +68,16 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    "vikramrajput@gmail.com",
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    _controller.vendorDetails.value?.locationName ?? '',
                     style: getTextStyle(fontSize: 14, color: Colors.black54),
                   ),
+                  // Text(
+                  //   "vikramrajput@gmail.com",
+                  //   style: getTextStyle(fontSize: 14, color: Colors.black54),
+                  // ),
                 ],
               ),
             ),

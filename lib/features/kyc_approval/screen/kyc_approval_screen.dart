@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:quikle_vendor/features/profile/my_profile/screen/my_profile_screen.dart';
 import 'package:quikle_vendor/routes/app_routes.dart' show AppRoute;
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../appbar/screen/appbar_screen.dart';
