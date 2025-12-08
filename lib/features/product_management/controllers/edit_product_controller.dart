@@ -1,10 +1,12 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quikle_vendor/features/product_management/controllers/products_controller.dart';
 import 'package:quikle_vendor/features/product_management/model/subcategory_model.dart';
+import 'package:quikle_vendor/features/product_management/services/edit_product_services.dart';
 import 'package:quikle_vendor/features/product_management/services/subcategory_services.dart';
 
 import '../../../core/services/storage_service.dart';
@@ -45,6 +47,8 @@ class EditProductController extends GetxController {
 
   // Services
   final SubcategoryServices subcategoryServices = SubcategoryServices();
+  late final EditMedicineProductServices editMedicineProductServices;
+  late final EditFoodProductServices editFoodProductServices;
 
   // Product data
   var productData = {}.obs;
@@ -54,6 +58,11 @@ class EditProductController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    // Initialize services
+    editMedicineProductServices = EditMedicineProductServices();
+    editFoodProductServices = EditFoodProductServices();
+
     selectedCategory = (categories.first['id'] as int).toString().obs;
     selectedSubCategory = ''.obs;
 
@@ -179,30 +188,79 @@ class EditProductController extends GetxController {
     hideRemoveDiscountConfirmation();
   }
 
-  void saveChanges() {
+  void saveChanges() async {
     // Validate form
     if (productNameController.text.isEmpty) {
+      AppLoggerHelper.error('Product name is required');
       return;
     }
 
     if (priceController.text.isEmpty) {
+      AppLoggerHelper.error('Price is required');
       return;
     }
 
-    // Update product data
-    productData['name'] = productNameController.text;
-    productData['description'] = descriptionController.text;
-    productData['weight'] = weightController.text;
-    productData['price'] = double.tryParse(priceController.text) ?? 0.0;
-    productData['stock'] = int.tryParse(stockQuantityController.text) ?? 0;
-    productData['discount'] = double.tryParse(discountController.text) ?? 0.0;
-    productData['category'] = selectedCategory.value;
-    productData['image'] = productImage.value;
+    if (currentProductId.value.isEmpty) {
+      AppLoggerHelper.error('Product ID is missing');
+      return;
+    }
 
-    // Navigate back after a delay
-    Future.delayed(Duration(seconds: 1), () {
-      Get.back();
-    });
+    try {
+      // Get discount value
+      final discountValue = int.tryParse(discountController.text) ?? 0;
+
+      // Handle image file
+      File? imageFile;
+      if (productImage.value.isNotEmpty && productImage.value.startsWith('/')) {
+        imageFile = File(productImage.value);
+      }
+
+      bool success;
+
+      // Call appropriate service based on vendor type
+      if (vendorType == 'medicine') {
+        success = await editMedicineProductServices.updateProduct(
+          itemId: currentProductId.value,
+          title: productNameController.text,
+          description: descriptionController.text,
+          subcategoryId: selectedSubCategoryId.value,
+          price: double.tryParse(priceController.text) ?? 0.0,
+          discount: discountValue,
+          stock: int.tryParse(stockQuantityController.text) ?? 0,
+          isOTC: isOtc.value,
+          weight: double.tryParse(weightController.text),
+          image: imageFile,
+        );
+      } else if (vendorType == 'food') {
+        success = await editFoodProductServices.updateProduct(
+          itemId: currentProductId.value,
+          title: productNameController.text,
+          description: descriptionController.text,
+          subcategoryId: selectedSubCategoryId.value,
+          price: double.tryParse(priceController.text) ?? 0.0,
+          discount: discountValue,
+          stock: int.tryParse(stockQuantityController.text) ?? 0,
+          weight: double.tryParse(weightController.text),
+          image: imageFile,
+        );
+      } else {
+        AppLoggerHelper.error('Unknown vendor type: $vendorType');
+        return;
+      }
+
+      if (success) {
+        AppLoggerHelper.info('Product updated successfully');
+        // Navigate back after a delay
+        Future.delayed(Duration(milliseconds: 500), () {
+          Get.back();
+        });
+      } else {
+        AppLoggerHelper.error('Failed to update product');
+      }
+    } catch (e) {
+      AppLoggerHelper.error('Error saving changes: $e');
+      log('Error: $e');
+    }
   }
 
   void pickProductImage() async {
@@ -224,6 +282,14 @@ class EditProductController extends GetxController {
 
   void changeSubCategory(String value) {
     selectedSubCategory.value = value;
+
+    // Find and set the subcategoryId based on selected name
+    final selectedSub = subCategories.firstWhereOrNull(
+      (sub) => sub.name == value,
+    );
+    if (selectedSub != null) {
+      selectedSubCategoryId.value = selectedSub.id;
+    }
   }
 
   void changeStockQuantity(String value) {

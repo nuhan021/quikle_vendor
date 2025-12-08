@@ -21,4 +21,7 @@ class ApiConstants {
   static const String getMedicineProducts =
       "${baseUrl}items/medicine/my-product/";
   static const String getFoodProducts = "${baseUrl}items/food/my-product/";
+  static const String updateProductMedicine =
+      "${baseUrl}items/medicine/{itemId}";
+  static const String updateProductFood = "${baseUrl}items/food/{itemId}";
 }
