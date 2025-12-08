@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:get/get.dart';
 import '../../../core/services/storage_service.dart';
-import '../../../core/utils/helpers/snackbar_helper.dart';
 import '../data/services/auth_service.dart';
 import '../../../routes/app_routes.dart';
 import '../../auth/presentation/screens/login_screen.dart';
@@ -96,7 +95,6 @@ class WelcomeController extends GetxController {
     } catch (e, stackTrace) {
       log('Error in _handleNavigation: $e');
       log('StackTrace: $stackTrace');
-      SnackBarHelper.error('An error occurred during navigation');
       Get.off(() => const LoginScreen());
     }
   }

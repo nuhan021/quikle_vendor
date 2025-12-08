@@ -41,7 +41,6 @@ class HelpAndSupportController extends GetxController {
 
   void submitIssue() {
     if (selectedSubject.isEmpty || description.isEmpty) {
-      Get.snackbar("Error", "Please fill all required fields");
       return;
     }
 
@@ -59,7 +58,5 @@ class HelpAndSupportController extends GetxController {
     selectedSubject.value = "";
     description.value = "";
     attachmentPath.value = "";
-
-    Get.snackbar("Success", "Your issue has been submitted!");
   }
 }

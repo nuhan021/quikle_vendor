@@ -10,21 +10,55 @@ class ProductsListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<ProductsController>();
 
-    return Obx(
-      () => ListView.builder(
-        controller: controller.scrollController,
+    return Obx(() {
+      // Use search results when searching, otherwise use main products list
+      final displayedProducts = controller.searchText.value.isNotEmpty
+          ? controller.searchResults.toList()
+          : controller.products.toList();
+
+      final isSearching = controller.searchText.value.isNotEmpty;
+      final isLoadingSearch = controller.isLoadingSearch.value;
+
+      return ListView.builder(
+        controller: isSearching
+            ? null
+            : controller
+                  .scrollController, // Disable scroll controller when searching
         padding: EdgeInsets.symmetric(horizontal: 12),
         itemCount:
-            controller.products.length +
-            (controller.isLoadingMore.value ? 1 : 0),
+            displayedProducts.length +
+            ((controller.isLoadingMore.value && !isSearching) || isLoadingSearch
+                ? 1
+                : 0),
         itemBuilder: (context, index) {
-          if (index == controller.products.length) {
-            return const Center(child: CircularProgressIndicator());
+          if (index == displayedProducts.length) {
+            if (isLoadingSearch) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 8),
+                      Text(
+                        'Searching products...',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            } else if (!isSearching) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return SizedBox.shrink();
           }
-          final product = controller.products[index];
+          if (index >= displayedProducts.length) return SizedBox.shrink();
+
+          final product = displayedProducts[index];
           return ProductCardWidget(product: product);
         },
-      ),
-    );
+      );
+    });
   }
 }

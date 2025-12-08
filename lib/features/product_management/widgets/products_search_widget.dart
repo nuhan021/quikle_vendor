@@ -36,7 +36,7 @@ class ProductsSearchWidget extends StatelessWidget {
                     child: TextField(
                       onChanged: controller.onSearchChanged,
                       decoration: InputDecoration(
-                        hintText: 'Search orders or customers',
+                        hintText: 'Search products...',
                         hintStyle: getTextStyle(
                           color: Color(0xFF9CA3AF),
                           fontSize: 16,
@@ -52,25 +52,25 @@ class ProductsSearchWidget extends StatelessWidget {
             ),
           ),
           SizedBox(width: 12),
-          GestureDetector(
-            onTap: () => controller.showFilterProductDialog(),
-            child: Container(
-              width: 55,
-              height: 55,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 6,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Icon(Icons.tune, color: Color(0xFF374151), size: 24),
-            ),
-          ),
+          // GestureDetector(
+          //   onTap: () => controller.showFilterProductDialog(),
+          //   child: Container(
+          //     width: 55,
+          //     height: 55,
+          //     decoration: BoxDecoration(
+          //       color: Colors.white,
+          //       borderRadius: BorderRadius.circular(12),
+          //       boxShadow: [
+          //         BoxShadow(
+          //           color: Colors.black.withValues(alpha: 0.05),
+          //           blurRadius: 6,
+          //           offset: Offset(0, 2),
+          //         ),
+          //       ],
+          //     ),
+          //     child: Icon(Icons.tune, color: Color(0xFF374151), size: 24),
+          //   ),
+          // ),
         ],
       ),
     );

@@ -154,42 +154,19 @@ class OrderManagementController extends GetxController {
     Get.toNamed(AppRoute.completedOrderDetailsScreen, arguments: orderId);
   }
 
-  /// -------------------- Snackbar Helper --------------------
-  void _showSnackbar(String title, String message, Color bgColor) {
-    Get.snackbar(
-      title,
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: bgColor,
-      colorText: Colors.white,
-    );
-  }
-
   /// -------------------- Order Actions --------------------
-  void acceptOrder(String orderId) =>
-      _showSnackbar('Order Accepted', 'Order $orderId accepted', Colors.green);
+  void acceptOrder(String orderId) {}
 
-  void rejectOrder(String orderId) =>
-      _showSnackbar('Order Rejected', 'Order $orderId rejected', Colors.red);
+  void rejectOrder(String orderId) {}
 
-  void reviewOrder(String orderId) => _showSnackbar(
-    'Order Review',
-    'Reviewing $orderId prescription',
-    Colors.indigo,
-  );
+  void reviewOrder(String orderId) {}
 
   void markAsPrepared(String orderId) {
     disabledButtons.add(orderId);
-    _showSnackbar(
-      'Prepared',
-      'Order $orderId marked as prepared',
-      Colors.green,
-    );
   }
 
   void markAsDispatched(String orderId) {
     disabledButtons.add(orderId);
-    _showSnackbar('Dispatched', 'Order $orderId dispatched', Colors.green);
   }
 
   /// -------------------- Get Order by ID --------------------
@@ -202,11 +179,7 @@ class OrderManagementController extends GetxController {
   }
 
   /// -------------------- View Prescription --------------------
-  void viewPrescription(String orderId) => _showSnackbar(
-    'Prescription',
-    'Viewing prescription for $orderId',
-    Colors.blue,
-  );
+  void viewPrescription(String orderId) {}
 
   /// -------------------- View Details --------------------
   void viewDetails(String orderId) {

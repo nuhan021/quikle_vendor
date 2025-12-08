@@ -34,15 +34,7 @@ class RegisterController extends GetxController {
         AppRoute.getVerify(),
         arguments: {"phone": phone, "shopName": shopName, "isLogin": false},
       );
-    } else {
-      Get.snackbar(
-        '❌',
-        response.errorMessage,
-        snackPosition: SnackPosition.TOP,
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
-      );
-    }
+    } else {}
 
     isLoading.value = false;
   }
@@ -52,37 +44,16 @@ class RegisterController extends GetxController {
     final phone = phoneController.text.trim();
 
     if (shopName.isEmpty) {
-      Get.snackbar(
-        '❌',
-        'Please enter shop name',
-        snackPosition: SnackPosition.TOP,
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
-      );
       return false;
     }
 
     if (phone.isEmpty) {
-      Get.snackbar(
-        '❌',
-        'Please enter phone number',
-        snackPosition: SnackPosition.TOP,
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
-      );
       return false;
     }
 
     // Basic phone validation (remove spaces and dashes, check if it has digits)
     final cleanPhone = phone.replaceAll(RegExp(r'[^\d+]'), '');
     if (!RegExp(r'^\+?91\d{10}$|^\d{10}$').hasMatch(cleanPhone)) {
-      Get.snackbar(
-        '❌',
-        'Please enter a valid phone number',
-        snackPosition: SnackPosition.TOP,
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
-      );
       return false;
     }
 

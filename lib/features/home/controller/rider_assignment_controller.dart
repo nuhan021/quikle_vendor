@@ -57,13 +57,6 @@ class RiderAssignmentController extends GetxController {
   }
 
   void completeAssignment() {
-    Get.snackbar(
-      'Assignment Complete',
-      'Order ${orderId.value} has been assigned to ${assignedRiderName.value}',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Color(0xFF10B981),
-      colorText: Colors.white,
-    );
     cancelDialog();
   }
 }

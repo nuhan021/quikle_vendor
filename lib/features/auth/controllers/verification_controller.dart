@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
-import 'package:quikle_vendor/core/utils/helpers/snackbar_helper.dart';
 import 'package:quikle_vendor/features/auth/data/services/auth_service.dart';
 import '../../../core/models/response_data.dart';
 import '../../../routes/app_routes.dart';
@@ -40,7 +39,6 @@ class VerificationController extends GetxController {
     final otp = otpDigits.join();
 
     if (otp.length != 6) {
-      SnackBarHelper.error('Enter 6-digit OTP');
       return;
     }
 
@@ -146,10 +144,8 @@ class VerificationController extends GetxController {
       }
 
       // Any other error case
-      SnackBarHelper.error('Failed to fetch vendor details');
       isVerifying.value = false;
     } else {
-      SnackBarHelper.error(response.errorMessage);
       isVerifying.value = false;
     }
   }
@@ -158,7 +154,6 @@ class VerificationController extends GetxController {
     final otp = otpDigits.join();
 
     if (otp.length != 6) {
-      SnackBarHelper.error('Enter 6-digit OTP');
       return;
     }
 
@@ -169,10 +164,8 @@ class VerificationController extends GetxController {
     response = await _auth.vendorSignup(shopName!, phone, otp);
 
     if (response.isSuccess) {
-      SnackBarHelper.success('Signup Successful');
       Get.offAllNamed(AppRoute.login);
     } else {
-      SnackBarHelper.error(response.errorMessage);
       isVerifying.value = false;
     }
   }
@@ -202,10 +195,7 @@ class VerificationController extends GetxController {
         : await _auth.sendOtpForSignup(phone);
 
     if (res.isSuccess) {
-      SnackBarHelper.success('OTP Sent Successfully');
       _startTimer();
-    } else {
-      SnackBarHelper.error(res.errorMessage);
     }
   }
 

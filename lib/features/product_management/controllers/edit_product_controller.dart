@@ -177,36 +177,15 @@ class EditProductController extends GetxController {
   void removeDiscount() {
     isDiscount.value = false;
     hideRemoveDiscountConfirmation();
-    Get.snackbar(
-      'Discount Removed',
-      'Discount offer has been removed from this product',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Color(0xFFEF4444),
-      colorText: Colors.white,
-    );
   }
 
   void saveChanges() {
     // Validate form
     if (productNameController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter product name',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
       return;
     }
 
     if (priceController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter product price',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
       return;
     }
 
@@ -219,14 +198,6 @@ class EditProductController extends GetxController {
     productData['discount'] = double.tryParse(discountController.text) ?? 0.0;
     productData['category'] = selectedCategory.value;
     productData['image'] = productImage.value;
-
-    Get.snackbar(
-      'Changes Saved',
-      'Product has been updated successfully',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Color(0xFF10B981),
-      colorText: Colors.white,
-    );
 
     // Navigate back after a delay
     Future.delayed(Duration(seconds: 1), () {
@@ -243,15 +214,7 @@ class EditProductController extends GetxController {
       if (pickedFile != null) {
         productImage.value = pickedFile.path;
       }
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to pick image: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
-    }
+    } catch (e) {}
   }
 
   void changeCategory(String value) {

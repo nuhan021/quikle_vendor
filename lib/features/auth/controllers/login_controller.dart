@@ -20,13 +20,6 @@ class LoginController extends GetxController {
     final phone = phoneController.text.trim();
 
     if (phone.length < 10) {
-      Get.snackbar(
-        '❌',
-        'Enter valid phone number',
-        snackPosition: SnackPosition.TOP,
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
-      );
       return;
     }
 
@@ -40,15 +33,7 @@ class LoginController extends GetxController {
           AppRoute.getVerify(),
           arguments: {"phone": phone, "isLogin": true},
         );
-      } else {
-        Get.snackbar(
-          '❌',
-          res.errorMessage,
-          snackPosition: SnackPosition.TOP,
-          colorText: Colors.white,
-          backgroundColor: Colors.red,
-        );
-      }
+      } else {}
     } finally {
       isLoading.value = false;
     }

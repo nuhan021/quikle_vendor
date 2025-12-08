@@ -115,24 +115,9 @@ class HomeController extends GetxController {
 
   void toggleRestaurantStatus() {
     isShopOpen.value = !isShopOpen.value;
-    Get.snackbar(
-      'Restaurant Status',
-      isShopOpen.value ? 'Open' : 'Closed',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: isShopOpen.value ? Color(0xFF10B981) : Color(0xFFEF4444),
-      colorText: Colors.white,
-    );
   }
 
-  void acceptOrder(String orderId) {
-    Get.snackbar(
-      'Order Accepted',
-      'Order $orderId has been accepted',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Color(0xFF10B981),
-      colorText: Colors.white,
-    );
-  }
+  void acceptOrder(String orderId) {}
 
   void viewAllOrders() {
     Get.toNamed(AppRoute.orderManagementScreen);

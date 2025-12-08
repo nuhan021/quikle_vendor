@@ -70,68 +70,24 @@ class CreateDiscountController extends GetxController {
   void addDiscount() {
     // Validate fields
     if (discountNameController.text.isEmpty) {
-      Get.snackbar(
-        'Validation Error',
-        'Please enter discount name',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
       return;
     }
 
     if (discountCodeController.text.isEmpty) {
-      Get.snackbar(
-        'Validation Error',
-        'Please enter discount code',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
       return;
     }
 
     if (discountValueController.text.isEmpty) {
-      Get.snackbar(
-        'Validation Error',
-        'Please enter discount value',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
       return;
     }
 
     if (startDate.value.isEmpty) {
-      Get.snackbar(
-        'Validation Error',
-        'Please select start date',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
       return;
     }
 
     if (endDate.value.isEmpty) {
-      Get.snackbar(
-        'Validation Error',
-        'Please select end date',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
       return;
     }
-
-    // Success message
-    Get.snackbar(
-      'Success',
-      'Discount created successfully',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Color(0xFF10B981),
-      colorText: Colors.white,
-    );
 
     // Clear all fields and close dialog
     closeDiscountDialog();

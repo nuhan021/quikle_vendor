@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:quikle_vendor/core/utils/helpers/snackbar_helper.dart';
 import 'package:quikle_vendor/features/vendor/controllers/vendor_controller.dart';
 import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
 
@@ -117,20 +116,17 @@ class MyProfileController extends GetxController {
     // TODO: Implement save logic
     shopName.value = shopNameController.text;
     isBasicInfoEditing.value = false;
-    SnackBarHelper.success('Basic information saved successfully');
   }
 
   void saveContactInfo() {
     // TODO: Implement save logic
     address.value = addressController.text;
     isContactInfoEditing.value = false;
-    SnackBarHelper.success('Contact information saved successfully');
   }
 
   void saveBusinessDetails() {
     // TODO: Implement save logic
     isBusinessDetailsEditing.value = false;
-    SnackBarHelper.success('Business details saved successfully');
   }
 
   Future<void> pickImage() async {
@@ -146,9 +142,7 @@ class MyProfileController extends GetxController {
         profileImagePath.value = image.path;
         // TODO: Upload image to server
       }
-    } catch (e) {
-      SnackBarHelper.error('Failed to pick image');
-    }
+    } catch (e) {}
   }
 
   @override

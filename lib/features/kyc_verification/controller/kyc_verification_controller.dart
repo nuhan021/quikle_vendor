@@ -6,7 +6,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:quikle_vendor/core/utils/helpers/snackbar_helper.dart';
 import 'package:quikle_vendor/features/kyc_verification/services/kyc_verification_service.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
 
@@ -62,13 +61,8 @@ class KycVerificationController extends GetxController {
           uploadProgress[0] = j / 10;
           uploadProgress.refresh();
         }
-        SnackBarHelper.success("1 file selected");
-      } else {
-        SnackBarHelper.info("No file selected");
-      }
-    } catch (e) {
-      SnackBarHelper.error("Failed to pick file: $e");
-    }
+      } else {}
+    } catch (e) {}
   }
 
   /// -------------------- Remove File --------------------
@@ -76,7 +70,6 @@ class KycVerificationController extends GetxController {
     if (index >= 0 && index < kycFiles.length) {
       kycFiles.removeAt(index);
       uploadProgress.removeAt(index);
-      SnackBarHelper.success("File removed successfully");
     }
   }
 
@@ -86,9 +79,6 @@ class KycVerificationController extends GetxController {
       LocationPermission permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
-        SnackBarHelper.warning(
-          "Please enable location permissions from settings",
-        );
         return;
       }
 
@@ -110,11 +100,7 @@ class KycVerificationController extends GetxController {
         address.value =
             "${placemark.street}, ${placemark.locality}, ${placemark.postalCode}";
       }
-
-      SnackBarHelper.success("Location fetched successfully!");
-    } catch (e) {
-      SnackBarHelper.error("Failed to get location: $e");
-    }
+    } catch (e) {}
   }
 
   /// -------------------- Map Tap --------------------
@@ -141,7 +127,6 @@ class KycVerificationController extends GetxController {
   /// -------------------- Search Location from Address --------------------
   Future<void> searchLocationFromAddress(String addressQuery) async {
     if (addressQuery.trim().isEmpty) {
-      SnackBarHelper.error("Please enter an address");
       return;
     }
 
@@ -172,7 +157,6 @@ class KycVerificationController extends GetxController {
           print('   Address: ${address.value}');
         }
 
-        SnackBarHelper.success("Location found on map!");
         searchAddress.value = ""; // Clear search field
 
         // Animate camera to searched location
@@ -184,11 +168,8 @@ class KycVerificationController extends GetxController {
             ),
           );
         });
-      } else {
-        SnackBarHelper.warning("Address not found. Try another search.");
-      }
+      } else {}
     } catch (e) {
-      SnackBarHelper.error("Failed to search address: $e");
     } finally {
       isSearching.value = false;
     }
@@ -202,22 +183,18 @@ class KycVerificationController extends GetxController {
   /// -------------------- Submit --------------------
   Future<void> submitKyc() async {
     if (kycFiles.isEmpty) {
-      SnackBarHelper.error("Please upload at least one KYC document");
       return;
     }
 
     if (latitude.value == 0.0 || longitude.value == 0.0) {
-      SnackBarHelper.error("Please select your business location");
       return;
     }
 
     if (nidController.text.isEmpty) {
-      SnackBarHelper.error("Please enter your NID number");
       return;
     }
 
     if (vendorType.isEmpty) {
-      SnackBarHelper.error("Vendor type not selected");
       return;
     }
 
@@ -249,7 +226,6 @@ class KycVerificationController extends GetxController {
 
       if (response.isSuccess) {
         log('✅ KYC submitted successfully');
-        SnackBarHelper.success("KYC submitted successfully!");
         await Future.delayed(const Duration(seconds: 1));
         // Pass the new kyc_status to KYC Approval screen
         Get.offAllNamed(
@@ -257,12 +233,10 @@ class KycVerificationController extends GetxController {
           arguments: {'kycStatus': 'pending'},
         );
       } else {
-        SnackBarHelper.error(response.errorMessage);
         log('❌ KYC submission failed: ${response.errorMessage}');
         isSubmitting.value = false;
       }
     } catch (e) {
-      SnackBarHelper.error("Submission failed: $e");
       log('❌ Error: $e');
       isSubmitting.value = false;
     }

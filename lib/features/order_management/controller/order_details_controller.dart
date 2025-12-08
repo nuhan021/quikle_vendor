@@ -50,14 +50,6 @@ class OrderDetailsController extends GetxController {
     final id = orderData.value?['id'];
     if (id == null) return;
 
-    Get.snackbar(
-      "Order Completed",
-      "Order $id marked as completed!",
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: const Color(0xFF10B981),
-      colorText: Colors.white,
-    );
-
     // TODO: Implement API call to update order status
   }
 
@@ -70,40 +62,15 @@ class OrderDetailsController extends GetxController {
   }
 
   /// -------------------- Order Actions --------------------
-  void _showSnackbar(String title, String message, Color bgColor) {
-    Get.snackbar(
-      title,
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: bgColor,
-      colorText: Colors.white,
-    );
-  }
+  void acceptOrder(String orderId) {}
 
-  void acceptOrder(String orderId) =>
-      _showSnackbar('Order Accepted', 'Order $orderId accepted', Colors.green);
+  void rejectOrder(String orderId) {}
 
-  void rejectOrder(String orderId) =>
-      _showSnackbar('Order Rejected', 'Order $orderId rejected', Colors.red);
+  void reviewOrder(String orderId) {}
 
-  void reviewOrder(String orderId) => _showSnackbar(
-    'Order Review',
-    'Reviewing $orderId prescription',
-    Colors.indigo,
-  );
+  void markAsPrepared(String orderId) {}
 
-  void markAsPrepared(String orderId) => _showSnackbar(
-    'Prepared',
-    'Order $orderId marked as prepared',
-    Colors.green,
-  );
+  void markAsDispatched(String orderId) {}
 
-  void markAsDispatched(String orderId) =>
-      _showSnackbar('Dispatched', 'Order $orderId dispatched', Colors.green);
-
-  void viewPrescription(String orderId) => _showSnackbar(
-    'Prescription',
-    'Viewing prescription for $orderId',
-    Colors.blue,
-  );
+  void viewPrescription(String orderId) {}
 }
