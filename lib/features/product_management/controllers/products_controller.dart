@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
 import '../widgets/create_discount_modal_widget.dart';
 import '../services/get_product_services.dart';
+import '../services/delete_product_services.dart';
 import '../model/products_model.dart';
 import '../../../core/services/storage_service.dart';
 
@@ -38,12 +39,19 @@ class ProductsController extends GetxController {
       true.obs; // Track if there might be more search results
 
   final GetProductServices _productServices = GetProductServices();
+  late final DeleteMedicineProductServices deleteMedicineProductServices;
+  late final DeleteFoodProductServices deleteFoodProductServices;
   final ScrollController scrollController = ScrollController();
   Timer? _searchDebounceTimer;
 
   @override
   void onInit() {
     super.onInit();
+
+    // Initialize delete services
+    deleteMedicineProductServices = DeleteMedicineProductServices();
+    deleteFoodProductServices = DeleteFoodProductServices();
+
     fetchProducts();
     scrollController.addListener(_scrollListener);
   }
@@ -316,11 +324,38 @@ class ProductsController extends GetxController {
     productToDelete.value = '';
   }
 
-  void deleteProduct() {
-    products.removeWhere(
-      (product) => product.id.toString() == productToDelete.value,
-    );
-    hideDeleteConfirmation();
+  void deleteProduct() async {
+    try {
+      String productId = productToDelete.value;
+      bool success;
+
+      // Call appropriate service based on vendor type
+      if (vendorType == 'medicine') {
+        success = await deleteMedicineProductServices.deleteProduct(
+          itemId: productId,
+        );
+      } else if (vendorType == 'food') {
+        success = await deleteFoodProductServices.deleteProduct(
+          itemId: productId,
+        );
+      } else {
+        log('Unknown vendor type: $vendorType');
+        hideDeleteConfirmation();
+        return;
+      }
+
+      if (success) {
+        // Remove product from list
+        products.removeWhere((product) => product.id.toString() == productId);
+        log('Product deleted successfully');
+      } else {
+        log('Failed to delete product');
+      }
+    } catch (e) {
+      log('Error deleting product: $e');
+    } finally {
+      hideDeleteConfirmation();
+    }
   }
 
   void editProduct(String productId) {
