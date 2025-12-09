@@ -22,11 +22,13 @@ class ProductsController extends GetxController {
 
   var showFilterProductModal = false.obs;
   var showDeleteDialog = false.obs;
+  var showLowStockFilter = false.obs; // Filter to show only low stock products
   var productToDelete = ''.obs;
   var isLoading = true.obs;
   var isLoadingMore = false.obs;
   var total = 0.obs;
-  static bool _isDataInitialized = false; // Static flag - persists across controller recreations
+  static bool _isDataInitialized =
+      false; // Static flag - persists across controller recreations
   int offset = 0;
   final int limit = 20;
   final int searchLimit = 100; // Load more products for search
@@ -58,14 +60,14 @@ class ProductsController extends GetxController {
     if (!_isDataInitialized) {
       fetchProducts();
       _isDataInitialized = true;
-      
+
       // Start auto-load timer after initial fetch
       _startAutoLoadTimer();
     } else {
       // Data already loaded, just restart the auto-load timer
       _startAutoLoadTimer();
     }
-    
+
     scrollController.addListener(_scrollListener);
   }
 
@@ -75,6 +77,9 @@ class ProductsController extends GetxController {
 
     // Update the search text immediately for UI
     searchText.value = value;
+
+    // Log search query
+    log('🔎 User typing search: "$value"');
 
     // Set new timer for debounced search
     _searchDebounceTimer = Timer(Duration(milliseconds: 500), () {
@@ -106,8 +111,12 @@ class ProductsController extends GetxController {
     if (alreadyLoadedMatches.isNotEmpty) {
       searchResults.addAll(alreadyLoadedMatches);
       log(
-        '✅ Found ${alreadyLoadedMatches.length} matches in already loaded products. Total results: ${searchResults.length}',
+        '✅ Found ${alreadyLoadedMatches.length} matches in already loaded products:',
       );
+      for (var product in alreadyLoadedMatches) {
+        log('   • ${product.title} (ID: ${product.id})');
+      }
+      log('Total results so far: ${searchResults.length}');
     }
 
     int searchOffset = 0;
@@ -173,8 +182,12 @@ class ProductsController extends GetxController {
               searchResults.addAll(matchingProducts);
               consecutiveEmptyBatches = 0; // Reset counter when we find matches
               log(
-                '✅ Found ${matchingProducts.length} matching products in batch. Total results: ${searchResults.length}',
+                '✅ Found ${matchingProducts.length} matching products in batch ${searchOffset ~/ batchSize + 1}:',
               );
+              for (var product in matchingProducts) {
+                log('   • ${product.title} (ID: ${product.id})');
+              }
+              log('Total results: ${searchResults.length}');
             } else {
               consecutiveEmptyBatches++;
               log(
@@ -222,10 +235,12 @@ class ProductsController extends GetxController {
 
   void _handleSearch(String searchValue) {
     if (searchValue.isNotEmpty) {
+      log('🔍 SEARCH INITIATED: Searching for "$searchValue"');
       // Perform incremental search that loads and searches in batches
       _performIncrementalSearch(searchValue);
     } else {
       // When search is cleared, reset search state
+      log('🔄 Search cleared');
       clearSearch();
     }
   }
@@ -250,12 +265,12 @@ class ProductsController extends GetxController {
   void _startAutoLoadTimer() {
     // Cancel existing timer if any
     _autoLoadTimer?.cancel();
-    
+
     // Start a periodic timer to auto-load more products every 3 seconds
     _autoLoadTimer = Timer.periodic(Duration(seconds: 3), (_) {
       // Only auto-load if not searching and there are more products
-      if (searchText.value.isEmpty && 
-          !isLoadingMore.value && 
+      if (searchText.value.isEmpty &&
+          !isLoadingMore.value &&
           products.length < total.value) {
         log('⏱️ Auto-loading next batch...');
         loadMore();
@@ -398,13 +413,31 @@ class ProductsController extends GetxController {
     Get.back();
   }
 
-  void viewLowStockProducts() {}
+  void viewLowStockProducts() {
+    showLowStockFilter.value = !showLowStockFilter.value;
+    if (showLowStockFilter.value) {
+      log('🔴 LOW STOCK FILTER ACTIVATED');
+      final lowStockProducts = products
+          .where((product) => product.stock <= 10 && product.stock > 0)
+          .toList();
+      log('📦 Showing ${lowStockProducts.length} products (stock 1-10):');
+      for (var product in lowStockProducts) {
+        log('   • ${product.title} (Stock: ${product.stock})');
+      }
+    } else {
+      log('🟢 LOW STOCK FILTER DEACTIVATED - Showing all products');
+    }
+  }
 
   void applyFilters() {}
 
   int get lowStockCount {
-    return products
-        .where((product) => !product.isInStock || product.stock <= 20)
+    // Use search results if searching, otherwise use all products
+    final productsToCheck = searchText.value.isNotEmpty
+        ? searchResults
+        : products;
+    return productsToCheck
+        .where((product) => product.stock <= 10 && product.stock > 0)
         .length;
   }
 

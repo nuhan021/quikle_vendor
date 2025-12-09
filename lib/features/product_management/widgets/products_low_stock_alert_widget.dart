@@ -10,8 +10,13 @@ class ProductsLowStockAlertWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<ProductsController>();
 
-    return Obx(
-      () => Container(
+    return Obx(() {
+      // Only show alert if there are low stock products
+      if (controller.lowStockCount == 0) {
+        return SizedBox.shrink();
+      }
+
+      return Container(
         margin: EdgeInsets.only(bottom: 20),
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -34,14 +39,32 @@ class ProductsLowStockAlertWidget extends StatelessWidget {
             ),
             GestureDetector(
               onTap: controller.viewLowStockProducts,
-              child: Text(
-                'View',
-                style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              child: Obx(
+                () => Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: controller.showLowStockFilter.value
+                        ? Color(0xFFDC2626)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(3),
+                    border: Border.all(color: Color(0xFFDC2626), width: 1),
+                  ),
+                  child: Text(
+                    'View',
+                    style: getTextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: controller.showLowStockFilter.value
+                          ? Colors.white
+                          : Color(0xFFDC2626),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
         ),
-      ),
-    );
+      );
+    });
   }
 }

@@ -46,12 +46,6 @@ class _NavbarScreenState extends State<NavbarScreen>
       duration: const Duration(milliseconds: 500),
       value: 1.0,
     );
-
-    // Set callback for Products tab
-    controller.onProductsTabSelected = () {
-      final productsController = Get.find<ProductsController>();
-      productsController.fetchProducts();
-    };
   }
 
   @override
