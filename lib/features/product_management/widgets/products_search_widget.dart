@@ -13,6 +13,8 @@ class ProductsSearchWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(14),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Container(

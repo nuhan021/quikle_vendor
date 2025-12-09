@@ -336,10 +336,29 @@ class AddProductModalWidget extends StatelessWidget {
                 ],
 
                 // Add Product Button
-                CustomButton(
-                  text: 'Add Product',
-                  onPressed: controller.addProduct,
-                ),
+                Obx(() {
+                  print(
+                    'Button rebuild - isLoading: ${controller.isLoading.value}',
+                  );
+                  return GestureDetector(
+                    onTap: () {
+                      print('Button tapped!');
+                      controller.addProduct();
+                    },
+                    child: CustomButton(
+                      text: controller.isLoading.value
+                          ? 'Adding...'
+                          : 'Add Product',
+                      onPressed: () {
+                        print('CustomButton onPressed called!');
+                        controller.addProduct();
+                      },
+                      textColor: Colors.white,
+                      backgroundColor: Colors.black,
+                      isLoading: controller.isLoading.value,
+                    ),
+                  );
+                }),
                 // SizedBox(height: 24),
               ],
             ),

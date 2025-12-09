@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:quikle_vendor/features/vendor/controllers/vendor_controller.dart';
-import 'package:quikle_vendor/core/utils/helpers/snackbar_helper.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
 

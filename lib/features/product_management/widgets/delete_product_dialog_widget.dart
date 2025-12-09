@@ -91,22 +91,28 @@ class DeleteProductDialogWidget extends StatelessWidget {
                   ),
                   SizedBox(width: 16.h),
                   Expanded(
-                    child: GestureDetector(
-                      onTap: controller.deleteProduct,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 16.h),
-                        decoration: BoxDecoration(
-                          color: Color(0xFF111827),
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Text(
-                          'Yes',
-                          style: getTextStyle(
-                            fontSize: 16.h,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                    child: Obx(
+                      () => GestureDetector(
+                        onTap: controller.isDeleting.value
+                            ? null
+                            : controller.deleteProduct,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          decoration: BoxDecoration(
+                            color: controller.isDeleting.value
+                                ? Color(0xFF111827).withOpacity(0.6)
+                                : Color(0xFF111827),
+                            borderRadius: BorderRadius.circular(12.r),
                           ),
-                          textAlign: TextAlign.center,
+                          child: Text(
+                            controller.isDeleting.value ? 'Yes...' : 'Yes',
+                            style: getTextStyle(
+                              fontSize: 16.h,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
                     ),

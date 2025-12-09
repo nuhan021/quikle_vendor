@@ -44,6 +44,7 @@ class EditProductController extends GetxController {
   ];
   var subCategories = <SubcategoryModel>[].obs;
   var isLoadingSubcategories = false.obs;
+  var isLoading = false.obs;
 
   // Services
   final SubcategoryServices subcategoryServices = SubcategoryServices();
@@ -205,6 +206,8 @@ class EditProductController extends GetxController {
       return;
     }
 
+    isLoading.value = true;
+
     try {
       // Get discount value
       final discountValue = int.tryParse(discountController.text) ?? 0;
@@ -250,14 +253,17 @@ class EditProductController extends GetxController {
 
       if (success) {
         AppLoggerHelper.info('Product updated successfully');
+        isLoading.value = false;
         // Navigate back after a delay
         Future.delayed(Duration(milliseconds: 500), () {
           Get.back();
         });
       } else {
+        isLoading.value = false;
         AppLoggerHelper.error('Failed to update product');
       }
     } catch (e) {
+      isLoading.value = false;
       AppLoggerHelper.error('Error saving changes: $e');
       log('Error: $e');
     }
