@@ -22,11 +22,13 @@ class ProductsController extends GetxController {
 
   var showFilterProductModal = false.obs;
   var showDeleteDialog = false.obs;
+  var isDeleting = false.obs;
   var productToDelete = ''.obs;
   var isLoading = true.obs;
   var isLoadingMore = false.obs;
   var total = 0.obs;
-  static bool _isDataInitialized = false; // Static flag - persists across controller recreations
+  static bool _isDataInitialized =
+      false; // Static flag - persists across controller recreations
   int offset = 0;
   final int limit = 20;
   final int searchLimit = 100; // Load more products for search
@@ -58,14 +60,14 @@ class ProductsController extends GetxController {
     if (!_isDataInitialized) {
       fetchProducts();
       _isDataInitialized = true;
-      
+
       // Start auto-load timer after initial fetch
       _startAutoLoadTimer();
     } else {
       // Data already loaded, just restart the auto-load timer
       _startAutoLoadTimer();
     }
-    
+
     scrollController.addListener(_scrollListener);
   }
 
@@ -250,12 +252,12 @@ class ProductsController extends GetxController {
   void _startAutoLoadTimer() {
     // Cancel existing timer if any
     _autoLoadTimer?.cancel();
-    
+
     // Start a periodic timer to auto-load more products every 3 seconds
     _autoLoadTimer = Timer.periodic(Duration(seconds: 3), (_) {
       // Only auto-load if not searching and there are more products
-      if (searchText.value.isEmpty && 
-          !isLoadingMore.value && 
+      if (searchText.value.isEmpty &&
+          !isLoadingMore.value &&
           products.length < total.value) {
         log('⏱️ Auto-loading next batch...');
         loadMore();
@@ -354,6 +356,7 @@ class ProductsController extends GetxController {
   }
 
   void deleteProduct() async {
+    isDeleting.value = true;
     try {
       String productId = productToDelete.value;
       bool success;
@@ -369,6 +372,7 @@ class ProductsController extends GetxController {
         );
       } else {
         log('Unknown vendor type: $vendorType');
+        isDeleting.value = false;
         hideDeleteConfirmation();
         return;
       }
@@ -383,6 +387,7 @@ class ProductsController extends GetxController {
     } catch (e) {
       log('Error deleting product: $e');
     } finally {
+      isDeleting.value = false;
       hideDeleteConfirmation();
     }
   }

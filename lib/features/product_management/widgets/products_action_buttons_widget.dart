@@ -33,6 +33,8 @@ class ProductsActionButtonsWidget extends StatelessWidget {
             child: CustomButton(
               text: 'Add New Product',
               onPressed: addProductController.showAddProductDialog,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
             ),
           ),
         ],

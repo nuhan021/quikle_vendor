@@ -22,6 +22,7 @@ class AddProductController extends GetxController {
   var selectedSubCategoryName = ''.obs;
 
   var isOtc = false.obs;
+  var isLoading = false.obs;
 
   void toggleOtc(bool value) {
     isOtc.value = value;
@@ -134,28 +135,33 @@ class AddProductController extends GetxController {
   }
 
   void addProduct() async {
+    log('addProduct called!');
+
     // ========== FORM VALIDATION ==========
     if (productNameController.text.isEmpty) {
+      log('Product name is empty - validation failed');
       return;
     }
 
     if (priceController.text.isEmpty) {
+      log('Price is empty - validation failed');
       return;
     }
 
     if (stockQuantityController.text.isEmpty) {
+      log('Stock quantity is empty - validation failed');
       return;
     }
 
     if (selectedSubCategoryId.value == 0) {
+      log('SubCategory not selected - validation failed');
       return;
     }
 
-    // ========== SHOW LOADING ==========
-    Get.dialog(
-      Center(child: CircularProgressIndicator()),
-      barrierDismissible: false,
-    );
+    log('Validation passed, setting isLoading to true');
+    // ========== SET LOADING STATE ==========
+    isLoading.value = true;
+    log('Loading state set to: ${isLoading.value}');
 
     if (vendorType == 'medicine') {
       try {
@@ -177,16 +183,15 @@ class AddProductController extends GetxController {
               : null,
         );
 
-        // Close loading dialog
-        Navigator.of(Get.context!).pop();
-
         if (success) {
+          isLoading.value = false;
           hideAddProductDialog(); // close modal & clear form first
         } else {
+          isLoading.value = false;
           // Handle failure case without snackbar
         }
       } catch (e) {
-        Navigator.of(Get.context!).pop(); // close loading
+        isLoading.value = false;
         // Handle error case without snackbar
       }
     } else if (vendorType == 'food') {
@@ -206,16 +211,15 @@ class AddProductController extends GetxController {
               : null,
         );
 
-        // Close loading dialog
-        Navigator.of(Get.context!).pop();
-
         if (success) {
+          isLoading.value = false;
           hideAddProductDialog(); // close modal & clear form first
         } else {
+          isLoading.value = false;
           // Handle failure case without snackbar
         }
       } catch (e) {
-        Navigator.of(Get.context!).pop(); // close loading
+        isLoading.value = false;
         // Handle error case without snackbar
       }
     }
