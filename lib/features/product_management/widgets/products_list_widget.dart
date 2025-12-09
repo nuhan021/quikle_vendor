@@ -16,10 +16,10 @@ class ProductsListWidget extends StatelessWidget {
           ? controller.searchResults.toList()
           : controller.products.toList();
 
-      // Filter to show only low stock products if filter is active
+      // Filter to show only low stock and out of stock products if filter is active
       if (controller.showLowStockFilter.value) {
         displayedProducts = displayedProducts
-            .where((product) => product.stock <= 10 && product.stock > 0)
+            .where((product) => product.stock <= 10)
             .toList();
       }
 

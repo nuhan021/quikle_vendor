@@ -62,14 +62,12 @@ class ProductsController extends GetxController {
       fetchProducts();
       _isDataInitialized = true;
 
-
       // Start auto-load timer after initial fetch
       _startAutoLoadTimer();
     } else {
       // Data already loaded, just restart the auto-load timer
       _startAutoLoadTimer();
     }
-
 
     scrollController.addListener(_scrollListener);
   }
@@ -269,12 +267,9 @@ class ProductsController extends GetxController {
     // Cancel existing timer if any
     _autoLoadTimer?.cancel();
 
-
     // Start a periodic timer to auto-load more products every 3 seconds
     _autoLoadTimer = Timer.periodic(Duration(seconds: 3), (_) {
       // Only auto-load if not searching and there are more products
-      if (searchText.value.isEmpty &&
-          !isLoadingMore.value &&
       if (searchText.value.isEmpty &&
           !isLoadingMore.value &&
           products.length < total.value) {
@@ -425,16 +420,23 @@ class ProductsController extends GetxController {
   void viewLowStockProducts() {
     showLowStockFilter.value = !showLowStockFilter.value;
     if (showLowStockFilter.value) {
-      log('🔴 LOW STOCK FILTER ACTIVATED');
-      final lowStockProducts = products
-          .where((product) => product.stock <= 10 && product.stock > 0)
+      log('🔴 LOW STOCK & OUT OF STOCK FILTER ACTIVATED');
+      // Use search results if searching, otherwise use all products
+      final productsToFilter = searchText.value.isNotEmpty
+          ? searchResults
+          : products;
+      final lowStockProducts = productsToFilter
+          .where((product) => product.stock <= 10)
           .toList();
-      log('📦 Showing ${lowStockProducts.length} products (stock 1-10):');
+      log('📦 Showing ${lowStockProducts.length} products (stock 0-10):');
       for (var product in lowStockProducts) {
-        log('   • ${product.title} (Stock: ${product.stock})');
+        final status = product.stock == 0 ? 'OUT OF STOCK' : 'LOW STOCK';
+        log('   • ${product.title} (Stock: ${product.stock}) - $status');
       }
     } else {
-      log('🟢 LOW STOCK FILTER DEACTIVATED - Showing all products');
+      log(
+        '🟢 LOW STOCK & OUT OF STOCK FILTER DEACTIVATED - Showing all products',
+      );
     }
   }
 
@@ -445,9 +447,7 @@ class ProductsController extends GetxController {
     final productsToCheck = searchText.value.isNotEmpty
         ? searchResults
         : products;
-    return productsToCheck
-        .where((product) => product.stock <= 10 && product.stock > 0)
-        .length;
+    return productsToCheck.where((product) => product.stock <= 10).length;
   }
 
   @override
