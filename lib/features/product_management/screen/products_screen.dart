@@ -10,6 +10,7 @@ import '../widgets/products_action_buttons_widget.dart';
 import '../widgets/products_low_stock_alert_widget.dart';
 import '../widgets/products_list_widget.dart';
 import '../widgets/delete_product_dialog_widget.dart';
+import '../../../core/widgets/shimmer_widget.dart';
 
 class ProductsScreen extends StatelessWidget {
   final bool onInit;
@@ -38,8 +39,15 @@ class ProductsScreen extends StatelessWidget {
                 ProductsLowStockAlertWidget(),
                 Obx(
                   () => controller.isLoading.value
-                      ? const Center(child: CircularProgressIndicator())
-                      : Expanded(child: ProductsListWidget()),
+                      ? const Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                            child: Center(
+                              child: ListShimmerSkeleton(itemCount: 6),
+                            ),
+                          ),
+                        )
+                      : const Expanded(child: ProductsListWidget()),
                 ),
               ],
             ),

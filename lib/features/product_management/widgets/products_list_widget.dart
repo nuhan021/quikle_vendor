@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/products_controller.dart';
 import 'product_card_widget.dart';
+import '../../../core/widgets/shimmer_widget.dart';
 
 class ProductsListWidget extends StatelessWidget {
   const ProductsListWidget({super.key});
@@ -31,7 +32,7 @@ class ProductsListWidget extends StatelessWidget {
             ? null
             : controller
                   .scrollController, // Disable scroll controller when searching
-        padding: EdgeInsets.symmetric(horizontal: 12),
+        padding: EdgeInsets.symmetric(horizontal: 16),
         itemCount:
             displayedProducts.length +
             ((controller.isLoadingMore.value && !isSearching) || isLoadingSearch
@@ -40,23 +41,18 @@ class ProductsListWidget extends StatelessWidget {
         itemBuilder: (context, index) {
           if (index == displayedProducts.length) {
             if (isLoadingSearch) {
-              return const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 8),
-                      Text(
-                        'Searching products...',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ],
-                  ),
+              return const Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Center(
+                  child: ListShimmerSkeleton(itemCount: 3, shrinkWrap: true),
                 ),
               );
             } else if (!isSearching) {
-              return const Center(child: CircularProgressIndicator());
+              // Load-more shimmer placeholder (use same skeleton but non-scrollable)
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 12),
+                child: ListShimmerSkeleton(itemCount: 1, shrinkWrap: true),
+              );
             }
             return SizedBox.shrink();
           }

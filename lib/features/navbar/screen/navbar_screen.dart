@@ -3,7 +3,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/features/earnings/screen/earnings_screen.dart';
-import 'package:quikle_vendor/features/product_management/controllers/products_controller.dart';
 import '../../../core/utils/constants/colors.dart';
 import '../../../core/utils/constants/icon_path.dart';
 import '../../../core/utils/constants/image_path.dart';
