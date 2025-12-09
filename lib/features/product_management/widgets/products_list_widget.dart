@@ -12,9 +12,16 @@ class ProductsListWidget extends StatelessWidget {
 
     return Obx(() {
       // Use search results when searching, otherwise use main products list
-      final displayedProducts = controller.searchText.value.isNotEmpty
+      var displayedProducts = controller.searchText.value.isNotEmpty
           ? controller.searchResults.toList()
           : controller.products.toList();
+
+      // Filter to show only low stock products if filter is active
+      if (controller.showLowStockFilter.value) {
+        displayedProducts = displayedProducts
+            .where((product) => product.stock <= 10 && product.stock > 0)
+            .toList();
+      }
 
       final isSearching = controller.searchText.value.isNotEmpty;
       final isLoadingSearch = controller.isLoadingSearch.value;
