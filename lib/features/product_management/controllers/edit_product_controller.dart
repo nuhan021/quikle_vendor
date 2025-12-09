@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+
 import 'package:quikle_vendor/features/product_management/controllers/products_controller.dart';
 import 'package:quikle_vendor/features/product_management/model/subcategory_model.dart';
 import 'package:quikle_vendor/features/product_management/services/edit_product_services.dart';
@@ -13,12 +14,16 @@ import '../../../core/services/storage_service.dart';
 import '../../../core/utils/logging/logger.dart';
 
 class EditProductController extends GetxController {
+  // Vendor
   final vendorData = StorageService.getVendorDetails();
-  late final String vendorType = vendorData!['type'];
-  var showRemoveDiscountDialog = false.obs;
-  var showEditProductModal = false.obs;
+  late final String? vendorType =
+      vendorData != null ? vendorData!['type'] as String? : null;
 
-  // Form Controllers
+  // UI state
+  final showRemoveDiscountDialog = false.obs;
+  final showEditProductModal = false.obs;
+
+  // Form controllers
   final productNameController = TextEditingController();
   final descriptionController = TextEditingController();
   final weightController = TextEditingController();
@@ -26,57 +31,77 @@ class EditProductController extends GetxController {
   final stockQuantityController = TextEditingController();
   final discountController = TextEditingController();
 
-  // Dropdown values
-  late var selectedCategory;
-  late var selectedSubCategory;
-  var selectedSubCategoryId = 0.obs;
-  var subCategorySearchText = ''.obs;
-  var selectedStockQuantity = ''.obs;
-  var productImage = ''.obs;
-  var isDiscount = false.obs;
-  var isOtc = false.obs;
+  // Dropdown and selection
+  late final RxString selectedCategory;
+  final selectedSubCategory = ''.obs;
+  final selectedSubCategoryId = 0.obs;
+  final subCategorySearchText = ''.obs;
+  final selectedStockQuantity = ''.obs;
+  final productImage = ''.obs;
+  final isDiscount = false.obs;
+  final isOtc = false.obs;
 
-  // Categories and Sub-categories (dynamic from API)
-  final List<Map<String, dynamic>> categories = [
+  // Categories and subcategories
+  final List<Map<String, dynamic>> categories = const [
     {'id': 1, 'name': 'Fruits'},
     {'id': 2, 'name': 'Vegetables'},
     {'id': 6, 'name': 'Medicine'},
   ];
-  var subCategories = <SubcategoryModel>[].obs;
-  var isLoadingSubcategories = false.obs;
-  var isLoading = false.obs;
+
+  final subCategories = <SubcategoryModel>[].obs;
+  final isLoadingSubcategories = false.obs;
+  final isLoading = false.obs;
 
   // Services
-  final SubcategoryServices subcategoryServices = SubcategoryServices();
-  late final EditMedicineProductServices editMedicineProductServices;
-  late final EditFoodProductServices editFoodProductServices;
+  final SubcategoryServices _subcategoryServices = SubcategoryServices();
+  late final EditMedicineProductServices _editMedicineProductServices;
+  late final EditFoodProductServices _editFoodProductServices;
 
   // Product data
-  var productData = {}.obs;
-  var currentProductId = ''.obs;
+  final productData = <String, dynamic>{}.obs;
+  final currentProductId = ''.obs;
   final ImagePicker _imagePicker = ImagePicker();
 
   @override
   void onInit() {
     super.onInit();
 
-    // Initialize services
-    editMedicineProductServices = EditMedicineProductServices();
-    editFoodProductServices = EditFoodProductServices();
+    _editMedicineProductServices = EditMedicineProductServices();
+    _editFoodProductServices = EditFoodProductServices();
 
-    selectedCategory = (categories.first['id'] as int).toString().obs;
-    selectedSubCategory = ''.obs;
+    selectedCategory =
+        (categories.first['id'] as int).toString().obs; // default category
 
-    // Load subcategories for the default category
-    getSubcategories();
+    _loadInitialSubcategories();
 
-    dynamic args = Get.arguments;
+    _readRouteArgumentsAndLoadProduct();
+  }
+
+  @override
+  void onClose() {
+    productNameController.dispose();
+    descriptionController.dispose();
+    weightController.dispose();
+    priceController.dispose();
+    stockQuantityController.dispose();
+    discountController.dispose();
+    super.onClose();
+  }
+
+  // ====== Initialization helpers ======
+
+  Future<void> _loadInitialSubcategories() async {
+    await getSubcategories();
+  }
+
+  void _readRouteArgumentsAndLoadProduct() {
+    final args = Get.arguments;
     String? id;
 
     if (args is Map<String, dynamic>?) {
       id = args?['id']?.toString();
     } else if (args is String) {
-      id = args.toString();
+      id = args;
     }
 
     if (id != null) {
@@ -85,28 +110,23 @@ class EditProductController extends GetxController {
     }
   }
 
-  // Get sub-categories from subcategory services
+  // ====== Subcategories ======
+
   Future<void> getSubcategories() async {
     try {
-      int categoryId;
-
-      // Determine category ID based on vendor type
-      if (vendorType == 'medicine') {
-        categoryId = 6;
-      } else if (vendorType == 'food') {
-        categoryId = 1;
-      } else {
+      final categoryId = _getCategoryIdForVendorType();
+      if (categoryId == null) {
         AppLoggerHelper.debug("Unknown vendor type: $vendorType");
         return;
       }
-      final subcategories = await subcategoryServices.getSubcategories(
-        categoryId,
-      );
-      subCategories.value = subcategories;
 
-      // Set the selected subcategory name if we have a selected ID
+      isLoadingSubcategories.value = true;
+      final fetched = await _subcategoryServices.getSubcategories(categoryId);
+      subCategories.assignAll(fetched);
+      isLoadingSubcategories.value = false;
+
       if (selectedSubCategoryId.value > 0) {
-        final selectedSub = subcategories.firstWhereOrNull(
+        final selectedSub = fetched.firstWhereOrNull(
           (sub) => sub.id == selectedSubCategoryId.value,
         );
         if (selectedSub != null) {
@@ -114,31 +134,58 @@ class EditProductController extends GetxController {
         }
       }
     } catch (e) {
+      isLoadingSubcategories.value = false;
       log('Error loading subcategories: $e');
     }
   }
 
-  void loadProductData(String id) {
-    final dataController = Get.find<ProductsController>();
-    var product = dataController.getProductById(id);
-    if (product != null) {
-      productNameController.text = product.title;
-      descriptionController.text = product.description;
-      weightController.text = product.weight.toString();
-      priceController.text = product.sellPrice;
-      stockQuantityController.text = product.stock.toString();
-      discountController.text = product.discount.toString();
-      selectedCategory.value = product.categoryId.toString();
-      selectedSubCategoryId.value = product.subcategoryId;
-      selectedStockQuantity.value = product.stock.toString();
-      productImage.value = product.image;
-      isDiscount.value = product.discount > 0;
-      isOtc.value = product.isOTC;
-
-      // Load subcategories for the product's category
-      getSubcategories();
+  int? _getCategoryIdForVendorType() {
+    switch (vendorType) {
+      case 'medicine':
+        return 6;
+      case 'food':
+        return 1;
+      default:
+        return null;
     }
   }
+
+  List<SubcategoryModel> getFilteredSubCategories() {
+    if (subCategorySearchText.value.isEmpty) {
+      return subCategories;
+    }
+    final query = subCategorySearchText.value.toLowerCase();
+    return subCategories
+        .where((item) => item.name.toLowerCase().contains(query))
+        .toList();
+  }
+
+  // ====== Product load / populate ======
+
+  void loadProductData(String id) {
+    final dataController = Get.find<ProductsController>();
+    final product = dataController.getProductById(id);
+
+    if (product == null) return;
+
+    productNameController.text = product.title;
+    descriptionController.text = product.description;
+    weightController.text = product.weight.toString();
+    priceController.text = product.sellPrice;
+    stockQuantityController.text = product.stock.toString();
+    discountController.text = product.discount.toString();
+
+    selectedCategory.value = product.categoryId.toString();
+    selectedSubCategoryId.value = product.subcategoryId;
+    selectedStockQuantity.value = product.stock.toString();
+    productImage.value = product.image;
+    isDiscount.value = product.discount > 0;
+    isOtc.value = product.isOTC;
+
+    getSubcategories();
+  }
+
+  // ====== Dialog visibility ======
 
   void showEditProductDialog() {
     showEditProductModal.value = true;
@@ -149,33 +196,6 @@ class EditProductController extends GetxController {
     showEditProductModal.value = false;
   }
 
-  void clearForm() {
-    productNameController.clear();
-    descriptionController.clear();
-    weightController.clear();
-    priceController.clear();
-    stockQuantityController.clear();
-    discountController.clear();
-    selectedCategory.value = (categories.first['id'] as int).toString();
-    selectedSubCategory.value = '';
-    selectedStockQuantity.value = '';
-    productImage.value = '';
-    subCategorySearchText.value = '';
-  }
-
-  List<SubcategoryModel> getFilteredSubCategories() {
-    if (subCategorySearchText.value.isEmpty) {
-      return subCategories;
-    }
-    return subCategories
-        .where(
-          (item) => item.name.toLowerCase().contains(
-            subCategorySearchText.value.toLowerCase(),
-          ),
-        )
-        .toList();
-  }
-
   void showRemoveDiscountConfirmation() {
     showRemoveDiscountDialog.value = true;
   }
@@ -184,112 +204,35 @@ class EditProductController extends GetxController {
     showRemoveDiscountDialog.value = false;
   }
 
-  void removeDiscount() {
+  // ====== Form helpers ======
+
+  void clearForm() {
+    productNameController.clear();
+    descriptionController.clear();
+    weightController.clear();
+    priceController.clear();
+    stockQuantityController.clear();
+    discountController.clear();
+
+    selectedCategory.value = (categories.first['id'] as int).toString();
+    selectedSubCategory.value = '';
+    selectedSubCategoryId.value = 0;
+    selectedStockQuantity.value = '';
+    productImage.value = '';
+    subCategorySearchText.value = '';
     isDiscount.value = false;
-    hideRemoveDiscountConfirmation();
-  }
-
-  void saveChanges() async {
-    // Validate form
-    if (productNameController.text.isEmpty) {
-      AppLoggerHelper.error('Product name is required');
-      return;
-    }
-
-    if (priceController.text.isEmpty) {
-      AppLoggerHelper.error('Price is required');
-      return;
-    }
-
-    if (currentProductId.value.isEmpty) {
-      AppLoggerHelper.error('Product ID is missing');
-      return;
-    }
-
-    isLoading.value = true;
-
-    try {
-      // Get discount value
-      final discountValue = int.tryParse(discountController.text) ?? 0;
-
-      // Handle image file
-      File? imageFile;
-      if (productImage.value.isNotEmpty && productImage.value.startsWith('/')) {
-        imageFile = File(productImage.value);
-      }
-
-      bool success;
-
-      // Call appropriate service based on vendor type
-      if (vendorType == 'medicine') {
-        success = await editMedicineProductServices.updateProduct(
-          itemId: currentProductId.value,
-          title: productNameController.text,
-          description: descriptionController.text,
-          subcategoryId: selectedSubCategoryId.value,
-          price: double.tryParse(priceController.text) ?? 0.0,
-          discount: discountValue,
-          stock: int.tryParse(stockQuantityController.text) ?? 0,
-          isOTC: isOtc.value,
-          weight: double.tryParse(weightController.text),
-          image: imageFile,
-        );
-      } else if (vendorType == 'food') {
-        success = await editFoodProductServices.updateProduct(
-          itemId: currentProductId.value,
-          title: productNameController.text,
-          description: descriptionController.text,
-          subcategoryId: selectedSubCategoryId.value,
-          price: double.tryParse(priceController.text) ?? 0.0,
-          discount: discountValue,
-          stock: int.tryParse(stockQuantityController.text) ?? 0,
-          weight: double.tryParse(weightController.text),
-          image: imageFile,
-        );
-      } else {
-        AppLoggerHelper.error('Unknown vendor type: $vendorType');
-        return;
-      }
-
-      if (success) {
-        AppLoggerHelper.info('Product updated successfully');
-        isLoading.value = false;
-        // Navigate back after a delay
-        Future.delayed(Duration(milliseconds: 500), () {
-          Get.back();
-        });
-      } else {
-        isLoading.value = false;
-        AppLoggerHelper.error('Failed to update product');
-      }
-    } catch (e) {
-      isLoading.value = false;
-      AppLoggerHelper.error('Error saving changes: $e');
-      log('Error: $e');
-    }
-  }
-
-  void pickProductImage() async {
-    try {
-      final XFile? pickedFile = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 80,
-      );
-      if (pickedFile != null) {
-        productImage.value = pickedFile.path;
-      }
-    } catch (e) {}
+    isOtc.value = false;
   }
 
   void changeCategory(String value) {
     selectedCategory.value = value;
-    selectedSubCategory.value = ''; // Reset subcategory when category changes
+    selectedSubCategory.value = '';
+    selectedSubCategoryId.value = 0;
+    getSubcategories();
   }
 
   void changeSubCategory(String value) {
     selectedSubCategory.value = value;
-
-    // Find and set the subcategoryId based on selected name
     final selectedSub = subCategories.firstWhereOrNull(
       (sub) => sub.name == value,
     );
@@ -306,14 +249,112 @@ class EditProductController extends GetxController {
     isOtc.value = value;
   }
 
-  @override
-  void onClose() {
-    productNameController.dispose();
-    descriptionController.dispose();
-    weightController.dispose();
-    priceController.dispose();
-    stockQuantityController.dispose();
-    discountController.dispose();
-    super.onClose();
+  void removeDiscount() {
+    isDiscount.value = false;
+    discountController.clear();
+    hideRemoveDiscountConfirmation();
+  }
+
+  // ====== Image ======
+
+  Future<void> pickProductImage() async {
+    try {
+      final XFile? pickedFile = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
+      if (pickedFile != null) {
+        productImage.value = pickedFile.path;
+      }
+    } catch (e) {
+      AppLoggerHelper.error('Error picking image: $e');
+    }
+  }
+
+  // ====== Save / update ======
+
+  Future<void> saveChanges() async {
+    if (!_validateForm()) return;
+
+    isLoading.value = true;
+
+    try {
+      final discountValue = int.tryParse(discountController.text) ?? 0;
+      final File? imageFile =
+          productImage.value.isNotEmpty && productImage.value.startsWith('/')
+              ? File(productImage.value)
+              : null;
+
+      final success = await _updateProduct(discountValue, imageFile);
+
+      isLoading.value = false;
+
+      if (success) {
+        AppLoggerHelper.info('Product updated successfully');
+        Future.delayed(const Duration(milliseconds: 500), Get.back);
+      } else {
+        AppLoggerHelper.error('Failed to update product');
+      }
+    } catch (e) {
+      isLoading.value = false;
+      AppLoggerHelper.error('Error saving changes: $e');
+      log('Error: $e');
+    }
+  }
+
+  bool _validateForm() {
+    if (productNameController.text.isEmpty) {
+      AppLoggerHelper.error('Product name is required');
+      return false;
+    }
+
+    if (priceController.text.isEmpty) {
+      AppLoggerHelper.error('Price is required');
+      return false;
+    }
+
+    if (currentProductId.value.isEmpty) {
+      AppLoggerHelper.error('Product ID is missing');
+      return false;
+    }
+
+    return true;
+  }
+
+  Future<bool> _updateProduct(int discountValue, File? imageFile) async {
+    final double price = double.tryParse(priceController.text) ?? 0.0;
+    final int stock = int.tryParse(stockQuantityController.text) ?? 0;
+    final double? weight = double.tryParse(weightController.text);
+
+    switch (vendorType) {
+      case 'medicine':
+        return _editMedicineProductServices.updateProduct(
+          itemId: currentProductId.value,
+          title: productNameController.text,
+          description: descriptionController.text,
+          subcategoryId: selectedSubCategoryId.value,
+          price: price,
+          discount: discountValue,
+          stock: stock,
+          isOTC: isOtc.value,
+          weight: weight,
+          image: imageFile,
+        );
+      case 'food':
+        return _editFoodProductServices.updateProduct(
+          itemId: currentProductId.value,
+          title: productNameController.text,
+          description: descriptionController.text,
+          subcategoryId: selectedSubCategoryId.value,
+          price: price,
+          discount: discountValue,
+          stock: stock,
+          weight: weight,
+          image: imageFile,
+        );
+      default:
+        AppLoggerHelper.error('Unknown vendor type: $vendorType');
+        return false;
+    }
   }
 }

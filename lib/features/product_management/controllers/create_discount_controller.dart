@@ -4,6 +4,7 @@ import 'products_controller.dart';
 import '../model/products_model.dart';
 
 class CreateDiscountController extends GetxController {
+  // Text controllers
   final discountNameController = TextEditingController();
   final discountCodeController = TextEditingController();
   final discountValueController = TextEditingController();
@@ -11,19 +12,20 @@ class CreateDiscountController extends GetxController {
   final endDateController = TextEditingController();
   final productSearchController = TextEditingController();
 
-  var selectedProduct = 'Sweet Oranges'.obs;
-  var selectedProductId = '2'.obs;
-  var startDate = ''.obs;
-  var endDate = ''.obs;
-  var filteredProducts = <Product>[].obs;
+  // Reactive state
+  final selectedProduct = 'Sweet Oranges'.obs;
+  final selectedProductId = '2'.obs;
+  final startDate = ''.obs;
+  final endDate = ''.obs;
+  final filteredProducts = <Product>[].obs;
 
-  late ProductsController productsController;
+  late final ProductsController productsController;
 
   @override
   void onInit() {
     super.onInit();
     productsController = Get.find<ProductsController>();
-    filteredProducts.value = productsController.products;
+    filteredProducts.assignAll(productsController.products);
   }
 
   @override
@@ -37,18 +39,22 @@ class CreateDiscountController extends GetxController {
     super.onClose();
   }
 
+  // ====== Search & selection ======
+
   void searchProducts(String query) {
     if (query.isEmpty) {
-      filteredProducts.value = productsController.products;
-    } else {
-      filteredProducts.value = productsController.products
-          .where(
-            (product) =>
-                product.title.toLowerCase().contains(query.toLowerCase()) ||
-                product.description.toLowerCase().contains(query.toLowerCase()),
-          )
-          .toList();
+      filteredProducts.assignAll(productsController.products);
+      return;
     }
+
+    final lowerQuery = query.toLowerCase();
+    filteredProducts.assignAll(
+      productsController.products.where(
+        (product) =>
+            product.title.toLowerCase().contains(lowerQuery) ||
+            product.description.toLowerCase().contains(lowerQuery),
+      ),
+    );
   }
 
   void setSelectedProduct(String productName, String productId) {
@@ -56,6 +62,8 @@ class CreateDiscountController extends GetxController {
     selectedProductId.value = productId;
     productSearchController.clear();
   }
+
+  // ====== Date handling ======
 
   void setStartDate(String date) {
     startDate.value = date;
@@ -67,30 +75,38 @@ class CreateDiscountController extends GetxController {
     endDateController.text = date;
   }
 
+  // ====== Discount handling ======
+
   void addDiscount() {
-    // Validate fields
+    if (!_validateFields()) return;
+
+    // TODO: Implement API call / local save for discount here
+
+    closeDiscountDialog();
+  }
+
+  bool _validateFields() {
     if (discountNameController.text.isEmpty) {
-      return;
+      return false;
     }
 
     if (discountCodeController.text.isEmpty) {
-      return;
+      return false;
     }
 
     if (discountValueController.text.isEmpty) {
-      return;
+      return false;
     }
 
     if (startDate.value.isEmpty) {
-      return;
+      return false;
     }
 
     if (endDate.value.isEmpty) {
-      return;
+      return false;
     }
 
-    // Clear all fields and close dialog
-    closeDiscountDialog();
+    return true;
   }
 
   void clearFields() {
@@ -100,11 +116,13 @@ class CreateDiscountController extends GetxController {
     startDateController.clear();
     endDateController.clear();
     productSearchController.clear();
+
     startDate.value = '';
     endDate.value = '';
     selectedProduct.value = 'Sweet Oranges';
     selectedProductId.value = '2';
-    filteredProducts.value = productsController.products;
+
+    filteredProducts.assignAll(productsController.products);
   }
 
   void closeDiscountDialog() {

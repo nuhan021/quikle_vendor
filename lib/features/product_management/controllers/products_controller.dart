@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import 'package:quikle_vendor/routes/app_routes.dart';
 import '../widgets/create_discount_modal_widget.dart';
 import '../services/get_product_services.dart';
@@ -11,40 +12,46 @@ import '../model/products_model.dart';
 import '../../../core/services/storage_service.dart';
 
 class ProductsController extends GetxController {
+  // Vendor
   final vendorData = StorageService.getVendorDetails();
-  late final String vendorType = vendorData != null
-      ? vendorData!['type'] ?? 'food'
-      : 'food';
-  var searchText = ''.obs;
-  var selectedCategory = 'All Categories'.obs;
-  var selectedStockStatus = 'All Status'.obs;
-  var selectedStockQuantity = '1'.obs;
+  late final String vendorType =
+      vendorData != null ? (vendorData!['type'] ?? 'food') : 'food';
 
-  var showFilterProductModal = false.obs;
-  var showDeleteDialog = false.obs;
-  var showLowStockFilter = false.obs; // Filter to show only low stock products
-  var isDeleting = false.obs;
-  var productToDelete = ''.obs;
-  var isLoading = true.obs;
-  var isLoadingMore = false.obs;
-  var total = 0.obs;
-  static bool _isDataInitialized =
-      false; // Static flag - persists across controller recreations
+  // Filters / search
+  final searchText = ''.obs;
+  final selectedCategory = 'All Categories'.obs;
+  final selectedStockStatus = 'All Status'.obs;
+  final selectedStockQuantity = '1'.obs;
+
+  // UI state
+  final showFilterProductModal = false.obs;
+  final showDeleteDialog = false.obs;
+  final showLowStockFilter = false.obs;
+  final isDeleting = false.obs;
+  final productToDelete = ''.obs;
+  final isLoading = true.obs;
+  final isLoadingMore = false.obs;
+
+  // Pagination
+  final total = 0.obs;
+  static bool _isDataInitialized = false;
   int offset = 0;
   final int limit = 20;
-  final int searchLimit = 100; // Load more products for search
+  final int searchLimit = 100; // Reserved for future if needed
 
-  var products = <Product>[].obs; // Main products list for normal viewing
-  var allProductsLoaded =
-      false.obs; // Track if all products are loaded for search
-  var isLoadingSearch = false.obs; // Prevent concurrent search loads
-  var searchResults = <Product>[].obs; // Separate list for search results
-  var hasMoreSearchResults =
-      true.obs; // Track if there might be more search results
+  // Data
+  final products = <Product>[].obs;
+  final allProductsLoaded = false.obs;
+  final isLoadingSearch = false.obs;
+  final searchResults = <Product>[].obs;
+  final hasMoreSearchResults = true.obs;
 
+  // Services
   final GetProductServices _productServices = GetProductServices();
-  late final DeleteMedicineProductServices deleteMedicineProductServices;
-  late final DeleteFoodProductServices deleteFoodProductServices;
+  late final DeleteMedicineProductServices _deleteMedicineProductServices;
+  late final DeleteFoodProductServices _deleteFoodProductServices;
+
+  // Controllers / timers
   final ScrollController scrollController = ScrollController();
   Timer? _searchDebounceTimer;
   Timer? _autoLoadTimer;
@@ -53,46 +60,58 @@ class ProductsController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // Initialize delete services
-    deleteMedicineProductServices = DeleteMedicineProductServices();
-    deleteFoodProductServices = DeleteFoodProductServices();
+    _deleteMedicineProductServices = DeleteMedicineProductServices();
+    _deleteFoodProductServices = DeleteFoodProductServices();
 
-    // Only fetch products on first time initialization
     if (!_isDataInitialized) {
       fetchProducts();
       _isDataInitialized = true;
-
-      // Start auto-load timer after initial fetch
-      _startAutoLoadTimer();
-    } else {
-      // Data already loaded, just restart the auto-load timer
-      _startAutoLoadTimer();
     }
 
+    _startAutoLoadTimer();
     scrollController.addListener(_scrollListener);
   }
 
-  void onSearchChanged(String value) {
-    // Cancel previous timer
+  @override
+  void onClose() {
     _searchDebounceTimer?.cancel();
+    _autoLoadTimer?.cancel();
+    scrollController.dispose();
+    super.onClose();
+  }
 
-    // Update the search text immediately for UI
+  // ====== Search ======
+
+  void onSearchChanged(String value) {
+    _searchDebounceTimer?.cancel();
     searchText.value = value;
-
-    // Log search query
     log('🔎 User typing search: "$value"');
 
-    // Set new timer for debounced search
-    _searchDebounceTimer = Timer(Duration(milliseconds: 500), () {
+    _searchDebounceTimer = Timer(const Duration(milliseconds: 500), () {
       _handleSearch(value);
     });
   }
 
-  Future<void> _performIncrementalSearch(String searchValue) async {
-    // If already loading search, don't start again
-    if (isLoadingSearch.value) {
-      return;
+  void _handleSearch(String searchValue) {
+    if (searchValue.isNotEmpty) {
+      log('🔍 SEARCH INITIATED: Searching for "$searchValue"');
+      _performIncrementalSearch(searchValue);
+    } else {
+      log('🔄 Search cleared');
+      clearSearch();
     }
+  }
+
+  void clearSearch() {
+    searchText.value = '';
+    searchResults.clear();
+    isLoadingSearch.value = false;
+    hasMoreSearchResults.value = true;
+    _searchDebounceTimer?.cancel();
+  }
+
+  Future<void> _performIncrementalSearch(String searchValue) async {
+    if (isLoadingSearch.value) return;
 
     log(
       '🔍 Starting incremental search for: "$searchValue" (10 products per batch, 15s timeout, 2 retries)',
@@ -101,29 +120,28 @@ class ProductsController extends GetxController {
     searchResults.clear();
     hasMoreSearchResults.value = true;
 
-    // First, search through already loaded products
+    final lowerQuery = searchValue.toLowerCase();
+
+    // Search already loaded products first
     final alreadyLoadedMatches = products
         .where(
-          (product) =>
-              product.title.toLowerCase().contains(searchValue.toLowerCase()),
+          (product) => product.title.toLowerCase().contains(lowerQuery),
         )
         .toList();
 
     if (alreadyLoadedMatches.isNotEmpty) {
       searchResults.addAll(alreadyLoadedMatches);
-      log(
-        '✅ Found ${alreadyLoadedMatches.length} matches in already loaded products:',
-      );
-      for (var product in alreadyLoadedMatches) {
+      log('✅ Found ${alreadyLoadedMatches.length} matches in already loaded products:');
+      for (final product in alreadyLoadedMatches) {
         log('   • ${product.title} (ID: ${product.id})');
       }
       log('Total results so far: ${searchResults.length}');
     }
 
     int searchOffset = 0;
-    const int batchSize = 10; // Even smaller batches for very slow networks
+    const int batchSize = 10;
     int consecutiveEmptyBatches = 0;
-    const int maxEmptyBatches = 3; // Stop after 3 empty batches
+    const int maxEmptyBatches = 3;
 
     try {
       while (hasMoreSearchResults.value &&
@@ -131,7 +149,6 @@ class ProductsController extends GetxController {
         log('🔍 Loading search batch ${searchOffset ~/ batchSize + 1}...');
 
         try {
-          // Retry logic for failed requests
           const int maxRetries = 2;
           Map<String, dynamic>? response;
 
@@ -143,18 +160,12 @@ class ProductsController extends GetxController {
                     offset: searchOffset,
                     limit: batchSize,
                   )
-                  .timeout(
-                    const Duration(seconds: 15),
-                  ); // Increased timeout for slower networks
-              break; // Success, exit retry loop
+                  .timeout(const Duration(seconds: 15));
+              break;
             } catch (e) {
-              if (attempt == maxRetries) {
-                rethrow; // All retries failed
-              }
+              if (attempt == maxRetries) rethrow;
               log('⚠️ Search batch attempt ${attempt + 1} failed, retrying...');
-              await Future.delayed(
-                Duration(seconds: 1),
-              ); // Wait 1 second before retry
+              await Future.delayed(const Duration(seconds: 1));
             }
           }
 
@@ -166,26 +177,23 @@ class ProductsController extends GetxController {
           final List<dynamic> data = response['data'] ?? [];
           final productList = data
               .whereType<Map<String, dynamic>>()
-              .map((json) => Product.fromJson(json))
+              .map(Product.fromJson)
               .toList();
 
           if (productList.isNotEmpty) {
-            // Filter products that match the search term
             final matchingProducts = productList
                 .where(
-                  (product) => product.title.toLowerCase().contains(
-                    searchValue.toLowerCase(),
-                  ),
+                  (product) => product.title.toLowerCase().contains(lowerQuery),
                 )
                 .toList();
 
             if (matchingProducts.isNotEmpty) {
               searchResults.addAll(matchingProducts);
-              consecutiveEmptyBatches = 0; // Reset counter when we find matches
+              consecutiveEmptyBatches = 0;
               log(
                 '✅ Found ${matchingProducts.length} matching products in batch ${searchOffset ~/ batchSize + 1}:',
               );
-              for (var product in matchingProducts) {
+              for (final product in matchingProducts) {
                 log('   • ${product.title} (ID: ${product.id})');
               }
               log('Total results: ${searchResults.length}');
@@ -196,7 +204,6 @@ class ProductsController extends GetxController {
               );
             }
 
-            // Check if we've reached the end
             if (productList.length < batchSize) {
               hasMoreSearchResults.value = false;
               log('🎯 Reached end of products');
@@ -205,7 +212,6 @@ class ProductsController extends GetxController {
 
             searchOffset += batchSize;
 
-            // If we have enough results (e.g., 50+), stop loading more
             if (searchResults.length >= 50) {
               log(
                 '🎯 Found sufficient results (${searchResults.length}), stopping search',
@@ -213,7 +219,6 @@ class ProductsController extends GetxController {
               break;
             }
           } else {
-            // No more products to load
             hasMoreSearchResults.value = false;
             log('🎯 No more products to load');
             break;
@@ -234,28 +239,9 @@ class ProductsController extends GetxController {
     }
   }
 
-  void _handleSearch(String searchValue) {
-    if (searchValue.isNotEmpty) {
-      log('🔍 SEARCH INITIATED: Searching for "$searchValue"');
-      // Perform incremental search that loads and searches in batches
-      _performIncrementalSearch(searchValue);
-    } else {
-      // When search is cleared, reset search state
-      log('🔄 Search cleared');
-      clearSearch();
-    }
-  }
-
-  void clearSearch() {
-    searchText.value = '';
-    searchResults.clear();
-    isLoadingSearch.value = false;
-    hasMoreSearchResults.value = true;
-    _searchDebounceTimer?.cancel();
-  }
+  // ====== Pagination & auto-load ======
 
   void _scrollListener() {
-    // Only load more if not searching
     if (scrollController.position.pixels ==
             scrollController.position.maxScrollExtent &&
         searchText.value.isEmpty) {
@@ -264,12 +250,9 @@ class ProductsController extends GetxController {
   }
 
   void _startAutoLoadTimer() {
-    // Cancel existing timer if any
     _autoLoadTimer?.cancel();
 
-    // Start a periodic timer to auto-load more products every 3 seconds
-    _autoLoadTimer = Timer.periodic(Duration(seconds: 3), (_) {
-      // Only auto-load if not searching and there are more products
+    _autoLoadTimer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (searchText.value.isEmpty &&
           !isLoadingMore.value &&
           products.length < total.value) {
@@ -279,7 +262,6 @@ class ProductsController extends GetxController {
     });
   }
 
-  //fetch products from api and call get product services
   Future<void> fetchProducts({bool isLoadMore = false}) async {
     if (isLoadMore) {
       isLoadingMore.value = true;
@@ -287,6 +269,7 @@ class ProductsController extends GetxController {
       isLoading.value = true;
       offset = 0;
     }
+
     try {
       log(
         '🔄 Fetching products: isLoadMore=$isLoadMore, offset=$offset, vendorType=$vendorType',
@@ -296,17 +279,20 @@ class ProductsController extends GetxController {
         offset: offset,
         limit: limit,
       );
+
       log('✅ API Response received: ${response.keys}');
       final List<dynamic> data = response['data'] ?? [];
       total.value = response['total'] ?? 0;
       log(
         '📊 Total products in API: ${total.value}, Current batch: ${data.length}',
       );
+
       final productList = data
           .whereType<Map<String, dynamic>>()
-          .map((json) => Product.fromJson(json))
+          .map(Product.fromJson)
           .toList();
       log('🏃 Mapped products: ${productList.length}');
+
       if (isLoadMore) {
         products.addAll(productList);
         offset += limit;
@@ -317,13 +303,9 @@ class ProductsController extends GetxController {
         products.assignAll(productList);
         log('🆕 Initial load complete. Total products: ${products.length}');
       }
-      if (isLoadMore) {
-        isLoadingMore.value = false;
-      } else {
-        isLoading.value = false;
-      }
     } catch (e) {
       log('Error fetching products: $e');
+    } finally {
       if (isLoadMore) {
         isLoadingMore.value = false;
       } else {
@@ -338,8 +320,10 @@ class ProductsController extends GetxController {
     }
   }
 
+  // ====== CRUD helpers ======
+
   Product? getProductById(String id) {
-    return products.firstWhereOrNull((product) => product.id.toString() == id);
+    return products.firstWhereOrNull((p) => p.id.toString() == id);
   }
 
   void showCreateDiscountDialog() {
@@ -369,31 +353,27 @@ class ProductsController extends GetxController {
     productToDelete.value = '';
   }
 
-  void deleteProduct() async {
+  Future<void> deleteProduct() async {
     isDeleting.value = true;
     try {
-      String productId = productToDelete.value;
+      final productId = productToDelete.value;
       bool success;
 
-      // Call appropriate service based on vendor type
       if (vendorType == 'medicine') {
-        success = await deleteMedicineProductServices.deleteProduct(
+        success = await _deleteMedicineProductServices.deleteProduct(
           itemId: productId,
         );
       } else if (vendorType == 'food') {
-        success = await deleteFoodProductServices.deleteProduct(
+        success = await _deleteFoodProductServices.deleteProduct(
           itemId: productId,
         );
       } else {
         log('Unknown vendor type: $vendorType');
-        isDeleting.value = false;
-        hideDeleteConfirmation();
         return;
       }
 
       if (success) {
-        // Remove product from list
-        products.removeWhere((product) => product.id.toString() == productId);
+        products.removeWhere((p) => p.id.toString() == productId);
         log('Product deleted successfully');
       } else {
         log('Failed to delete product');
@@ -409,7 +389,7 @@ class ProductsController extends GetxController {
   void editProduct(String productId) {
     Get.toNamed(
       AppRoute.productEditScreen,
-      arguments: {'id': productId.toString()},
+      arguments: {'id': productId},
     );
   }
 
@@ -417,19 +397,20 @@ class ProductsController extends GetxController {
     Get.back();
   }
 
+  // ====== Low stock ======
+
   void viewLowStockProducts() {
     showLowStockFilter.value = !showLowStockFilter.value;
+
     if (showLowStockFilter.value) {
       log('🔴 LOW STOCK & OUT OF STOCK FILTER ACTIVATED');
-      // Use search results if searching, otherwise use all products
-      final productsToFilter = searchText.value.isNotEmpty
-          ? searchResults
-          : products;
-      final lowStockProducts = productsToFilter
-          .where((product) => product.stock <= 10)
-          .toList();
+      final productsToFilter =
+          searchText.value.isNotEmpty ? searchResults : products;
+      final lowStockProducts =
+          productsToFilter.where((p) => p.stock <= 10).toList();
+
       log('📦 Showing ${lowStockProducts.length} products (stock 0-10):');
-      for (var product in lowStockProducts) {
+      for (final product in lowStockProducts) {
         final status = product.stock == 0 ? 'OUT OF STOCK' : 'LOW STOCK';
         log('   • ${product.title} (Stock: ${product.stock}) - $status');
       }
@@ -440,21 +421,13 @@ class ProductsController extends GetxController {
     }
   }
 
-  void applyFilters() {}
-
-  int get lowStockCount {
-    // Use search results if searching, otherwise use all products
-    final productsToCheck = searchText.value.isNotEmpty
-        ? searchResults
-        : products;
-    return productsToCheck.where((product) => product.stock <= 10).length;
+  void applyFilters() {
+    // Implement category / status / quantity filter logic here if needed
   }
 
-  @override
-  void onClose() {
-    _searchDebounceTimer?.cancel();
-    _autoLoadTimer?.cancel();
-    scrollController.dispose();
-    super.onClose();
+  int get lowStockCount {
+    final productsToCheck =
+        searchText.value.isNotEmpty ? searchResults : products;
+    return productsToCheck.where((p) => p.stock <= 10).length;
   }
 }
