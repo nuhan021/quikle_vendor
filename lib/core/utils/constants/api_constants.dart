@@ -12,7 +12,7 @@ class ApiConstants {
       "${baseUrl}auth/vendor/toggle-active-status/";
   static const String vendorDetails = "${baseUrl}auth/vendor/vendor-details/";
   static const String updateVendorProfile =
-      "${baseUrl}vendor/update-vendor-profile/";
+      "${baseUrl}auth/vendor/update-vendor-profile/";
   static const String verifyToken = "${baseUrl}auth/verify-token/";
   static const String subcategories =
       "${baseUrl}items/subcategories/?category_id={categoryId}";

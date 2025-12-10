@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
@@ -34,11 +35,13 @@ class RestaurantHeaderWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-            child: Image.asset(ImagePath.shopImage, fit: BoxFit.cover),
+          Obx(
+            () => Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+              child: _buildRestaurantImage(controller),
+            ),
           ),
           SizedBox(width: 12),
           Expanded(
@@ -113,5 +116,23 @@ class RestaurantHeaderWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Build restaurant image from photo URL or default asset
+  Widget _buildRestaurantImage(HomeController controller) {
+    // Priority 1: Photo URL from reactive HomeController
+    if (controller.vendorPhotoUrl.value != null &&
+        controller.vendorPhotoUrl.value!.isNotEmpty) {
+      return Image.network(
+        controller.vendorPhotoUrl.value!,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Image.asset(ImagePath.shopImage, fit: BoxFit.cover);
+        },
+      );
+    }
+
+    // Fallback to default asset image
+    return Image.asset(ImagePath.shopImage, fit: BoxFit.cover);
   }
 }

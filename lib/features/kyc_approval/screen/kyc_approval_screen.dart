@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:quikle_vendor/routes/app_routes.dart' show AppRoute;
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../appbar/screen/appbar_screen.dart';
+import '../../profile/my_profile/screen/my_profile_screen.dart';
 import '../controller/kyc_approval_controller.dart';
 import '../widget/kyc_status_card.dart';
 
@@ -44,8 +45,8 @@ class KycApprovalScreen extends StatelessWidget {
                     "Your documents have been successfully verified.\nYou’re all set!",
                 buttonText: "Update Profile",
                 onButtonTap: () {
-                  // Get.offAll(MyProfileScreen(fromKycFlow: true));
-                  controller.goNavbar();
+                  Get.offAll(MyProfileScreen(fromKycFlow: true));
+                  // controller.goNavbar();
                 },
               ),
             );

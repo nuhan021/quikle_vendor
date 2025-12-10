@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
@@ -9,19 +10,19 @@ import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_textfield.dart';
 import '../../../appbar/screen/appbar_screen.dart';
-import '../../my_profile/controller/my_profile_controller.dart';
+import '../controller/edit_profile_controller.dart';
 
 class EditProfileScreen extends StatelessWidget {
-  const EditProfileScreen({super.key});
+  final bool fromKycFlow;
+  const EditProfileScreen({super.key, this.fromKycFlow = false});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<MyProfileController>();
+    final controller = Get.put(EditProfileController());
     final vendorData = StorageService.getVendorDetails();
     final vendorDetails = vendorData != null
         ? VendorDetailsModel.fromJson(vendorData)
         : null;
-    final ownerNameController = TextEditingController(text: "Vikash Rajput");
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -52,19 +53,14 @@ class EditProfileScreen extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 45,
-                          backgroundImage:
-                              controller.profileImagePath.value != null
-                              ? FileImage(
-                                  File(controller.profileImagePath.value!),
-                                )
-                              : const AssetImage("assets/images/profile.png")
-                                    as ImageProvider,
+                          backgroundImage: _getProfileImage(controller),
                         ),
                         Positioned(
                           bottom: 0,
                           right: 0,
                           child: GestureDetector(
-                            onTap: controller.pickImage,
+                            onTap: () =>
+                                _showImagePickerOptions(context, controller),
                             child: Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
@@ -142,7 +138,7 @@ class EditProfileScreen extends StatelessWidget {
                   CustomTextField(
                     label: "Owner Name",
                     hintText: "Enter owner name",
-                    controller: ownerNameController,
+                    controller: controller.ownerNameController,
                   ),
                   const SizedBox(height: 12),
 
@@ -205,18 +201,23 @@ class EditProfileScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   /// Save Button
-                  CustomButton(
-                    text: "Save Changes",
-                    fontSize: 16,
-                    onPressed: () {
-                      // TODO: save profile logic
-                      Get.back();
-                    },
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white,
-                    height: 50,
-                    borderRadius: 8,
-                    fontWeight: FontWeight.w600,
+                  Obx(
+                    () => CustomButton(
+                      text: controller.isUpdatingProfile.value
+                          ? "Saving..."
+                          : "Save Changes",
+                      fontSize: 16,
+                      onPressed: controller.isUpdatingProfile.value
+                          ? () {}
+                          : () => controller.updateProfile(fromKycFlow),
+                      backgroundColor: controller.isUpdatingProfile.value
+                          ? Colors.grey
+                          : Colors.black,
+                      textColor: Colors.white,
+                      height: 50,
+                      borderRadius: 8,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -225,5 +226,64 @@ class EditProfileScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Show image picker options (Camera or Gallery)
+  static void _showImagePickerOptions(
+    BuildContext context,
+    EditProfileController controller,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Pick Profile Image',
+              style: getTextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Take Photo'),
+              onTap: () {
+                Navigator.pop(context);
+                controller.pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Choose from Gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                controller.pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Get profile image from local file, API response photo, or default asset
+  ImageProvider _getProfileImage(EditProfileController controller) {
+    // Priority 1: Local file image (recently picked)
+    if (controller.profileImagePath.value != null) {
+      return FileImage(File(controller.profileImagePath.value!));
+    }
+
+    // Priority 2: Photo URL from SharedPreferences (API response)
+    final vendorData = StorageService.getVendorDetails();
+    if (vendorData != null && vendorData['photo'] != null) {
+      final photoUrl = vendorData['photo'] as String;
+      if (photoUrl.isNotEmpty) {
+        return NetworkImage(photoUrl);
+      }
+    }
+
+    // Priority 3: Default asset image
+    return const AssetImage("assets/images/profile.png");
   }
 }

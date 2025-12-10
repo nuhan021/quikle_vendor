@@ -8,7 +8,9 @@ import '../../../../core/common/widgets/custom_button.dart';
 import '../controller/my_profile_controller.dart';
 
 class ContactInfoCard extends StatelessWidget {
-  const ContactInfoCard({super.key});
+  final bool fromKycFlow;
+  
+  const ContactInfoCard({super.key, this.fromKycFlow = false});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +54,7 @@ class ContactInfoCard extends StatelessWidget {
                     fontWeight: FontWeight.w400,
                     color: Colors.white,
                   ),
-                  onPressed: () => Get.to(EditProfileScreen()),
+                  onPressed: () => Get.to(EditProfileScreen(fromKycFlow: fromKycFlow)),
                   backgroundColor: Colors.black,
                   textColor: Colors.white,
                   fontSize: 14,
@@ -64,7 +66,7 @@ class ContactInfoCard extends StatelessWidget {
 
             ProfileField(
               label: "Owner Name",
-              value: controller.ownerNameController.text,
+              value: controller.ownerNameDisplay.value,
             ),
 
             // ProfileField(
@@ -77,33 +79,33 @@ class ContactInfoCard extends StatelessWidget {
             // ),
             ProfileField(
               label: "Vendor Type",
-              value: controller.vendorDetails.type.toString(),
+              value: controller.vendorTypeDisplay.value,
               showDivider: false,
             ),
             Divider(height: 20.h),
 
             ProfileField(
               label: "Active Status",
-              value: controller.accountStatusController.text,
+              value: controller.accountStatusDisplay.value,
               showDivider: false,
             ),
             Divider(height: 20.h),
 
             ProfileField(
               label: "Phone Number",
-              value: controller.phoneController.text,
+              value: controller.phoneNumberDisplay.value,
               showDivider: false,
             ),
             Divider(height: 20.h),
             ProfileField(
               label: "NID Number",
-              value: controller.tinNumberController.text,
+              value: controller.nidNumberDisplay.value,
               showDivider: false,
             ),
             Divider(height: 20.h),
             ProfileField(
               label: "Opening Hours",
-              value: controller.openingHoursController.text,
+              value: controller.openingHoursDisplay.value,
               showDivider: false,
             ),
           ],
