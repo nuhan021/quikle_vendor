@@ -39,7 +39,9 @@ class RestaurantHeaderWidget extends StatelessWidget {
             () => Container(
               width: 60,
               height: 60,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+              ),
               child: _buildRestaurantImage(controller),
             ),
           ),
@@ -78,12 +80,16 @@ class RestaurantHeaderWidget extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 8),
-                    Text(
-                      'Until 10:00 PM',
-                      style: getTextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w400,
+                    Obx(
+                      () => Text(
+                        controller.vendorCloseTime.value ??
+                            vendorDetails?.closeTime ??
+                            '7:00 PM',
+                        style: getTextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ),
                   ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/common/widgets/custom_button.dart';
+import 'package:quikle_vendor/features/cupons/screen/cupon_screen.dart';
 import '../controllers/products_controller.dart';
 import '../controllers/add_product_controller.dart';
 
@@ -19,9 +20,10 @@ class ProductsActionButtonsWidget extends StatelessWidget {
         children: [
           Expanded(
             child: CustomButton(
-              text: 'Add Discount',
+              text: 'Add Cupons',
               onPressed: () {
-                controller.showCreateDiscountDialog();
+                // controller.showCreateDiscountDialog();
+                Get.to(CuponScreen());
               },
               textColor: Colors.black,
               backgroundColor: Colors.white,

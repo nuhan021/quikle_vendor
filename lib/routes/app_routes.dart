@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:quikle_vendor/features/cupons/screen/cupon_screen.dart';
 import 'package:quikle_vendor/features/home/screen/home_screen.dart';
 import 'package:quikle_vendor/features/kyc_approval/screen/kyc_approval_screen.dart';
 import 'package:quikle_vendor/features/kyc_verification/screen/kyc_verification_screen.dart';
@@ -44,6 +45,7 @@ class AppRoute {
   static String completedOrderDetailsScreen = '/completedOrderDetailsScreen';
   static String productManagementScreen = '/productManagementScreen';
   static String productEditScreen = '/productEditScreen';
+  static String cuponsScreen = '/cuponsScreen';
 
   static String getSplashScreen() => splash;
   static String getLoginScreen() => login;
@@ -61,6 +63,7 @@ class AppRoute {
   static String getHelpAndSupportScreen() => helpAndSupportScreen;
   static String getOrderManagementScreen() => orderManagementScreen;
   static String getCompletedOrderDetailsScreen() => completedOrderDetailsScreen;
+  static String getCuponScreen() => cuponsScreen;
 
   static List<GetPage> routes = [
     GetPage(name: splash, page: () => SplashScreen()),
@@ -89,5 +92,6 @@ class AppRoute {
     ),
     GetPage(name: productManagementScreen, page: () => ProductsScreen()),
     GetPage(name: productEditScreen, page: () => EditProductScreen()),
+    GetPage(name: cuponsScreen, page: () => CuponScreen()),
   ];
 }

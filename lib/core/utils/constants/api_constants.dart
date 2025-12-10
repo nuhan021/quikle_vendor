@@ -27,4 +27,8 @@ class ApiConstants {
   static const String deleteProductMedicine =
       "${baseUrl}items/medicine/{itemId}";
   static const String deleteProductFood = "${baseUrl}items/food/{itemId}";
+  static const String createCupon = "${baseUrl}promo/cupons/";
+  static const String getCupons = "${baseUrl}promo/cupons/my_cupon";
+  static const String updateCupon = "${baseUrl}promo/cupons/?cupon_id=";
+  static const String deleteCupon = "${baseUrl}promo/cupons/?cupon_id=";
 }
