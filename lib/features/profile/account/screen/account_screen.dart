@@ -1,12 +1,15 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/core/utils/constants/image_path.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/utils/constants/icon_path.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../appbar/screen/appbar_screen.dart';
+import '../../../home/controller/home_controller.dart';
 import '../controller/account_controller.dart';
 import '../widget/account_items.dart';
 import '../widget/language_dialog.dart';
@@ -29,6 +32,8 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final homeController = Get.find<HomeController>();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const AppbarScreen(title: "Account"),
@@ -58,9 +63,11 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 45,
-                    backgroundImage: AssetImage(ImagePath.shopImage),
+                  Obx(
+                    () => CircleAvatar(
+                      radius: 45,
+                      backgroundImage: _getProfileImage(homeController),
+                    ),
                   ),
                   SizedBox(height: 12),
                   Text(
@@ -161,5 +168,17 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
       ),
     );
+  }
+
+  /// Get profile image from SharedPreferences photo URL or default asset
+  ImageProvider _getProfileImage(HomeController controller) {
+    // Priority 1: Photo URL from reactive HomeController
+    if (controller.vendorPhotoUrl.value != null &&
+        controller.vendorPhotoUrl.value!.isNotEmpty) {
+      return NetworkImage(controller.vendorPhotoUrl.value!);
+    }
+
+    // Priority 2: Default asset image
+    return AssetImage(ImagePath.shopImage);
   }
 }

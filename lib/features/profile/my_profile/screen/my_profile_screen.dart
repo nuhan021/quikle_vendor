@@ -56,13 +56,10 @@ class MyProfileScreen extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 45,
-                          backgroundImage:
-                              controller.profileImagePath.value != null
-                              ? FileImage(
-                                  File(controller.profileImagePath.value!),
-                                )
-                              : const AssetImage("assets/images/profile.png")
-                                    as ImageProvider,
+                          backgroundImage: _getProfileImage(
+                            controller,
+                            vendorDetails,
+                          ),
                         ),
                         // Positioned(
                         //   bottom: 0,
@@ -120,7 +117,7 @@ class MyProfileScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             /// Contact Info
-            const ContactInfoCard(),
+            ContactInfoCard(fromKycFlow: fromKycFlow),
             const SizedBox(height: 20),
 
             if (fromKycFlow) ...[
@@ -143,5 +140,28 @@ class MyProfileScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Get profile image from local file, API response photo, or default asset
+  ImageProvider _getProfileImage(
+    MyProfileController controller,
+    VendorDetailsModel? vendorDetails,
+  ) {
+    // Priority 1: Local file image (recently picked)
+    if (controller.profileImagePath.value != null) {
+      return FileImage(File(controller.profileImagePath.value!));
+    }
+
+    // Priority 2: Photo URL from SharedPreferences (API response)
+    final vendorData = StorageService.getVendorDetails();
+    if (vendorData != null && vendorData['photo'] != null) {
+      final photoUrl = vendorData['photo'] as String;
+      if (photoUrl.isNotEmpty) {
+        return NetworkImage(photoUrl);
+      }
+    }
+
+    // Priority 3: Default asset image
+    return const AssetImage("assets/images/profile.png");
   }
 }
