@@ -10,7 +10,7 @@ class OrderDetailsActionsWidget extends StatelessWidget {
   final String orderId;
   final String status;
   final bool requiresPrescription;
-  final Function(String)? onAccept;
+  final Function(String)? onConfirm;
   final Function(String)? onReject;
   final Function(String)? onReview;
   final Function(String)? onPrepared;
@@ -22,7 +22,7 @@ class OrderDetailsActionsWidget extends StatelessWidget {
     required this.orderId,
     required this.status,
     required this.requiresPrescription,
-    this.onAccept,
+    this.onConfirm,
     this.onReject,
     this.onReview,
     this.onPrepared,
@@ -75,10 +75,12 @@ class OrderDetailsActionsWidget extends StatelessWidget {
             else
               Obx(() {
                 final controller = Get.find<OrderManagementController>();
-                final isAccepted = controller.acceptedOrders.contains(orderId);
-                return isAccepted
+                final isConfirmed = controller.confirmedOrders.contains(
+                  orderId,
+                );
+                return isConfirmed
                     ? CustomButton(
-                        text: 'Accepted',
+                        text: 'Confirmed',
                         onPressed: () {},
                         backgroundColor: const Color(0xFFD1D5DB),
                         textColor: Colors.black54,
@@ -87,7 +89,7 @@ class OrderDetailsActionsWidget extends StatelessWidget {
                         children: [
                           Expanded(
                             child: CustomButton(
-                              text: 'Reject',
+                              text: 'Cancel',
                               onPressed: () => onReject?.call(orderId),
                               backgroundColor: Colors.white,
                               textColor: AppColors.error,
@@ -97,10 +99,10 @@ class OrderDetailsActionsWidget extends StatelessWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: CustomButton(
-                              text: 'Accept',
+                              text: 'Confirm',
                               onPressed: () {
-                                controller.acceptedOrders.add(orderId);
-                                onAccept?.call(orderId);
+                                controller.confirmedOrders.add(orderId);
+                                onConfirm?.call(orderId);
                               },
                               backgroundColor: Colors.black,
                               textColor: Colors.white,
@@ -109,7 +111,7 @@ class OrderDetailsActionsWidget extends StatelessWidget {
                         ],
                       );
               }),
-          ] else if (status == 'accepted')
+          ] else if (status == 'confirmed')
             Obx(() {
               final controller = Get.find<OrderManagementController>();
               final isDisabled = controller.disabledButtons.contains(orderId);

@@ -61,7 +61,7 @@ class OrderDetailsController extends GetxController {
   }
 
   /// -------------------- Order Actions --------------------
-  void acceptOrder(String orderId) {}
+  void confirmOrder(String orderId) {}
 
   void rejectOrder(String orderId) {}
 

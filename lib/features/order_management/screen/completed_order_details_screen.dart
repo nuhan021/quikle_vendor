@@ -59,7 +59,7 @@ class CompletedOrderDetailsScreen extends StatelessWidget {
                   orderId: order['id'],
                   status: order['status'],
                   requiresPrescription: order['requiresPrescription'],
-                  onAccept: controller.acceptOrder,
+                  onConfirm: controller.confirmOrder,
                   onReject: controller.rejectOrder,
                   onReview: controller.reviewOrder,
                   onPrepared: controller.markAsPrepared,

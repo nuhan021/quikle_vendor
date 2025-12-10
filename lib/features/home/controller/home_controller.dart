@@ -116,7 +116,7 @@ class HomeController extends GetxController {
     isShopOpen.value = !isShopOpen.value;
   }
 
-  void acceptOrder(String orderId) {}
+  void confirmOrder(String orderId) {}
 
   void viewAllOrders() {
     Get.toNamed(AppRoute.orderManagementScreen);

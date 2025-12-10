@@ -22,7 +22,7 @@ class OrderStatusBadgeWidget extends StatelessWidget {
       backgroundColor = Color(0xFFFEF2F2);
       textColor = Color(0xFFDC2626);
       borderColor = Color(0xFFFECACA);
-    } else if (tag == 'Accepted') {
+    } else if (tag == 'Confirmed') {
       backgroundColor = Color(0xFFD1FAE5);
       textColor = Color(0xFF065F46);
       borderColor = Color(0xFFA7F3D0);

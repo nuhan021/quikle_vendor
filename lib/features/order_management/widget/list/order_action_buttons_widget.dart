@@ -33,8 +33,7 @@ class OrderActionButtonsWidget extends StatelessWidget {
       );
     }
 
-    /// 🟢 ACCEPTED Orders
-    if (status == 'accepted') {
+    if (status == 'confirmed') {
       return Obx(() {
         final isDisabled = controller.disabledButtons.contains(orderId);
         return CustomButton(

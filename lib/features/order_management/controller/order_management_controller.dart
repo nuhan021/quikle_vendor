@@ -3,7 +3,7 @@ import 'package:quikle_vendor/routes/app_routes.dart';
 
 class OrderManagementController extends GetxController {
   /// -------------------- Tabs --------------------
-  final tabs = ["New", "Accepted", "In Progress", "Completed"];
+  final tabs = ["New", "Confirmed", "In Progress", "Completed"];
   final selectedTab = 0.obs;
 
   /// -------------------- Orders (Mock Data) --------------------
@@ -11,7 +11,7 @@ class OrderManagementController extends GetxController {
 
   /// -------------------- Button State Management --------------------
   final disabledButtons = <String>{}.obs;
-  final acceptedOrders = <String>{}.obs;
+  final confirmedOrders = <String>{}.obs;
 
   @override
   void onInit() {
@@ -60,8 +60,8 @@ class OrderManagementController extends GetxController {
         'timeAgo': '25 mins ago',
         'deliveryTime': 'Delivery in 15 min',
         'address': '123 Main St, City Center',
-        'status': 'accepted',
-        'tags': ['Accepted'],
+        'status': 'confirmed',
+        'tags': ['Confirmed'],
         'isUrgent': false,
         'requiresPrescription': false,
         'estimatedDelivery': '2:30 PM',
@@ -154,7 +154,7 @@ class OrderManagementController extends GetxController {
   }
 
   /// -------------------- Order Actions --------------------
-  void acceptOrder(String orderId) {}
+  void confirmOrder(String orderId) {}
 
   void rejectOrder(String orderId) {}
 

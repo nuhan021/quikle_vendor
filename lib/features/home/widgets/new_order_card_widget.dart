@@ -55,7 +55,7 @@ class NewOrderCardWidget extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: () => controller.acceptOrder(orderId),
+            onTap: () => controller.confirmOrder(orderId),
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
@@ -63,7 +63,7 @@ class NewOrderCardWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                'Accept',
+                'Confirm',
                 style: getTextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
