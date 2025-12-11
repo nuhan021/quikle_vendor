@@ -96,14 +96,7 @@ class HomeController extends GetxController {
   ].obs;
 
   // Pending Actions Data
-  var pendingActions = [
-    {
-      'title': 'Update Inventory',
-      'subtitle': '3 items low in stock',
-      'buttonText': 'Update',
-      'buttonColor': Color(0xFFEF4444),
-    },
-  ].obs;
+  var pendingActions = <Map<String, dynamic>>[].obs;
 
   // Recent Orders Data
   var recentOrders = [

@@ -31,18 +31,13 @@ class PendingActionsWidget extends StatelessWidget {
         ),
         SizedBox(height: 16),
         Obx(() {
-          // Try to get products controller if registered
+          // Get products controller if registered
           final hasProductsController = Get.isRegistered<ProductsController>();
           final productsController = hasProductsController
               ? Get.find<ProductsController>()
               : null;
 
           final lowStockCount = productsController?.lowStockCount ?? 0;
-
-          // Build a list of action cards, but override the subtitle for Update Inventory
-          final otherActions = controller.pendingActions
-              .where((a) => a['title'] != 'Update Inventory')
-              .toList();
 
           return Container(
             padding: const EdgeInsets.all(16),
@@ -52,26 +47,13 @@ class PendingActionsWidget extends StatelessWidget {
             ),
             child: Column(
               children: [
-                // Update Inventory card (dynamic subtitle)
+                // Update Inventory card (dynamic subtitle from lowStockCount)
                 PendingActionCardWidget(
                   title: 'Update Inventory',
                   subtitle: '$lowStockCount items low in stock',
                   buttonText: 'Update',
                   buttonColor: const Color(0xFFEF4444),
                   onTap: controller.updateInventory,
-                ),
-
-                // Render any other pending actions (if present)
-                ...otherActions.map(
-                  (action) => PendingActionCardWidget(
-                    title: action['title'] as String,
-                    subtitle: action['subtitle'] as String,
-                    buttonText: action['buttonText'] as String,
-                    buttonColor: action['buttonColor'] as Color,
-                    onTap: action['title'] == 'Update Inventory'
-                        ? controller.updateInventory
-                        : controller.assignRider,
-                  ),
                 ),
               ],
             ),
