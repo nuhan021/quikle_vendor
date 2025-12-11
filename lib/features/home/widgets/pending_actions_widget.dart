@@ -30,35 +30,36 @@ class PendingActionsWidget extends StatelessWidget {
           ],
         ),
         SizedBox(height: 16),
-        Obx(() {
-          // Get products controller if registered
-          final hasProductsController = Get.isRegistered<ProductsController>();
-          final productsController = hasProductsController
-              ? Get.find<ProductsController>()
-              : null;
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          child: Column(
+            children: [
+              // Update Inventory card (dynamic subtitle from lowStockCount)
+              Obx(() {
+                // Get products controller if registered
+                final hasProductsController =
+                    Get.isRegistered<ProductsController>();
+                final productsController = hasProductsController
+                    ? Get.find<ProductsController>()
+                    : null;
 
-          final lowStockCount = productsController?.lowStockCount ?? 0;
+                final lowStockCount = productsController?.lowStockCount ?? 0;
 
-          return Container(
-            padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-            ),
-            child: Column(
-              children: [
-                // Update Inventory card (dynamic subtitle from lowStockCount)
-                PendingActionCardWidget(
+                return PendingActionCardWidget(
                   title: 'Update Inventory',
                   subtitle: '$lowStockCount items low in stock',
                   buttonText: 'Update',
                   buttonColor: const Color(0xFFEF4444),
                   onTap: controller.updateInventory,
-                ),
-              ],
-            ),
-          );
-        }),
+                );
+              }),
+            ],
+          ),
+        ),
       ],
     );
   }

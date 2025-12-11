@@ -98,11 +98,13 @@ class VerificationController extends GetxController {
         //   }
         // }
 
-        if (vendorData['vendor_profile'] ==
-                'Vendor profile fetched successfully' &&
+        // Case 1: Profile is completed
+        if (vendorData['message'] == 'Vendor profile fetched successfully' &&
             vendorData['vendor_profile']['is_completed'] == true) {
-          isVerifying.value = false;
+          log('✅ Navigated to Navbar Screen - Profile Completed');
+          await StorageService.saveVendorDetails(vendorData['vendor_profile']);
           Get.offAllNamed(AppRoute.navbarScreen);
+          return;
         }
 
         // Handle: Vendor profile not found
