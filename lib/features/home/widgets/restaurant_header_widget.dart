@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
@@ -78,12 +77,16 @@ class RestaurantHeaderWidget extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 8),
-                    Text(
-                      'Until 10:00 PM',
-                      style: getTextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w400,
+                    Obx(
+                      () => Text(
+                        controller.vendorCloseTime.value ??
+                            vendorDetails?.closeTime ??
+                            '7:00 PM',
+                        style: getTextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ),
                   ],

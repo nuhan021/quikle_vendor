@@ -1,12 +1,11 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/core/utils/constants/image_path.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/utils/constants/icon_path.dart';
+import '../../../../core/utils/widgets/network_image_with_fallback.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../appbar/screen/appbar_screen.dart';
 import '../../../home/controller/home_controller.dart';
@@ -64,9 +63,13 @@ class _AccountScreenState extends State<AccountScreen> {
               child: Column(
                 children: [
                   Obx(
-                    () => CircleAvatar(
-                      radius: 45,
-                      backgroundImage: _getProfileImage(homeController),
+                    () => ClipRRect(
+                      borderRadius: BorderRadius.circular(45),
+                      child: SizedBox(
+                        width: 90,
+                        height: 90,
+                        child: _buildProfileImage(homeController),
+                      ),
                     ),
                   ),
                   SizedBox(height: 12),
@@ -170,15 +173,26 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  /// Get profile image from SharedPreferences photo URL or default asset
-  ImageProvider _getProfileImage(HomeController controller) {
+  /// Build profile image widget with fallback
+  Widget _buildProfileImage(HomeController controller) {
     // Priority 1: Photo URL from reactive HomeController
     if (controller.vendorPhotoUrl.value != null &&
         controller.vendorPhotoUrl.value!.isNotEmpty) {
-      return NetworkImage(controller.vendorPhotoUrl.value!);
+      return NetworkImageWithFallback(
+        controller.vendorPhotoUrl.value!,
+        fallback: ImagePath.shopImage,
+        fit: BoxFit.cover,
+        width: 90,
+        height: 90,
+      );
     }
 
     // Priority 2: Default asset image
-    return AssetImage(ImagePath.shopImage);
+    return Image.asset(
+      ImagePath.shopImage,
+      fit: BoxFit.cover,
+      width: 90,
+      height: 90,
+    );
   }
 }

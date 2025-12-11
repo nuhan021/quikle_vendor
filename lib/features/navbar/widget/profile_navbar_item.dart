@@ -1,9 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/common/styles/global_text_style.dart';
-import '../../../core/services/storage_service.dart';
 import '../../../core/utils/constants/colors.dart';
+import '../../../core/utils/widgets/network_image_with_fallback.dart';
 import '../../../features/home/controller/home_controller.dart';
 
 class ProfileNavbarItem extends StatelessWidget {
@@ -30,9 +29,13 @@ class ProfileNavbarItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Obx(
-            () => CircleAvatar(
-              radius: 14,
-              backgroundImage: _getProfileImage(homeController),
+            () => ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: SizedBox(
+                width: 28,
+                height: 28,
+                child: _buildProfileImage(homeController),
+              ),
             ),
           ),
           const SizedBox(height: 4),
@@ -49,15 +52,19 @@ class ProfileNavbarItem extends StatelessWidget {
     );
   }
 
-  /// Get profile image from photo URL or default asset
-  ImageProvider _getProfileImage(HomeController controller) {
+  /// Build profile image widget with fallback
+  Widget _buildProfileImage(HomeController controller) {
     // Priority 1: Photo URL from reactive HomeController
     if (controller.vendorPhotoUrl.value != null &&
         controller.vendorPhotoUrl.value!.isNotEmpty) {
-      return NetworkImage(controller.vendorPhotoUrl.value!);
+      return NetworkImageWithFallback(
+        controller.vendorPhotoUrl.value!,
+        fallback: imagePath,
+        fit: BoxFit.cover,
+      );
     }
 
     // Priority 2: Default asset image
-    return AssetImage(imagePath);
+    return Image.asset(imagePath, fit: BoxFit.cover);
   }
 }

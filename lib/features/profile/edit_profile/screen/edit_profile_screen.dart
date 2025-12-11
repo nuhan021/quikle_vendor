@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
+import 'package:quikle_vendor/core/utils/widgets/network_image_with_fallback.dart';
 import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
@@ -51,9 +52,13 @@ class EditProfileScreen extends StatelessWidget {
                   Obx(
                     () => Stack(
                       children: [
-                        CircleAvatar(
-                          radius: 45,
-                          backgroundImage: _getProfileImage(controller),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(45),
+                          child: SizedBox(
+                            width: 90,
+                            height: 90,
+                            child: _buildProfileImage(controller),
+                          ),
                         ),
                         Positioned(
                           bottom: 0,
@@ -267,11 +272,14 @@ class EditProfileScreen extends StatelessWidget {
     );
   }
 
-  /// Get profile image from local file, API response photo, or default asset
-  ImageProvider _getProfileImage(EditProfileController controller) {
+  /// Build profile image widget with fallback
+  Widget _buildProfileImage(EditProfileController controller) {
     // Priority 1: Local file image (recently picked)
     if (controller.profileImagePath.value != null) {
-      return FileImage(File(controller.profileImagePath.value!));
+      return Image.file(
+        File(controller.profileImagePath.value!),
+        fit: BoxFit.cover,
+      );
     }
 
     // Priority 2: Photo URL from SharedPreferences (API response)
@@ -279,11 +287,15 @@ class EditProfileScreen extends StatelessWidget {
     if (vendorData != null && vendorData['photo'] != null) {
       final photoUrl = vendorData['photo'] as String;
       if (photoUrl.isNotEmpty) {
-        return NetworkImage(photoUrl);
+        return NetworkImageWithFallback(
+          photoUrl,
+          fallback: "assets/images/profile.png",
+          fit: BoxFit.cover,
+        );
       }
     }
 
     // Priority 3: Default asset image
-    return const AssetImage("assets/images/profile.png");
+    return Image.asset("assets/images/profile.png", fit: BoxFit.cover);
   }
 }

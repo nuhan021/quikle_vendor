@@ -19,6 +19,7 @@ class HomeController extends GetxController {
   // Reactive vendor data - will trigger UI updates when changed
   var vendorPhotoUrl = Rx<String?>(null);
   var vendorOwnerName = Rx<String?>(null);
+  var vendorCloseTime = Rx<String?>(null);
 
   @override
   void onInit() {
@@ -37,6 +38,7 @@ class HomeController extends GetxController {
       isShopOpen.value = isActive;
       vendorPhotoUrl.value = vendorData['photo'] as String?;
       vendorOwnerName.value = vendorData['owner_name'] as String?;
+      vendorCloseTime.value = vendorData['close_time'] as String?;
       log('Shop status loaded from vendor details: $isActive');
     }
   }
@@ -49,9 +51,11 @@ class HomeController extends GetxController {
       isShopOpen.value = isActive;
       vendorPhotoUrl.value = vendorData['photo'] as String?;
       vendorOwnerName.value = vendorData['owner_name'] as String?;
+      vendorCloseTime.value = vendorData['close_time'] as String?;
       log('Vendor data reloaded from SharedPreferences');
       log('Updated photo URL: ${vendorPhotoUrl.value}');
       log('Updated owner name: ${vendorOwnerName.value}');
+      log('Updated close time: ${vendorCloseTime.value}');
       // Force rebuild by updating a dummy observable
       update();
     }

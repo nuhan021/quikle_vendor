@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/common/widgets/custom_button.dart';
-import '../controllers/products_controller.dart';
+import 'package:quikle_vendor/features/cupons/screen/cupon_screen.dart';
+import 'package:quikle_vendor/features/cupons/controllers/cupon_controller.dart';
 import '../controllers/add_product_controller.dart';
 
 class ProductsActionButtonsWidget extends StatelessWidget {
@@ -9,7 +10,6 @@ class ProductsActionButtonsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<ProductsController>();
     final addProductController = Get.find<AddProductController>();
 
     return Container(
@@ -19,9 +19,12 @@ class ProductsActionButtonsWidget extends StatelessWidget {
         children: [
           Expanded(
             child: CustomButton(
-              text: 'Add Discount',
-              onPressed: () {
-                controller.showCreateDiscountDialog();
+              text: 'Add Cupons',
+              onPressed: () async {
+                // Ensure coupon controller exists and refresh data
+                final couponController = Get.put(CouponController());
+                await couponController.fetchCoupons();
+                Get.to(() => CuponScreen());
               },
               textColor: Colors.black,
               backgroundColor: Colors.white,

@@ -10,9 +10,12 @@ class AppbarScreen extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(
-        title,
-        style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+      title: GestureDetector(
+        onTap: () {},
+        child: Text(
+          title,
+          style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        ),
       ),
       centerTitle: false,
       shape: RoundedRectangleBorder(
