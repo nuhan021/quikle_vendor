@@ -8,7 +8,7 @@ import '../models/response_data.dart';
 import '../utils/logging/logger.dart';
 
 class NetworkCaller {
-  final int timeoutDuration = 30;
+  final int timeoutDuration = 60; // Increased from 30 to 60 seconds
 
   // GET Request
   Future<ResponseData> getRequest(

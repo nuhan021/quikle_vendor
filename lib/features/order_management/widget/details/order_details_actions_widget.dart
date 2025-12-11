@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/widgets/custom_button.dart';
+import '../../../../core/common/widgets/custom_textfield.dart';
 import '../../../../core/utils/constants/colors.dart';
 import '../../../../core/services/storage_service.dart';
 import '../../../vendor/models/vendor_model.dart';
 import '../../controller/order_management_controller.dart';
+import '../../controller/order_details_controller.dart';
 
 class OrderDetailsActionsWidget extends StatelessWidget {
   final String orderId;
@@ -14,7 +16,7 @@ class OrderDetailsActionsWidget extends StatelessWidget {
   final Function(String)? onReject;
   final Function(String)? onReview;
   final Function(String)? onPrepared;
-  final Function(String)? onDispatched;
+  final Function(String)? onShipped;
   final Function(String)? onViewPrescription;
 
   const OrderDetailsActionsWidget({
@@ -26,7 +28,7 @@ class OrderDetailsActionsWidget extends StatelessWidget {
     this.onReject,
     this.onReview,
     this.onPrepared,
-    this.onDispatched,
+    this.onShipped,
     this.onViewPrescription,
   });
 
@@ -67,6 +69,20 @@ class OrderDetailsActionsWidget extends StatelessWidget {
           ],
 
           if (status == 'new') ...[
+            // Prepare Time Input for New Orders
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: GetBuilder<OrderDetailsController>(
+                builder: (controller) => CustomTextField(
+                  label: 'Prepare Time (minutes)',
+                  hintText: 'Enter prepare time in minutes',
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    controller.prepareTime.value = int.tryParse(value) ?? 0;
+                  },
+                ),
+              ),
+            ),
             if (requiresPrescription)
               CustomButton(
                 text: 'Review',
@@ -129,12 +145,12 @@ class OrderDetailsActionsWidget extends StatelessWidget {
               final controller = Get.find<OrderManagementController>();
               final isDisabled = controller.disabledButtons.contains(orderId);
               return CustomButton(
-                text: isDisabled ? 'Dispatched...' : 'Mark as Dispatched',
+                text: isDisabled ? 'Shipped...' : 'Mark as Shipped',
                 onPressed: isDisabled
                     ? () {}
                     : () {
                         controller.disabledButtons.add(orderId);
-                        onDispatched?.call(orderId);
+                        onShipped?.call(orderId);
                       },
                 backgroundColor: isDisabled
                     ? const Color(0xFFD1D5DB)

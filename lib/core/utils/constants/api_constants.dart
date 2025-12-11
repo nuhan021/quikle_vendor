@@ -27,4 +27,11 @@ class ApiConstants {
   static const String deleteProductMedicine =
       "${baseUrl}items/medicine/{itemId}";
   static const String deleteProductFood = "${baseUrl}items/food/{itemId}";
+
+  // Orders
+  static const String myOrders = "${baseUrl}earning/order/my_orders";
+  static const String createOffer = "${baseUrl}rider/orders/create-offer/";
+  static const String markShipped = "${baseUrl}rider/orders/shipped/";
+  // Earnings / Vendor account
+  static const String vendorAccount = "${baseUrl}earning/vendor/vendor_account";
 }

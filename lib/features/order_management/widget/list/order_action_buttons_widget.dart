@@ -56,10 +56,10 @@ class OrderActionButtonsWidget extends StatelessWidget {
       return Obx(() {
         final isDisabled = controller.disabledButtons.contains(orderId);
         return CustomButton(
-          text: 'Mark as Dispatched',
+          text: 'Mark as Shipped',
           onPressed: isDisabled
               ? () {}
-              : () => controller.markAsDispatched(orderId),
+              : () => controller.markAsShipped(orderId),
           height: 50,
           backgroundColor: isDisabled
               ? const Color(0xFFD1D5DB)

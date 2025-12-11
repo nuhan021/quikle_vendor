@@ -63,7 +63,7 @@ class CompletedOrderDetailsScreen extends StatelessWidget {
                   onReject: controller.rejectOrder,
                   onReview: controller.reviewOrder,
                   onPrepared: controller.markAsPrepared,
-                  onDispatched: controller.markAsDispatched,
+                  onShipped: controller.markAsShipped,
                   onViewPrescription: controller.viewPrescription,
                 ),
               ],

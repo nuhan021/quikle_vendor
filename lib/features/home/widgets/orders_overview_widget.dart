@@ -4,11 +4,25 @@ import 'package:quikle_vendor/core/common/widgets/custom_button.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import '../../../core/common/styles/global_text_style.dart';
 import '../controller/home_controller.dart';
+import 'package:quikle_vendor/features/order_management/controller/order_management_controller.dart';
 import 'new_order_card_widget.dart';
 import 'ongoing_delivery_card_widget.dart';
 
 class OrdersOverviewWidget extends StatelessWidget {
   const OrdersOverviewWidget({super.key});
+
+  List<Map<String, dynamic>> _getNewOrders() {
+    try {
+      // Use Get.isRegistered to safely check before accessing
+      if (!Get.isRegistered<OrderManagementController>()) {
+        return [];
+      }
+      final omc = Get.find<OrderManagementController>();
+      return omc.allOrders.where((o) => o['status'] == 'new').take(3).toList();
+    } catch (_) {
+      return [];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,26 +59,60 @@ class OrdersOverviewWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Text(
-                    'New Orders',
-                    style: getTextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF111827),
+              Obx(() {
+                if (!Get.isRegistered<OrderManagementController>()) {
+                  return Row(
+                    children: [
+                      Text(
+                        'New Orders',
+                        style: getTextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF111827),
+                        ),
+                      ),
+                      Spacer(),
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: AppColors.success,
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        child: Text(
+                          '0',
+                          style: getTextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+                final omc = Get.find<OrderManagementController>();
+                final newOrderCount = omc.allOrders
+                    .where((o) => o['status'] == 'new')
+                    .length;
+                return Row(
+                  children: [
+                    Text(
+                      'New Orders',
+                      style: getTextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF111827),
+                      ),
                     ),
-                  ),
-                  Spacer(),
-                  Obx(
-                    () => Container(
+                    Spacer(),
+                    Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: AppColors.success,
                         borderRadius: BorderRadius.circular(22),
                       ),
                       child: Text(
-                        '${controller.newOrders.length}',
+                        '$newOrderCount',
                         style: getTextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -72,23 +120,32 @@ class OrdersOverviewWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                );
+              }),
               const SizedBox(height: 8),
-              // Order cards (now properly in a vertical Column)
-              Obx(
-                () => Column(
-                  children: controller.newOrders
-                      .map(
-                        (order) => NewOrderCardWidget(
-                          orderId: order['id']!,
-                          items: order['items']!,
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
+              Obx(() {
+                final newOrders = _getNewOrders();
+                return Column(
+                  children: newOrders.map((order) {
+                    // Normalize items into a short string for the overview card
+                    final rawItems = order['items'];
+                    String itemsText;
+                    if (rawItems is String) {
+                      itemsText = rawItems;
+                    } else if (rawItems is List) {
+                      // prefer a concise summary like "2 items"
+                      itemsText = '${rawItems.length} items';
+                    } else {
+                      itemsText = rawItems?.toString() ?? '';
+                    }
+                    return NewOrderCardWidget(
+                      orderId: order['id']!,
+                      items: itemsText,
+                    );
+                  }).toList(),
+                );
+              }),
             ],
           ),
         ),

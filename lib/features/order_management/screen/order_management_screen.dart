@@ -22,6 +22,19 @@ class OrderManagementScreen extends StatelessWidget {
             OrdersTabNavigationWidget(),
             Expanded(
               child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (controller.errorMessage.value.isNotEmpty) {
+                  return Center(
+                    child: Text(
+                      controller.errorMessage.value,
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                }
+
                 final orders = controller.filteredOrders;
                 if (orders.isEmpty) {
                   return const Center(child: Text("No orders found"));

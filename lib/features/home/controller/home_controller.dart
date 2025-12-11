@@ -5,6 +5,7 @@ import 'package:quikle_vendor/features/home/controller/rider_assignment_controll
 import 'package:quikle_vendor/features/home/services/home_services.dart';
 import 'package:quikle_vendor/features/navbar/controller/navbar_controller.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
+import 'package:quikle_vendor/features/order_management/controller/order_management_controller.dart';
 
 import '../../../core/services/storage_service.dart';
 
@@ -24,6 +25,8 @@ class HomeController extends GetxController {
     super.onInit();
     _homeServices = Get.put(HomeServices());
     Get.put(RiderAssignmentController());
+    // Initialize OrderManagementController early so OrdersOverviewWidget can access it
+    Get.put(OrderManagementController());
     loadShopStatus();
   }
 
@@ -72,11 +75,15 @@ class HomeController extends GetxController {
     }
   }
 
-  // New Orders Data
-  var newOrders = [
-    {'id': '#12345', 'items': '2 Pizza, 1 Coke'},
-    {'id': '#12345', 'items': '1 Pizza, 1 Coke'},
-  ].obs;
+  // New Orders Data (sourced from OrderManagementController)
+  List<Map<String, dynamic>> get newOrders {
+    try {
+      final omc = Get.find<OrderManagementController>();
+      return omc.allOrders.where((o) => o['status'] == 'new').toList();
+    } catch (_) {
+      return <Map<String, dynamic>>[];
+    }
+  }
 
   // Ongoing Deliveries Data
   var ongoingDeliveries = [
@@ -140,12 +147,18 @@ class HomeController extends GetxController {
 
   void confirmOrder(String orderId) {}
 
+  void viewOrder(String orderId) {
+    Get.toNamed(AppRoute.completedOrderDetailsScreen, arguments: orderId);
+  }
+
   void viewAllOrders() {
     Get.toNamed(AppRoute.orderManagementScreen);
   }
 
   void updateInventory() {
-    Get.toNamed(AppRoute.productManagementScreen);
+    // Navigate via the navbar controller to the Product Management tab
+    // (keeps navigation consistent with other dashboard shortcuts)
+    controller.changeTab(3);
   }
 
   void assignRider() {

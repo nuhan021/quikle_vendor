@@ -1,17 +1,24 @@
 import 'package:get/get.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
+import '../../../core/services/storage_service.dart';
+import '../services/order_services.dart';
 
 class OrderManagementController extends GetxController {
   /// -------------------- Tabs --------------------
-  final tabs = ["New", "Confirmed", "In Progress", "Completed"];
+  final tabs = ["New", "In Progress", "Completed"];
   final selectedTab = 0.obs;
 
   /// -------------------- Orders (Mock Data) --------------------
   final allOrders = <Map<String, dynamic>>[].obs;
+  final isLoading = false.obs;
+  final errorMessage = ''.obs;
 
   /// -------------------- Button State Management --------------------
   final disabledButtons = <String>{}.obs;
   final confirmedOrders = <String>{}.obs;
+
+  /// -------------------- Services --------------------
+  final OrderService _orderService = OrderService();
 
   @override
   void onInit() {
@@ -19,133 +26,126 @@ class OrderManagementController extends GetxController {
     fetchOrders();
   }
 
-  /// -------------------- Fetch Orders --------------------
+  /// -------------------- Fetch Orders from API --------------------
   Future<void> fetchOrders() async {
-    await Future.delayed(const Duration(milliseconds: 800)); // mock delay
+    isLoading.value = true;
+    errorMessage.value = '';
 
-    allOrders.assignAll([
-      {
-        'id': '#5679',
-        'customerName': 'Sarah Johnson',
-        'timeAgo': '10 mins ago',
-        'deliveryTime': 'Delivery in 30 min',
-        'address': '456 Oak Ave, Downtown',
-        'status': 'new',
-        'tags': ['New', 'Urgent'],
-        'isUrgent': true,
-        'requiresPrescription': false,
-        'estimatedDelivery': '2:45 PM',
-        'items': [
-          {
-            'name': 'Paracetamol',
-            'description': '500mg tablets',
-            'quantity': 2,
-            'price': 5.99,
-            'image': 'assets/images/medicine.png',
-          },
-          {
-            'name': 'Vitamin C',
-            'description': '1000mg',
-            'quantity': 1,
-            'price': 8.99,
-            'image': 'assets/images/medicine.png',
-          },
-        ],
-        'total': 14.98,
-        'specialInstructions': 'Please deliver during office hours',
-      },
-      {
-        'id': '#1325',
-        'customerName': 'John Smith',
-        'timeAgo': '25 mins ago',
-        'deliveryTime': 'Delivery in 15 min',
-        'address': '123 Main St, City Center',
-        'status': 'confirmed',
-        'tags': ['Confirmed'],
-        'isUrgent': false,
-        'requiresPrescription': false,
-        'estimatedDelivery': '2:30 PM',
-        'items': [
-          {
-            'name': 'Cough Syrup',
-            'description': '100ml bottle',
-            'quantity': 1,
-            'price': 7.50,
-            'image': 'assets/images/medicine.png',
-          },
-        ],
-        'total': 7.50,
-        'specialInstructions': 'Leave at door if not home',
-      },
-      {
-        'id': '#1327',
-        'customerName': 'Emma Davis',
-        'timeAgo': '40 mins ago',
-        'deliveryTime': 'Delivery in 5 min',
-        'address': '789 Pine St, Uptown',
-        'status': 'in-progress',
-        'tags': ['In Progress'],
-        'isUrgent': false,
-        'requiresPrescription': false,
-        'estimatedDelivery': '2:15 PM',
-        'items': [
-          {
-            'name': 'Antibiotic Cream',
-            'description': '50g tube',
-            'quantity': 2,
-            'price': 6.99,
-            'image': 'assets/images/medicine.png',
-          },
-        ],
-        'total': 13.98,
-        'specialInstructions': 'Call before delivery',
-      },
-      {
-        'id': '#13275',
-        'customerName': 'Michael Brown',
-        'timeAgo': '40 mins ago',
-        'deliveryTime': 'Delivered at 2:30 PM',
-        'address': '321 Elm St, Suburb',
-        'status': 'completed',
-        'tags': ['Completed'],
-        'isUrgent': false,
-        'requiresPrescription': false,
-        'estimatedDelivery': '2:30 PM',
-        'items': [
-          {
-            'name': 'Pain Relief Tablets',
-            'description': '200mg',
-            'quantity': 1,
-            'price': 4.99,
-            'image': 'assets/images/medicine.png',
-          },
-          {
-            'name': 'Multivitamins',
-            'description': 'Daily supplement',
-            'quantity': 1,
-            'price': 12.99,
-            'image': 'assets/images/medicine.png',
-          },
-        ],
-        'total': 17.98,
-        'specialInstructions':
-            'Please call when outside. Leave package at the door. The doorbell doesn\'t work.',
-      },
-    ]);
+    try {
+      // Pass stored token (if available) as Bearer token
+      final storedToken = StorageService.token;
+      final authHeader = storedToken != null ? 'Bearer $storedToken' : null;
+
+      final response = await _orderService.fetchOrders(
+        offset: 0,
+        limit: 50,
+        token: authHeader,
+      );
+
+      if (response != null && response.orders.isNotEmpty) {
+        // Convert API response to UI format
+        final uiOrders = response.orders
+            .map((order) => OrderService.orderModelToMap(order))
+            .toList();
+        allOrders.assignAll(uiOrders);
+      } else {
+        errorMessage.value = 'No orders found or API returned an error';
+        // If token missing or invalid, give actionable message
+        if (authHeader == null) {
+          errorMessage.value = 'Authentication token missing. Please login.';
+        }
+        // Remove dummy data: clear any existing orders so UI shows empty state
+        allOrders.clear();
+      }
+    } catch (e) {
+      errorMessage.value = 'Failed to load orders: $e';
+      print('Error fetching orders: $e');
+      // Remove dummy data fallback: clear orders so UI can display empty/error state
+      allOrders.clear();
+    } finally {
+      isLoading.value = false;
+    }
   }
 
-  /// -------------------- Tab Switch --------------------
-  void changeTab(int index) => selectedTab.value = index;
+  /// -------------------- Tab Switch with API Call --------------------
+  void changeTab(int index) {
+    selectedTab.value = index;
+    // Fetch orders for the selected tab
+    _fetchOrdersByStatus(index);
+  }
 
-  /// -------------------- Filtered Orders --------------------
+  /// -------------------- Fetch Orders by Tab Status --------------------
+  Future<void> _fetchOrdersByStatus(int tabIndex) async {
+    isLoading.value = true;
+    errorMessage.value = '';
+
+    try {
+      final tabName = tabs[tabIndex].toLowerCase();
+
+      // Map UI tab to a single API status (one status → one tab)
+      String? apiStatus;
+      switch (tabName) {
+        case 'new':
+          apiStatus = 'processing';
+          break;
+        case 'in progress':
+          apiStatus = 'confirmed';
+          break;
+        case 'completed':
+          apiStatus = 'delivered';
+          break;
+      }
+
+      final storedToken = StorageService.token;
+      final authHeader = storedToken != null ? 'Bearer $storedToken' : null;
+
+      final response = await _orderService.fetchOrders(
+        offset: 0,
+        limit: 50,
+        status: apiStatus,
+        token: authHeader,
+      );
+
+      if (response != null && response.orders.isNotEmpty) {
+        final uiOrders = response.orders
+            .map((order) => OrderService.orderModelToMap(order))
+            .toList();
+        allOrders.assignAll(uiOrders);
+      } else {
+        errorMessage.value = 'No orders found for this status';
+        if (authHeader == null) {
+          errorMessage.value = 'Authentication token missing. Please login.';
+        }
+      }
+    } catch (e) {
+      errorMessage.value = 'Failed to load orders: $e';
+      print('Error fetching orders by status: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// -------------------- Filtered Orders by Selected Tab --------------------
   List<Map<String, dynamic>> get filteredOrders {
-    final currentStatus = tabs[selectedTab.value].toLowerCase().replaceAll(
-      ' ',
-      '-',
-    );
-    return allOrders
-        .where((order) => order['status'] == currentStatus)
-        .toList();
+    // establish reactive dependencies on selectedTab and allOrders
+    final tabName = tabs[selectedTab.value].toLowerCase();
+
+    String statusFilter;
+    switch (tabName) {
+      case 'new':
+        statusFilter = 'new';
+        break;
+      case 'in progress':
+        statusFilter = 'in-progress';
+        break;
+      case 'completed':
+        statusFilter = 'completed';
+        break;
+      default:
+        statusFilter = 'new';
+    }
+
+    return allOrders.where((order) => order['status'] == statusFilter).toList();
   }
 
   /// -------------------- Navigate to Details --------------------
@@ -164,7 +164,7 @@ class OrderManagementController extends GetxController {
     disabledButtons.add(orderId);
   }
 
-  void markAsDispatched(String orderId) {
+  void markAsShipped(String orderId) {
     disabledButtons.add(orderId);
   }
 

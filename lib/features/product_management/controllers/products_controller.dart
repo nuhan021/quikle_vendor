@@ -14,8 +14,9 @@ import '../../../core/services/storage_service.dart';
 class ProductsController extends GetxController {
   // Vendor
   final vendorData = StorageService.getVendorDetails();
-  late final String vendorType =
-      vendorData != null ? (vendorData!['type'] ?? 'food') : 'food';
+  late final String vendorType = vendorData != null
+      ? (vendorData!['type'] ?? 'food')
+      : 'food';
 
   // Filters / search
   final searchText = ''.obs;
@@ -85,7 +86,7 @@ class ProductsController extends GetxController {
   void onSearchChanged(String value) {
     _searchDebounceTimer?.cancel();
     searchText.value = value;
-    log('🔎 User typing search: "$value"');
+    // log('🔎 User typing search: "$value"');
 
     _searchDebounceTimer = Timer(const Duration(milliseconds: 500), () {
       _handleSearch(value);
@@ -94,10 +95,10 @@ class ProductsController extends GetxController {
 
   void _handleSearch(String searchValue) {
     if (searchValue.isNotEmpty) {
-      log('🔍 SEARCH INITIATED: Searching for "$searchValue"');
+      // log('🔍 SEARCH INITIATED: Searching for "$searchValue"');
       _performIncrementalSearch(searchValue);
     } else {
-      log('🔄 Search cleared');
+      // log('🔄 Search cleared');
       clearSearch();
     }
   }
@@ -113,9 +114,9 @@ class ProductsController extends GetxController {
   Future<void> _performIncrementalSearch(String searchValue) async {
     if (isLoadingSearch.value) return;
 
-    log(
-      '🔍 Starting incremental search for: "$searchValue" (10 products per batch, 15s timeout, 2 retries)',
-    );
+    // log(
+    //   '🔍 Starting incremental search for: "$searchValue" (10 products per batch, 15s timeout, 2 retries)',
+    // );
     isLoadingSearch.value = true;
     searchResults.clear();
     hasMoreSearchResults.value = true;
@@ -124,18 +125,16 @@ class ProductsController extends GetxController {
 
     // Search already loaded products first
     final alreadyLoadedMatches = products
-        .where(
-          (product) => product.title.toLowerCase().contains(lowerQuery),
-        )
+        .where((product) => product.title.toLowerCase().contains(lowerQuery))
         .toList();
 
     if (alreadyLoadedMatches.isNotEmpty) {
       searchResults.addAll(alreadyLoadedMatches);
-      log('✅ Found ${alreadyLoadedMatches.length} matches in already loaded products:');
+      // log('✅ Found ${alreadyLoadedMatches.length} matches in already loaded products:');
       for (final product in alreadyLoadedMatches) {
-        log('   • ${product.title} (ID: ${product.id})');
+        // log('   • ${product.title} (ID: ${product.id})');
       }
-      log('Total results so far: ${searchResults.length}');
+      // log('Total results so far: ${searchResults.length}');
     }
 
     int searchOffset = 0;
@@ -146,7 +145,7 @@ class ProductsController extends GetxController {
     try {
       while (hasMoreSearchResults.value &&
           consecutiveEmptyBatches < maxEmptyBatches) {
-        log('🔍 Loading search batch ${searchOffset ~/ batchSize + 1}...');
+        // log('🔍 Loading search batch ${searchOffset ~/ batchSize + 1}...');
 
         try {
           const int maxRetries = 2;
@@ -164,13 +163,13 @@ class ProductsController extends GetxController {
               break;
             } catch (e) {
               if (attempt == maxRetries) rethrow;
-              log('⚠️ Search batch attempt ${attempt + 1} failed, retrying...');
+              // log('⚠️ Search batch attempt ${attempt + 1} failed, retrying...');
               await Future.delayed(const Duration(seconds: 1));
             }
           }
 
           if (response == null) {
-            log('❌ No response received after retries');
+            // log('❌ No response received after retries');
             break;
           }
 
@@ -190,52 +189,52 @@ class ProductsController extends GetxController {
             if (matchingProducts.isNotEmpty) {
               searchResults.addAll(matchingProducts);
               consecutiveEmptyBatches = 0;
-              log(
-                '✅ Found ${matchingProducts.length} matching products in batch ${searchOffset ~/ batchSize + 1}:',
-              );
+              // log(
+              //   '✅ Found ${matchingProducts.length} matching products in batch ${searchOffset ~/ batchSize + 1}:',
+              // );
               for (final product in matchingProducts) {
-                log('   • ${product.title} (ID: ${product.id})');
+                // log('   • ${product.title} (ID: ${product.id})');
               }
-              log('Total results: ${searchResults.length}');
+              // log('Total results: ${searchResults.length}');
             } else {
               consecutiveEmptyBatches++;
-              log(
-                '⏭️ No matches in batch ${searchOffset ~/ batchSize + 1}, consecutive empty: $consecutiveEmptyBatches',
-              );
+              // log(
+              //   '⏭️ No matches in batch ${searchOffset ~/ batchSize + 1}, consecutive empty: $consecutiveEmptyBatches',
+              // );
             }
 
             if (productList.length < batchSize) {
               hasMoreSearchResults.value = false;
-              log('🎯 Reached end of products');
+              // log('🎯 Reached end of products');
               break;
             }
 
             searchOffset += batchSize;
 
             if (searchResults.length >= 50) {
-              log(
-                '🎯 Found sufficient results (${searchResults.length}), stopping search',
-              );
+              // log(
+              //   '🎯 Found sufficient results (${searchResults.length}), stopping search',
+              // );
               break;
             }
           } else {
             hasMoreSearchResults.value = false;
-            log('🎯 No more products to load');
+            // log('🎯 No more products to load');
             break;
           }
         } catch (e) {
-          log('❌ Error loading search batch: $e');
+          // log('❌ Error loading search batch: $e');
           if (e.toString().contains('timeout')) {
-            log('⏰ Search batch timed out, stopping search');
+            // log('⏰ Search batch timed out, stopping search');
           }
           break;
         }
       }
     } finally {
       isLoadingSearch.value = false;
-      log(
-        '🔍 Incremental search complete. Found ${searchResults.length} results',
-      );
+      // log(
+      //   '🔍 Incremental search complete. Found ${searchResults.length} results',
+      // );
     }
   }
 
@@ -256,8 +255,8 @@ class ProductsController extends GetxController {
       if (searchText.value.isEmpty &&
           !isLoadingMore.value &&
           products.length < total.value) {
-        log('⏱️ Auto-loading next batch...');
-        loadMore();
+        // log('⏱️ Auto-loading next batch...');
+        loadMore;
       }
     });
   }
@@ -271,9 +270,9 @@ class ProductsController extends GetxController {
     }
 
     try {
-      log(
-        '🔄 Fetching products: isLoadMore=$isLoadMore, offset=$offset, vendorType=$vendorType',
-      );
+      // log(
+      //   '🔄 Fetching products: isLoadMore=$isLoadMore, offset=$offset, vendorType=$vendorType',
+      // );
       final response = await _productServices.getProducts(
         vendorType: vendorType,
         offset: offset,
@@ -283,28 +282,28 @@ class ProductsController extends GetxController {
       log('✅ API Response received: ${response.keys}');
       final List<dynamic> data = response['data'] ?? [];
       total.value = response['total'] ?? 0;
-      log(
-        '📊 Total products in API: ${total.value}, Current batch: ${data.length}',
-      );
+      // log(
+      //   '📊 Total products in API: ${total.value}, Current batch: ${data.length}',
+      // );
 
       final productList = data
           .whereType<Map<String, dynamic>>()
           .map(Product.fromJson)
           .toList();
-      log('🏃 Mapped products: ${productList.length}');
+      // log('🏃 Mapped products: ${productList.length}');
 
       if (isLoadMore) {
         products.addAll(productList);
         offset += limit;
-        log(
-          '➕ Load more complete. New offset: $offset, Total products: ${products.length}',
-        );
+        // log(
+        //   '➕ Load more complete. New offset: $offset, Total products: ${products.length}',
+        // );
       } else {
         products.assignAll(productList);
-        log('🆕 Initial load complete. Total products: ${products.length}');
+        // log('🆕 Initial load complete. Total products: ${products.length}');
       }
     } catch (e) {
-      log('Error fetching products: $e');
+      // log('Error fetching products: $e');
     } finally {
       if (isLoadMore) {
         isLoadingMore.value = false;
@@ -368,18 +367,18 @@ class ProductsController extends GetxController {
           itemId: productId,
         );
       } else {
-        log('Unknown vendor type: $vendorType');
+        // log('Unknown vendor type: $vendorType');
         return;
       }
 
       if (success) {
         products.removeWhere((p) => p.id.toString() == productId);
-        log('Product deleted successfully');
+        // log('Product deleted successfully');
       } else {
-        log('Failed to delete product');
+        // log('Failed to delete product');
       }
     } catch (e) {
-      log('Error deleting product: $e');
+      // log('Error deleting product: $e');
     } finally {
       isDeleting.value = false;
       hideDeleteConfirmation();
@@ -387,10 +386,7 @@ class ProductsController extends GetxController {
   }
 
   void editProduct(String productId) {
-    Get.toNamed(
-      AppRoute.productEditScreen,
-      arguments: {'id': productId},
-    );
+    Get.toNamed(AppRoute.productEditScreen, arguments: {'id': productId});
   }
 
   void addDiscount() {
@@ -403,21 +399,23 @@ class ProductsController extends GetxController {
     showLowStockFilter.value = !showLowStockFilter.value;
 
     if (showLowStockFilter.value) {
-      log('🔴 LOW STOCK & OUT OF STOCK FILTER ACTIVATED');
-      final productsToFilter =
-          searchText.value.isNotEmpty ? searchResults : products;
-      final lowStockProducts =
-          productsToFilter.where((p) => p.stock <= 10).toList();
+      // log('🔴 LOW STOCK & OUT OF STOCK FILTER ACTIVATED');
+      final productsToFilter = searchText.value.isNotEmpty
+          ? searchResults
+          : products;
+      final lowStockProducts = productsToFilter
+          .where((p) => p.stock <= 10)
+          .toList();
 
-      log('📦 Showing ${lowStockProducts.length} products (stock 0-10):');
+      // log('📦 Showing ${lowStockProducts.length} products (stock 0-10):');
       for (final product in lowStockProducts) {
         final status = product.stock == 0 ? 'OUT OF STOCK' : 'LOW STOCK';
-        log('   • ${product.title} (Stock: ${product.stock}) - $status');
+        // log('   • ${product.title} (Stock: ${product.stock}) - $status');
       }
     } else {
-      log(
-        '🟢 LOW STOCK & OUT OF STOCK FILTER DEACTIVATED - Showing all products',
-      );
+      // log(
+      //   '🟢 LOW STOCK & OUT OF STOCK FILTER DEACTIVATED - Showing all products',
+      // );
     }
   }
 
@@ -426,8 +424,9 @@ class ProductsController extends GetxController {
   }
 
   int get lowStockCount {
-    final productsToCheck =
-        searchText.value.isNotEmpty ? searchResults : products;
+    final productsToCheck = searchText.value.isNotEmpty
+        ? searchResults
+        : products;
     return productsToCheck.where((p) => p.stock <= 10).length;
   }
 }
