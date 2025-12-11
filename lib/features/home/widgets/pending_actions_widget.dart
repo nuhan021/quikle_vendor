@@ -30,36 +30,43 @@ class PendingActionsWidget extends StatelessWidget {
           ],
         ),
         SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          child: Column(
-            children: [
-              // Update Inventory card (dynamic subtitle from lowStockCount)
-              Obx(() {
-                // Get products controller if registered
-                final hasProductsController =
-                    Get.isRegistered<ProductsController>();
-                final productsController = hasProductsController
-                    ? Get.find<ProductsController>()
-                    : null;
+        Obx(() {
+          // Get products controller if registered
+          final hasProductsController = Get.isRegistered<ProductsController>();
 
-                final lowStockCount = productsController?.lowStockCount ?? 0;
+          if (!hasProductsController) {
+            return const SizedBox.shrink();
+          }
 
-                return PendingActionCardWidget(
+          final productsController = Get.find<ProductsController>();
+
+          // Show widget only after products are loaded
+          if (productsController.isLoading.value) {
+            return const SizedBox.shrink();
+          }
+
+          final lowStockCount = productsController.lowStockCount;
+
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            child: Column(
+              children: [
+                // Update Inventory card (dynamic subtitle from lowStockCount)
+                PendingActionCardWidget(
                   title: 'Update Inventory',
                   subtitle: '$lowStockCount items low in stock',
                   buttonText: 'Update',
                   buttonColor: const Color(0xFFEF4444),
                   onTap: controller.updateInventory,
-                );
-              }),
-            ],
-          ),
-        ),
+                ),
+              ],
+            ),
+          );
+        }),
       ],
     );
   }
