@@ -5,7 +5,8 @@ import '../../../core/common/styles/global_text_style.dart';
 
 class PendingActionCardWidget extends StatelessWidget {
   final String title;
-  final String subtitle;
+  final Widget? subtitleWidget; // New: accepts a widget
+  final String? subtitle; // Keep for backward compatibility
   final String buttonText;
   final Color buttonColor;
   final VoidCallback onTap;
@@ -13,7 +14,8 @@ class PendingActionCardWidget extends StatelessWidget {
   const PendingActionCardWidget({
     super.key,
     required this.title,
-    required this.subtitle,
+    this.subtitle,
+    this.subtitleWidget,
     required this.buttonText,
     required this.buttonColor,
     required this.onTap,
@@ -50,10 +52,14 @@ class PendingActionCardWidget extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 8),
-                Text(
-                  subtitle,
-                  style: getTextStyle(fontSize: 12, color: Color(0xFF6B7280)),
-                ),
+                subtitleWidget ??
+                    Text(
+                      subtitle ?? '',
+                      style: getTextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF6B7280),
+                      ),
+                    ),
               ],
             ),
           ),

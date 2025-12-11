@@ -46,6 +46,7 @@ class ProductsController extends GetxController {
   final isLoadingSearch = false.obs;
   final searchResults = <Product>[].obs;
   final hasMoreSearchResults = true.obs;
+  final lowStockCountValue = 0.obs; // Observable for low stock count
 
   // Services
   final GetProductServices _productServices = GetProductServices();
@@ -131,9 +132,9 @@ class ProductsController extends GetxController {
     if (alreadyLoadedMatches.isNotEmpty) {
       searchResults.addAll(alreadyLoadedMatches);
       // log('✅ Found ${alreadyLoadedMatches.length} matches in already loaded products:');
-      for (final product in alreadyLoadedMatches) {
-        // log('   • ${product.title} (ID: ${product.id})');
-      }
+      // for (final product in alreadyLoadedMatches) {
+      //   log('   • ${product.title} (ID: ${product.id})');
+      // }
       // log('Total results so far: ${searchResults.length}');
     }
 
@@ -192,9 +193,9 @@ class ProductsController extends GetxController {
               // log(
               //   '✅ Found ${matchingProducts.length} matching products in batch ${searchOffset ~/ batchSize + 1}:',
               // );
-              for (final product in matchingProducts) {
-                // log('   • ${product.title} (ID: ${product.id})');
-              }
+              // for (final product in matchingProducts) {
+              //   log('   • ${product.title} (ID: ${product.id})');
+              // }
               // log('Total results: ${searchResults.length}');
             } else {
               consecutiveEmptyBatches++;
@@ -302,6 +303,9 @@ class ProductsController extends GetxController {
         products.assignAll(productList);
         // log('🆕 Initial load complete. Total products: ${products.length}');
       }
+
+      // Update low stock count
+      lowStockCountValue.value = products.where((p) => p.stock <= 10).length;
     } catch (e) {
       // log('Error fetching products: $e');
     } finally {
@@ -400,18 +404,18 @@ class ProductsController extends GetxController {
 
     if (showLowStockFilter.value) {
       // log('🔴 LOW STOCK & OUT OF STOCK FILTER ACTIVATED');
-      final productsToFilter = searchText.value.isNotEmpty
-          ? searchResults
-          : products;
-      final lowStockProducts = productsToFilter
-          .where((p) => p.stock <= 10)
-          .toList();
+      // final productsToFilter = searchText.value.isNotEmpty
+      //     ? searchResults
+      //     : products;
+      // final lowStockProducts = productsToFilter
+      //     .where((p) => p.stock <= 10)
+      //     .toList();
 
       // log('📦 Showing ${lowStockProducts.length} products (stock 0-10):');
-      for (final product in lowStockProducts) {
-        final status = product.stock == 0 ? 'OUT OF STOCK' : 'LOW STOCK';
-        // log('   • ${product.title} (Stock: ${product.stock}) - $status');
-      }
+      // for (final product in lowStockProducts) {
+      //   final status = product.stock == 0 ? 'OUT OF STOCK' : 'LOW STOCK';
+      //   log('   • ${product.title} (Stock: ${product.stock}) - $status');
+      // }
     } else {
       // log(
       //   '🟢 LOW STOCK & OUT OF STOCK FILTER DEACTIVATED - Showing all products',

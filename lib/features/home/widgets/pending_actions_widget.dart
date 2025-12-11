@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import '../../../core/common/styles/global_text_style.dart';
 import '../controller/home_controller.dart';
 import 'pending_action_card_widget.dart';
-import 'package:quikle_vendor/features/product_management/controllers/products_controller.dart';
 
 class PendingActionsWidget extends StatelessWidget {
   PendingActionsWidget({super.key});
@@ -30,43 +29,24 @@ class PendingActionsWidget extends StatelessWidget {
           ],
         ),
         SizedBox(height: 16),
-        Obx(() {
-          // Get products controller if registered
-          final hasProductsController = Get.isRegistered<ProductsController>();
-
-          if (!hasProductsController) {
-            return const SizedBox.shrink();
-          }
-
-          final productsController = Get.find<ProductsController>();
-
-          // Show widget only after products are loaded
-          if (productsController.isLoading.value) {
-            return const SizedBox.shrink();
-          }
-
-          final lowStockCount = productsController.lowStockCount;
-
-          return Container(
-            padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-            ),
-            child: Column(
-              children: [
-                // Update Inventory card (dynamic subtitle from lowStockCount)
-                PendingActionCardWidget(
-                  title: 'Update Inventory',
-                  subtitle: '$lowStockCount items low in stock',
-                  buttonText: 'Update',
-                  buttonColor: const Color(0xFFEF4444),
-                  onTap: controller.updateInventory,
-                ),
-              ],
-            ),
-          );
-        }),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          child: Column(
+            children: [
+              PendingActionCardWidget(
+                title: 'Update Inventory',
+                subtitle: '0 items low in stock',
+                buttonText: 'Update',
+                buttonColor: const Color(0xFFEF4444),
+                onTap: controller.updateInventory,
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
