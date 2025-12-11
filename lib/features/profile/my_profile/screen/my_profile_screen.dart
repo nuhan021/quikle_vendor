@@ -7,6 +7,7 @@ import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/features/profile/my_profile/widget/contactInfoCard.dart';
 import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
+import 'package:quikle_vendor/core/utils/widgets/network_image_with_fallback.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../appbar/screen/appbar_screen.dart';
@@ -54,11 +55,15 @@ class MyProfileScreen extends StatelessWidget {
                   Obx(
                     () => Stack(
                       children: [
-                        CircleAvatar(
-                          radius: 45,
-                          backgroundImage: _getProfileImage(
-                            controller,
-                            vendorDetails,
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(45),
+                          child: SizedBox(
+                            width: 90,
+                            height: 90,
+                            child: _buildProfileImage(
+                              controller,
+                              vendorDetails,
+                            ),
                           ),
                         ),
                         // Positioned(
@@ -142,14 +147,17 @@ class MyProfileScreen extends StatelessWidget {
     );
   }
 
-  /// Get profile image from local file, API response photo, or default asset
-  ImageProvider _getProfileImage(
+  /// Build profile image widget with fallback
+  Widget _buildProfileImage(
     MyProfileController controller,
     VendorDetailsModel? vendorDetails,
   ) {
     // Priority 1: Local file image (recently picked)
     if (controller.profileImagePath.value != null) {
-      return FileImage(File(controller.profileImagePath.value!));
+      return Image.file(
+        File(controller.profileImagePath.value!),
+        fit: BoxFit.cover,
+      );
     }
 
     // Priority 2: Photo URL from SharedPreferences (API response)
@@ -157,11 +165,15 @@ class MyProfileScreen extends StatelessWidget {
     if (vendorData != null && vendorData['photo'] != null) {
       final photoUrl = vendorData['photo'] as String;
       if (photoUrl.isNotEmpty) {
-        return NetworkImage(photoUrl);
+        return NetworkImageWithFallback(
+          photoUrl,
+          fallback: "assets/images/profile.png",
+          fit: BoxFit.cover,
+        );
       }
     }
 
     // Priority 3: Default asset image
-    return const AssetImage("assets/images/profile.png");
+    return Image.asset("assets/images/profile.png", fit: BoxFit.cover);
   }
 }

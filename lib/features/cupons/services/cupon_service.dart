@@ -3,9 +3,11 @@ import 'package:quikle_vendor/core/models/response_data.dart';
 import 'package:quikle_vendor/core/services/network_caller.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/core/utils/constants/api_constants.dart';
+import 'package:quikle_vendor/features/cupons/network/cupon_network_caller.dart';
 
 class CouponService {
   final NetworkCaller networkCaller = NetworkCaller();
+  final CouponNetworkCaller couponNetworkCaller = CouponNetworkCaller();
 
   Future<ResponseData> createCoupon({
     required String title,
@@ -20,9 +22,9 @@ class CouponService {
         'discount': discount,
       };
 
-      // Add product IDs if provided
+      // Add product IDs if provided - send as comma-separated string for form data
       if (productIds != null && productIds.isNotEmpty) {
-        body['product_ids'] = productIds;
+        body['item_ids'] = productIds.join(',');
       }
 
       log('Creating Coupon with body: $body');
@@ -60,25 +62,28 @@ class CouponService {
     try {
       final String updateUrl = '${ApiConstants.updateCupon}$couponId';
 
+      // Build the body with correct types for form encoding
       final Map<String, dynamic> body = {
-        'title': title,
-        'description': description,
-        'discount': discount,
+        'title': title, // String
+        'description': description, // String
+        'discount': discount, // int
       };
 
-      // Add product IDs if provided
+      // Add product IDs as List<int> - NetworkCaller will encode as repeated keys
+      // Backend expects: item_ids=25802&item_ids=25789
       if (productIds != null && productIds.isNotEmpty) {
-        body['product_ids'] = productIds;
+        body['item_ids'] = productIds; // List<int>
       }
 
       log('Updating Coupon with body: $body');
       log('Update URL: $updateUrl');
 
-      final response = await networkCaller.putRequest(
+      // Use custom CouponNetworkCaller with proper form array encoding
+      // Backend expects: item_ids=25802&item_ids=25789 (repeated keys)
+      final response = await couponNetworkCaller.putRequest(
         updateUrl,
         token: 'Bearer ${StorageService.token}',
         body: body,
-        form: true,
       );
 
       log('Update Coupon Response: ${response.responseData}');

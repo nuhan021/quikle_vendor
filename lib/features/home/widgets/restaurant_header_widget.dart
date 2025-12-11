@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
@@ -39,9 +38,7 @@ class RestaurantHeaderWidget extends StatelessWidget {
             () => Container(
               width: 60,
               height: 60,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-              ),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
               child: _buildRestaurantImage(controller),
             ),
           ),

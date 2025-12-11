@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:quikle_vendor/core/common/widgets/custom_button.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
+import 'package:quikle_vendor/features/appbar/screen/appbar_screen.dart';
 import 'package:quikle_vendor/features/cupons/controllers/cupon_controller.dart';
 import 'package:quikle_vendor/features/cupons/models/cupon_model.dart';
 import 'package:quikle_vendor/features/cupons/widgets/coupon_modal_widget.dart';
@@ -16,37 +17,9 @@ class CuponScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F7F6),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: const Color(0xFFF8F7F6),
-        centerTitle: true,
-        title: Text(
-          'Coupons',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 22.sp,
-          ),
-        ),
-      ),
+      appBar: AppbarScreen(title: "Cupons"),
       body: Column(
         children: [
-          Padding(
-            padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
-            child: CustomButton(
-              text: 'Create New Coupon',
-              onPressed: () {
-                c.openCreateForm();
-                _showCouponModal();
-              },
-              backgroundColor: AppColors.ebonyBlack,
-              textColor: Colors.white,
-              fontSize: 14.sp,
-              fontWeight: FontWeight.bold,
-              borderRadius: 12.r,
-              height: 48.h,
-            ),
-          ),
           SizedBox(height: 8.h),
           Expanded(
             child: Obx(
@@ -72,6 +45,22 @@ class CuponScreen extends StatelessWidget {
                         return _buildCouponCard(coupon);
                       },
                     ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 20.h),
+            child: CustomButton(
+              text: 'Create New Coupon',
+              onPressed: () {
+                c.openCreateForm();
+                _showCouponModal();
+              },
+              backgroundColor: AppColors.ebonyBlack,
+              textColor: Colors.white,
+              fontSize: 14.sp,
+              fontWeight: FontWeight.bold,
+              borderRadius: 12.r,
+              height: 48.h,
             ),
           ),
         ],
@@ -138,14 +127,14 @@ class CuponScreen extends StatelessWidget {
                   if (coupon.createdAt != null) ...[
                     SizedBox(height: 6.h),
                     // Created time
-                    Text(
-                      _formatCreatedTime(coupon.createdAt!),
-                      style: TextStyle(
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF9CA3AF),
-                      ),
-                    ),
+                    // Text(
+                    //   _formatCreatedTime(coupon.createdAt!),
+                    //   style: TextStyle(
+                    //     fontSize: 11.sp,
+                    //     fontWeight: FontWeight.w400,
+                    //     color: const Color(0xFF9CA3AF),
+                    //   ),
+                    // ),
                   ],
                 ],
               ),
@@ -332,37 +321,5 @@ class CuponScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _formatCreatedTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
-
-    if (difference.inMinutes < 1) {
-      return 'Just now';
-    } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}m ago';
-    } else if (difference.inHours < 24) {
-      return '${difference.inHours}h ago';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
-    } else {
-      // Format as date: Dec 10, 2025
-      final months = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ];
-      return '${months[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}';
-    }
   }
 }

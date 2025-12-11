@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:quikle_vendor/core/common/widgets/custom_button.dart';
+import 'package:quikle_vendor/core/common/widgets/custom_textfield.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/features/cupons/controllers/cupon_controller.dart';
+import 'package:quikle_vendor/features/product_management/controllers/products_controller.dart';
 
 class CouponModalWidget extends StatelessWidget {
   final CouponController controller;
@@ -56,21 +58,21 @@ class CouponModalWidget extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                       borderSide: const BorderSide(
-                        color: Colors.yellow,
+                        color: AppColors.ebonyBlack,
                         width: 1,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                       borderSide: const BorderSide(
-                        color: Colors.yellow,
+                        color: AppColors.ebonyBlack,
                         width: 1,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                       borderSide: const BorderSide(
-                        color: Colors.yellow,
+                        color: AppColors.ebonyBlack,
                         width: 1,
                       ),
                     ),
@@ -102,21 +104,21 @@ class CouponModalWidget extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                       borderSide: const BorderSide(
-                        color: Colors.yellow,
+                        color: AppColors.ebonyBlack,
                         width: 1,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                       borderSide: const BorderSide(
-                        color: Colors.yellow,
+                        color: AppColors.ebonyBlack,
                         width: 1,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                       borderSide: const BorderSide(
-                        color: Colors.yellow,
+                        color: AppColors.ebonyBlack,
                         width: 1,
                       ),
                     ),
@@ -148,21 +150,21 @@ class CouponModalWidget extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                       borderSide: const BorderSide(
-                        color: Colors.yellow,
+                        color: AppColors.ebonyBlack,
                         width: 1,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                       borderSide: const BorderSide(
-                        color: Colors.yellow,
+                        color: AppColors.ebonyBlack,
                         width: 1,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                       borderSide: const BorderSide(
-                        color: Colors.yellow,
+                        color: AppColors.ebonyBlack,
                         width: 1,
                       ),
                     ),
@@ -174,9 +176,9 @@ class CouponModalWidget extends StatelessWidget {
                   keyboardType: TextInputType.number,
                 ),
                 SizedBox(height: 16.h),
-                // Product ID field (nullable)
+                // Product Selection field (optional)
                 Text(
-                  'Product IDs (Optional)',
+                  'Choose Products (Optional)',
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
@@ -185,7 +187,7 @@ class CouponModalWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  'Comma-separated IDs (e.g. 123, 456, 789) or leave empty for all products',
+                  'Leave empty to apply coupon to all products',
                   style: TextStyle(
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w400,
@@ -193,40 +195,84 @@ class CouponModalWidget extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 8.h),
-                TextField(
-                  onChanged: (value) => controller.productIdCtrl.value = value,
-                  controller: TextEditingController(
-                    text: controller.productIdCtrl.value,
+                Obx(
+                  () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          _showProductSelectionDialog(context, controller);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12.w,
+                            vertical: 14.h,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.ebonyBlack),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  controller.selectedProductNames.isEmpty
+                                      ? 'Choose products'
+                                      : '${controller.selectedProductNames.length} selected',
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color:
+                                        controller.selectedProductNames.isEmpty
+                                        ? Colors.grey
+                                        : Colors.black87,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.keyboard_arrow_down,
+                                color: const Color(0xFF9CA3AF),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (controller.selectedProductNames.isNotEmpty) ...[
+                        SizedBox(height: 8.h),
+                        Wrap(
+                          spacing: 8.w,
+                          runSpacing: 8.h,
+                          children: controller.selectedProductNames
+                              .map(
+                                (name) => Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10.w,
+                                    vertical: 6.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withValues(
+                                      alpha: 0.2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(6.r),
+                                    border: Border.all(
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    name,
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.ebonyBlack,
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ],
+                    ],
                   ),
-                  decoration: InputDecoration(
-                    hintText: '123, 456, 789',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                      borderSide: const BorderSide(
-                        color: Colors.yellow,
-                        width: 1,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                      borderSide: const BorderSide(
-                        color: Colors.yellow,
-                        width: 1,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                      borderSide: const BorderSide(
-                        color: Colors.yellow,
-                        width: 1,
-                      ),
-                    ),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 10.h,
-                    ),
-                  ),
-                  keyboardType: TextInputType.number,
                 ),
                 SizedBox(height: 16.h),
                 // Error message display
@@ -299,5 +345,198 @@ class CouponModalWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _showProductSelectionDialog(
+    BuildContext context,
+    CouponController controller,
+  ) {
+    final ProductsController productsController =
+        Get.find<ProductsController>();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16.w),
+            constraints: BoxConstraints(maxHeight: 400.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Select Products',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF111827),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+                // Search Field
+                CustomTextField(
+                  label: '',
+                  hintText: 'Search products...',
+                  onChanged: (value) {
+                    controller.productSearchText.value = value;
+                  },
+                ),
+                SizedBox(height: 12.h),
+                // Products List
+                Expanded(
+                  child: Obx(() {
+                    final filtered = productsController.products
+                        .where(
+                          (product) => product.title.toLowerCase().contains(
+                            controller.productSearchText.value.toLowerCase(),
+                          ),
+                        )
+                        .toList();
+
+                    return ListView(
+                      children: filtered.isEmpty
+                          ? [
+                              Container(
+                                color: Colors.white,
+                                padding: EdgeInsets.all(16.w),
+                                child: Center(
+                                  child: Text(
+                                    'No products found',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      color: const Color(0xFF9CA3AF),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ]
+                          : filtered
+                                .map(
+                                  (product) => GestureDetector(
+                                    onTap: () {
+                                      final productId = product.id.toString();
+                                      final productName = product.title;
+
+                                      if (controller.selectedProductIds
+                                          .contains(productId)) {
+                                        controller.selectedProductIds.remove(
+                                          productId,
+                                        );
+                                        controller.selectedProductNames.remove(
+                                          productName,
+                                        );
+                                      } else {
+                                        controller.selectedProductIds.add(
+                                          productId,
+                                        );
+                                        controller.selectedProductNames.add(
+                                          productName,
+                                        );
+                                      }
+
+                                      // Update productIdCtrl with comma-separated IDs
+                                      controller.productIdCtrl.value =
+                                          controller.selectedProductIds.join(
+                                            ',',
+                                          );
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 12.h,
+                                        horizontal: 12.w,
+                                      ),
+                                      margin: EdgeInsets.only(bottom: 4.h),
+                                      decoration: BoxDecoration(
+                                        color: Colors.transparent,
+                                        borderRadius: BorderRadius.circular(
+                                          6.r,
+                                        ),
+                                        border: Border.all(
+                                          color:
+                                              controller.selectedProductIds
+                                                  .contains(
+                                                    product.id.toString(),
+                                                  )
+                                              ? Colors.black.withValues(
+                                                  alpha: 0.5,
+                                                )
+                                              : const Color(0xFFE5E7EB),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            controller.selectedProductIds
+                                                    .contains(
+                                                      product.id.toString(),
+                                                    )
+                                                ? Icons.check_box
+                                                : Icons.check_box_outline_blank,
+                                            color:
+                                                controller.selectedProductIds
+                                                    .contains(
+                                                      product.id.toString(),
+                                                    )
+                                                ? AppColors.primary
+                                                : const Color(0xFF9CA3AF),
+                                          ),
+                                          SizedBox(width: 10.w),
+                                          Expanded(
+                                            child: Text(
+                                              product.title,
+                                              style: TextStyle(
+                                                fontSize: 14.sp,
+                                                fontWeight:
+                                                    controller
+                                                        .selectedProductIds
+                                                        .contains(
+                                                          product.id.toString(),
+                                                        )
+                                                    ? FontWeight.w600
+                                                    : FontWeight.w400,
+                                                color: const Color(0xFF111827),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                    );
+                  }),
+                ),
+                SizedBox(height: 12.h),
+                // Done Button
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        text: 'Done',
+                        onPressed: () => Navigator.pop(context),
+                        backgroundColor: AppColors.ebonyBlack,
+                        textColor: Colors.white,
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
+                        borderRadius: 10.r,
+                        height: 45.h,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ).then((_) {
+      controller.productSearchText.value = '';
+    });
   }
 }
