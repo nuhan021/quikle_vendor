@@ -1,6 +1,8 @@
 class ApiConstants {
   // Base URL
-  static const String baseUrl = "https://quikle-u4dv.onrender.com/";
+  // production
+  // static const String baseUrl = "https://quikle-u4dv.onrender.com/";
+  static const String baseUrl = "https://quikle-dev.onrender.com/";
 
   static const String sendOtp = "${baseUrl}auth/send_otp/";
   static const String login = "${baseUrl}auth/login/";
@@ -34,8 +36,22 @@ class ApiConstants {
   static const String markShipped = "${baseUrl}rider/orders/shipped/";
   // Earnings / Vendor account
   static const String vendorAccount = "${baseUrl}earning/vendor/vendor_account";
+  // Cupons
   static const String createCupon = "${baseUrl}promo/cupons/";
   static const String getCupons = "${baseUrl}promo/cupons/my_cupon";
   static const String updateCupon = "${baseUrl}promo/cupons/?cupon_id=";
   static const String deleteCupon = "${baseUrl}promo/cupons/?cupon_id=";
+  // Prescription Orders
+  static const String getAllPrescriptionOrders =
+      "${baseUrl}prescription/prescriptions-order/all";
+  static const String getPrescriptionOrderById =
+      "${baseUrl}prescription/prescriptions-order";
+  static const String changePrescriptionStatus =
+      "${baseUrl}prescription/prescriptions-order/change-status/";
+  static const String submitVendorResponse =
+      "${baseUrl}prescription/prescriptions-order/vendor-response";
+
+  static const String sendNotification = "${baseUrl}rider/send_notification/";
+  static const String vendorResponseAboutPrescription =
+      "${baseUrl}prescription/prescriptions-order/vendor-response";
 }
