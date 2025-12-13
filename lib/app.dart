@@ -1,3 +1,4 @@
+import 'package:quikle_vendor/features/order_management/screen/completed_order_details_screen.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

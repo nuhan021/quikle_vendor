@@ -46,17 +46,16 @@ class OrderDetailsActionsWidget extends StatelessWidget {
       child: Column(
         children: [
           // Show View Prescription button for medicine vendors
-          if (isMedicineVendor) ...[
-            CustomButton(
-              text: 'View Prescription',
-              onPressed: () => onViewPrescription?.call(orderId),
-              backgroundColor: AppColors.backgroundLight,
-              textColor: AppColors.backgroundDark,
-              borderColor: AppColors.textSecondary,
-            ),
-            const SizedBox(height: 10),
-          ],
-
+          // if (isMedicineVendor) ...[
+          //   CustomButton(
+          //     text: 'View Prescription',
+          //     onPressed: () => onViewPrescription?.call(orderId),
+          //     backgroundColor: AppColors.backgroundLight,
+          //     textColor: AppColors.backgroundDark,
+          //     borderColor: AppColors.textSecondary,
+          //   ),
+          //   const SizedBox(height: 10),
+          // ],
           if (requiresPrescription) ...[
             CustomButton(
               text: 'View Prescription',

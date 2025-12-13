@@ -4,6 +4,8 @@ import 'package:quikle_vendor/features/home/screen/home_screen.dart';
 import 'package:quikle_vendor/features/kyc_approval/screen/kyc_approval_screen.dart';
 import 'package:quikle_vendor/features/kyc_verification/screen/kyc_verification_screen.dart';
 import 'package:quikle_vendor/features/navbar/screen/navbar_screen.dart';
+import 'package:quikle_vendor/features/order_management/prescription_order_management/presentation/screens/prescription_details_screen.dart';
+import 'package:quikle_vendor/features/order_management/prescription_order_management/presentation/screens/prescription_list_screen.dart';
 import 'package:quikle_vendor/features/order_management/screen/completed_order_details_screen.dart';
 import 'package:quikle_vendor/features/product_management/screen/edit_product_screen.dart';
 import 'package:quikle_vendor/features/splash/presentation/screens/splash_screen.dart';
@@ -46,6 +48,9 @@ class AppRoute {
   static String productManagementScreen = '/productManagementScreen';
   static String productEditScreen = '/productEditScreen';
   static String cuponsScreen = '/cuponsScreen';
+  static String prescriptionOrdersScreen = '/prescriptionOrersScreen';
+  static String prescriptionOrderDetailsScreen =
+      '/prescriptionOrderDetailsScreen';
 
   static String getSplashScreen() => splash;
   static String getLoginScreen() => login;
@@ -64,6 +69,9 @@ class AppRoute {
   static String getOrderManagementScreen() => orderManagementScreen;
   static String getCompletedOrderDetailsScreen() => completedOrderDetailsScreen;
   static String getCuponScreen() => cuponsScreen;
+  static String getPrescriptionOrdersScreen() => prescriptionOrdersScreen;
+  static String getPrescriptionOrderDetailsScreen() =>
+      prescriptionOrderDetailsScreen;
 
   static List<GetPage> routes = [
     GetPage(name: splash, page: () => SplashScreen()),
@@ -93,5 +101,13 @@ class AppRoute {
     GetPage(name: productManagementScreen, page: () => ProductsScreen()),
     GetPage(name: productEditScreen, page: () => EditProductScreen()),
     GetPage(name: cuponsScreen, page: () => CuponScreen()),
+    GetPage(
+      name: prescriptionOrdersScreen,
+      page: () => PrescriptionListScreen(),
+    ),
+    GetPage(
+      name: prescriptionOrderDetailsScreen,
+      page: () => PrescriptionDetailsScreen(),
+    ),
   ];
 }
