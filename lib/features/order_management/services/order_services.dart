@@ -124,6 +124,8 @@ class OrderService {
       'vendorId': order.vendorId,
       'paymentStatus': order.paymentStatus,
       'trackingNumber': order.trackingNumber,
+      // Preserve original API status so UI can filter by API status when needed
+      'apiStatus': order.status,
     };
   }
 

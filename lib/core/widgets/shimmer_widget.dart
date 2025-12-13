@@ -81,6 +81,170 @@ class _ShimmerPlaceholderState extends State<ShimmerPlaceholder>
   }
 }
 
+/// Recent order card shimmer placeholder used on Home screen.
+class RecentOrderShimmer extends StatelessWidget {
+  const RecentOrderShimmer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final bgColor = Theme.of(context).brightness == Brightness.light
+        ? Colors.white
+        : Colors.grey.shade800;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: ShimmerPlaceholder(width: double.infinity, height: 16),
+                ),
+                const SizedBox(width: 8),
+                ShimmerPlaceholder(
+                  width: 70,
+                  height: 22,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ShimmerPlaceholder(width: 120, height: 14),
+                ShimmerPlaceholder(width: 60, height: 14),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// New order card shimmer placeholder for Home new orders list.
+class NewOrderShimmer extends StatelessWidget {
+  const NewOrderShimmer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final bgColor = Theme.of(context).brightness == Brightness.light
+        ? Colors.white
+        : Colors.grey.shade800;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  ShimmerPlaceholder(width: double.infinity, height: 16),
+                  SizedBox(height: 6),
+                  ShimmerPlaceholder(width: 100, height: 14),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            ShimmerPlaceholder(
+              width: 80,
+              height: 32,
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Generic order overview shimmer used by Recent Orders, New Orders,
+/// and Update Inventory sections on the dashboard.
+class OrderOverviewShimmer extends StatelessWidget {
+  final double height;
+  final int lines;
+
+  const OrderOverviewShimmer({super.key, this.height = 96, this.lines = 2});
+
+  @override
+  Widget build(BuildContext context) {
+    final bgColor = Theme.of(context).brightness == Brightness.light
+        ? Colors.white
+        : Colors.grey.shade800;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: Container(
+        height: height,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            // Left column: icon/avatar placeholder
+            ShimmerPlaceholder(
+              width: 56,
+              height: 56,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            const SizedBox(width: 12),
+            // Middle column: title + meta lines
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ShimmerPlaceholder(
+                    width: double.infinity,
+                    height: 16,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  const SizedBox(height: 8),
+                  for (var i = 0; i < 2; i++) ...[
+                    ShimmerPlaceholder(width: i == 0 ? 160 : 120, height: 12),
+                    const SizedBox(height: 6),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Right column: action button or badge placeholder
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ShimmerPlaceholder(
+                  width: 80,
+                  height: 32,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// Shimmer skeleton that resembles the product card in the UI.
 class ShimmerProductCard extends StatelessWidget {
   final double height;
@@ -89,10 +253,14 @@ class ShimmerProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = Theme.of(context).brightness == Brightness.light
+        ? Colors.white
+        : Colors.grey.shade800;
+
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: bgColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -199,6 +367,102 @@ class ShimmerProductCard extends StatelessWidget {
   }
 }
 
+/// Shimmer skeleton that resembles the order card used in Order Management.
+class ShimmerOrderCard extends StatelessWidget {
+  final double height;
+
+  const ShimmerOrderCard({super.key, this.height = 192});
+
+  @override
+  Widget build(BuildContext context) {
+    final bgColor = Theme.of(context).brightness == Brightness.light
+        ? Colors.white
+        : Colors.grey.shade800;
+
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 6,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header row: order id and time
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(child: ShimmerPlaceholder(width: 16, height: 20)),
+              const SizedBox(width: 12),
+              ShimmerPlaceholder(width: 60, height: 20),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Tags / badges row
+          // Row(
+          //   children: [
+          //     ShimmerPlaceholder(width: 90, height: 22, borderRadius: BorderRadius.circular(12)),
+          //     const SizedBox(width: 8),
+          //     ShimmerPlaceholder(width: 90, height: 22, borderRadius: BorderRadius.circular(12)),
+          //   ],
+          // ),
+          // const SizedBox(height: 12),
+
+          // Customer info row
+          Row(
+            children: [
+              ShimmerPlaceholder(
+                width: 24,
+                height: 24,
+                borderRadius: BorderRadius.circular(18),
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: ShimmerPlaceholder(width: 24, height: 18)),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Delivery time row
+          Row(
+            children: [
+              ShimmerPlaceholder(
+                width: 24,
+                height: 24,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: ShimmerPlaceholder(width: 24, height: 18)),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Action button placeholder
+          Row(
+            children: [
+              Expanded(
+                child: ShimmerPlaceholder(
+                  width: double.infinity,
+                  height: 44,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Shimmer block for units/count + quantity/progress bar (right side of card).
 class ShimmerUnitsProgress extends StatelessWidget {
   final double width;
@@ -256,7 +520,7 @@ class ListShimmerSkeleton extends StatelessWidget {
 
   const ListShimmerSkeleton({
     Key? key,
-    this.itemCount = 3,
+    this.itemCount = 2,
     this.itemHeight = 84,
     this.shrinkWrap = false,
   }) : super(key: key);

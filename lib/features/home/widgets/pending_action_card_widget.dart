@@ -66,7 +66,7 @@ class PendingActionCardWidget extends StatelessWidget {
           GestureDetector(
             onTap: onTap,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: buttonColor,
                 borderRadius: BorderRadius.circular(6),
@@ -74,8 +74,8 @@ class PendingActionCardWidget extends StatelessWidget {
               child: Text(
                 buttonText,
                 style: getTextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),
               ),

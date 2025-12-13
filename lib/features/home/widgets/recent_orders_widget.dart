@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import '../../../core/common/styles/global_text_style.dart';
 import '../controller/home_controller.dart';
+import 'package:quikle_vendor/features/order_management/controller/order_management_controller.dart';
 import 'recent_order_card_widget.dart';
+import 'package:quikle_vendor/core/widgets/shimmer_widget.dart';
 
 class RecentOrdersWidget extends StatelessWidget {
   const RecentOrdersWidget({super.key});
@@ -45,31 +47,124 @@ class RecentOrdersWidget extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(height: 16),
-        Obx(
-          () => Container(
-            padding: const EdgeInsets.all(16),
+        Obx(() {
+          final omc = Get.find<OrderManagementController>();
 
+          // Use the controller's reactive recentOrdersCache (first shipped, first delivered)
+          final cached = omc.recentOrdersCache;
+
+          // If cache doesn't have both items yet, request them. Controller will no-op if already cached/ loading.
+          if (cached.length < 1) omc.fetchOrdersForApiStatus('shipped');
+          if (cached.length < 2) omc.fetchOrdersForApiStatus('delivered');
+
+          // Build a display list of exactly two slots: [shipped, delivered]
+          final List<Map<String, dynamic>> displayOrders = [];
+          if (cached.isNotEmpty)
+            displayOrders.addAll(
+              cached.map((e) => Map<String, dynamic>.from(e)),
+            );
+          // pad with empty maps to keep two slots
+          while (displayOrders.length < 2) {
+            displayOrders.add({});
+          }
+
+          return Container(
+            padding: const EdgeInsets.all(16),
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
             child: Column(
-              children: controller.recentOrders
-                  .map(
-                    (order) => RecentOrderCardWidget(
-                      customer: order['customer'] as String,
-                      items: order['items'] as String,
-                      amount: order['amount'] as String,
-                      time: order['time'] as String,
-                      status: order['status'] as String,
-                      statusColor: order['statusColor'] as Color,
-                    ),
-                  )
-                  .toList(),
+              children: displayOrders.map((order) {
+                // customer
+                // show order id instead of customer name
+                // if order map is empty -> show shimmer placeholder
+                if (order.isEmpty) {
+                  return const RecentOrderShimmer();
+                }
+
+                final rawOrderId =
+                    order['order_id'] ?? order['id'] ?? order['orderId'];
+                final customer = rawOrderId is String
+                    ? rawOrderId
+                    : (rawOrderId != null ? rawOrderId.toString() : '');
+
+                // items (could be a String or a List)
+                String items;
+                final rawItems = order['items'];
+                if (rawItems is String) {
+                  items = rawItems;
+                } else if (rawItems is List) {
+                  items = '${rawItems.length} items';
+                } else {
+                  final itemsList = order['items_list'];
+                  if (itemsList is List) {
+                    items = '${itemsList.length} items';
+                  } else {
+                    items = '0 items';
+                  }
+                }
+
+                // amount (could be num or String)
+                String amount;
+                final rawTotal = order['total'] ?? order['subtotal'];
+                if (rawTotal is num) {
+                  amount = '\$${rawTotal.toString()}';
+                } else if (rawTotal is String) {
+                  amount = rawTotal.startsWith('\$')
+                      ? rawTotal
+                      : '\$' + rawTotal;
+                } else {
+                  amount = '\$0';
+                }
+
+                // time
+                final time = order['created_at'] is String
+                    ? order['created_at'] as String
+                    : (order['time'] is String ? order['time'] as String : '');
+
+                // status
+                final status = order['status'] is String
+                    ? order['status'] as String
+                    : (order['apiStatus'] is String
+                          ? order['apiStatus'] as String
+                          : 'Unknown');
+
+                // statusColor (may be provided as int or Color). If absent,
+                // map common statuses to colors: in-progress/processing/shipped -> amber,
+                // delivered/completed -> green, otherwise default grey.
+                Color statusColor = const Color(0xFF6B7280);
+                final sc = order['statusColor'];
+                if (sc is int) {
+                  statusColor = Color(sc);
+                } else if (sc is Color) {
+                  statusColor = sc;
+                } else {
+                  final sl = status.toLowerCase();
+                  if (sl.contains('in-progress') ||
+                      sl.contains('in progress') ||
+                      sl.contains('processing') ||
+                      sl.contains('shipped')) {
+                    statusColor = Colors.amber;
+                  } else if (sl.contains('delivered') ||
+                      sl.contains('completed') ||
+                      sl.contains('complete')) {
+                    statusColor = Colors.green;
+                  }
+                }
+
+                return RecentOrderCardWidget(
+                  customer: customer,
+                  items: items,
+                  amount: amount,
+                  time: time,
+                  status: status,
+                  statusColor: statusColor,
+                );
+              }).toList(),
             ),
-          ),
-        ),
+          );
+        }),
       ],
     );
   }

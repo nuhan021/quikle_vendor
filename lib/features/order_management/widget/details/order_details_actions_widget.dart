@@ -41,6 +41,33 @@ class OrderDetailsActionsWidget extends StatelessWidget {
         : null;
     final isMedicineVendor = vendorDetails?.type == 'medicine';
 
+    final managementController = Get.find<OrderManagementController>();
+    final localOrder = managementController.getOrderById(orderId);
+    final isApiShipped =
+        localOrder != null &&
+        ((localOrder['apiStatus'] != null &&
+                localOrder['apiStatus'] == 'shipped') ||
+            (localOrder['tags'] is List &&
+                List.from(localOrder['tags']).contains('Out For Delivery')));
+
+    // If order is shipped, show a single inactive Out For Delivery button
+    if (isApiShipped) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            CustomButton(
+              text: 'Out For Delivery',
+              onPressed: () {},
+              backgroundColor: const Color(0xFFD1D5DB),
+              textColor: Colors.black54,
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(

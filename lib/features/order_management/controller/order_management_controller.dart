@@ -5,13 +5,21 @@ import '../services/order_services.dart';
 
 class OrderManagementController extends GetxController {
   /// -------------------- Tabs --------------------
-  final tabs = ["New", "In Progress", "Completed"];
+  final tabs = ["New", "In Progress", "Shipped", "Completed"];
   final selectedTab = 0.obs;
 
   /// -------------------- Orders (Mock Data) --------------------
   final allOrders = <Map<String, dynamic>>[].obs;
   final isLoading = false.obs;
   final errorMessage = ''.obs;
+
+  // Per-status cache: apiStatus -> list of orders
+  final Map<String, List<Map<String, dynamic>>> _statusCache = {};
+  final Map<String, int> _statusOffsets = {};
+  final Map<String, bool> _statusHasMore = {};
+  final Map<String, bool> _statusLoading = {};
+  // Exposed reactive small cache for RecentOrdersWidget: [first shipped, first delivered]
+  final recentOrdersCache = <Map<String, dynamic>>[].obs;
 
   /// -------------------- Button State Management --------------------
   final disabledButtons = <String>{}.obs;
@@ -23,106 +31,158 @@ class OrderManagementController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchOrders();
+    // Prefetch each tab's orders on app start
+    _prefetchAllTabs();
+  }
+
+  /// Prefetch orders for all tabs so UI can show shipped/completed without extra taps
+  Future<void> _prefetchAllTabs() async {
+    for (var i = 0; i < tabs.length; i++) {
+      final apiStatus = _mapTabIndexToApiStatus(i);
+      // initialize tracking
+      _statusOffsets[apiStatus] = 0;
+      _statusHasMore[apiStatus] = true;
+      _statusCache[apiStatus] = [];
+      _statusLoading[apiStatus] = false;
+    }
+
+    // Fire off prefetches (await sequentially to avoid rate limits)
+    for (var i = 0; i < tabs.length; i++) {
+      final apiStatus = _mapTabIndexToApiStatus(i);
+      await _fetchOrdersByStatus(i, offset: 0, limit: 20);
+    }
+
+    // After prefetch, populate allOrders with selected tab cache
+    final initialApi = _mapTabIndexToApiStatus(selectedTab.value);
+    final cached = _statusCache[initialApi] ?? [];
+    allOrders.assignAll(cached);
   }
 
   /// -------------------- Fetch Orders from API --------------------
   Future<void> fetchOrders() async {
-    isLoading.value = true;
-    errorMessage.value = '';
-
-    try {
-      // Pass stored token (if available) as Bearer token
-      final storedToken = StorageService.token;
-      final authHeader = storedToken != null ? 'Bearer $storedToken' : null;
-
-      final response = await _orderService.fetchOrders(
-        offset: 0,
-        limit: 50,
-        token: authHeader,
-      );
-
-      if (response != null && response.orders.isNotEmpty) {
-        // Convert API response to UI format
-        final uiOrders = response.orders
-            .map((order) => OrderService.orderModelToMap(order))
-            .toList();
-        allOrders.assignAll(uiOrders);
-      } else {
-        errorMessage.value = 'No orders found or API returned an error';
-        // If token missing or invalid, give actionable message
-        if (authHeader == null) {
-          errorMessage.value = 'Authentication token missing. Please login.';
-        }
-        // Remove dummy data: clear any existing orders so UI shows empty state
-        allOrders.clear();
-      }
-    } catch (e) {
-      errorMessage.value = 'Failed to load orders: $e';
-      print('Error fetching orders: $e');
-      // Remove dummy data fallback: clear orders so UI can display empty/error state
-      allOrders.clear();
-    } finally {
-      isLoading.value = false;
-    }
+    // Deprecated: use per-status prefetch and _fetchOrdersByStatus instead
+    return;
   }
 
   /// -------------------- Tab Switch with API Call --------------------
   void changeTab(int index) {
     selectedTab.value = index;
-    // Fetch orders for the selected tab
-    _fetchOrdersByStatus(index);
+    // If we have cached orders for this tab, use them; otherwise fetch
+    final apiStatus = _mapTabIndexToApiStatus(index);
+    final cached = _statusCache[apiStatus];
+    if (cached != null && cached.isNotEmpty) {
+      allOrders.assignAll(cached);
+    } else {
+      _fetchOrdersByStatus(index);
+    }
   }
 
   /// -------------------- Fetch Orders by Tab Status --------------------
-  Future<void> _fetchOrdersByStatus(int tabIndex) async {
-    isLoading.value = true;
-    errorMessage.value = '';
+  Future<void> _fetchOrdersByStatus(
+    int tabIndex, {
+    int offset = 0,
+    int limit = 20,
+  }) async {
+    // New implementation: support pagination and caching per status
+    final apiStatus = _mapTabIndexToApiStatus(tabIndex);
+    if (_statusLoading[apiStatus] == true) return;
+    _statusLoading[apiStatus] = true;
+
+    final currentOffset = _statusOffsets[apiStatus] ?? 0;
+    final fetchOffset = offset == 0 ? currentOffset : offset;
 
     try {
-      final tabName = tabs[tabIndex].toLowerCase();
-
-      // Map UI tab to a single API status (one status → one tab)
-      String? apiStatus;
-      switch (tabName) {
-        case 'new':
-          apiStatus = 'processing';
-          break;
-        case 'in progress':
-          apiStatus = 'confirmed';
-          break;
-        case 'completed':
-          apiStatus = 'delivered';
-          break;
-      }
-
       final storedToken = StorageService.token;
       final authHeader = storedToken != null ? 'Bearer $storedToken' : null;
 
       final response = await _orderService.fetchOrders(
-        offset: 0,
-        limit: 50,
+        offset: fetchOffset,
+        limit: limit,
         status: apiStatus,
         token: authHeader,
       );
 
-      if (response != null && response.orders.isNotEmpty) {
+      if (response != null) {
         final uiOrders = response.orders
             .map((order) => OrderService.orderModelToMap(order))
             .toList();
-        allOrders.assignAll(uiOrders);
-      } else {
-        errorMessage.value = 'No orders found for this status';
-        if (authHeader == null) {
-          errorMessage.value = 'Authentication token missing. Please login.';
+        final existing = _statusCache[apiStatus] ?? [];
+        // append new
+        existing.addAll(uiOrders);
+        _statusCache[apiStatus] = existing;
+        // update offset
+        _statusOffsets[apiStatus] = existing.length;
+        // set hasMore
+        _statusHasMore[apiStatus] = (response.orders.length >= limit);
+
+        // if current selected tab, show cached
+        if (_mapTabIndexToApiStatus(selectedTab.value) == apiStatus) {
+          allOrders.assignAll(existing);
         }
+        // update the recentOrdersCache (first shipped + first delivered)
+        _updateRecentOrdersCache();
+      } else {
+        // no response — mark no more
+        _statusHasMore[apiStatus] = false;
       }
     } catch (e) {
-      errorMessage.value = 'Failed to load orders: $e';
       print('Error fetching orders by status: $e');
     } finally {
-      isLoading.value = false;
+      _statusLoading[apiStatus] = false;
     }
+  }
+
+  void _updateRecentOrdersCache() {
+    final shipped = _statusCache['shipped'] ?? [];
+    final delivered = _statusCache['delivered'] ?? [];
+
+    final List<Map<String, dynamic>> out = [];
+    if (shipped.isNotEmpty) out.add(shipped.first);
+    if (delivered.isNotEmpty) out.add(delivered.first);
+
+    // ensure length 2 when possible; do not fill with duplicates
+    recentOrdersCache.assignAll(out);
+  }
+
+  /// Helper to map tab index to API status string
+  String _mapTabIndexToApiStatus(int tabIndex) {
+    final tabName = tabs[tabIndex].toLowerCase();
+    switch (tabName) {
+      case 'new':
+        return 'processing';
+      case 'in progress':
+        return 'confirmed';
+      case 'shipped':
+        return 'shipped';
+      case 'completed':
+        return 'delivered';
+      default:
+        return 'processing';
+    }
+  }
+
+  /// Public helper: ensure orders for a given API status are loaded into the cache.
+  /// Safe to call repeatedly; it will noop if cache already populated or loading is in progress.
+  Future<void> fetchOrdersForApiStatus(String apiStatus) async {
+    // find tab index corresponding to this apiStatus
+    final tabIndex = tabs.indexWhere(
+      (t) => _mapTabIndexToApiStatus(tabs.indexOf(t)) == apiStatus,
+    );
+    if (tabIndex < 0) return;
+
+    // If already have cached data or currently loading, do nothing
+    if ((_statusCache[apiStatus]?.isNotEmpty ?? false) ||
+        (_statusLoading[apiStatus] == true))
+      return;
+
+    await _fetchOrdersByStatus(tabIndex, offset: 0, limit: 20);
+    // ensure recent cache updated after fetch
+    _updateRecentOrdersCache();
+  }
+
+  /// Public: check if a specific API status is currently loading.
+  bool isStatusLoading(String apiStatus) {
+    return _statusLoading[apiStatus] == true;
   }
 
   /// -------------------- Filtered Orders by Selected Tab --------------------
@@ -138,11 +198,22 @@ class OrderManagementController extends GetxController {
       case 'in progress':
         statusFilter = 'in-progress';
         break;
+      case 'shipped':
+        // We'll filter by apiStatus for shipped orders in UI mapping
+        statusFilter = 'shipped';
+        break;
       case 'completed':
         statusFilter = 'completed';
         break;
       default:
         statusFilter = 'new';
+    }
+
+    if (statusFilter == 'shipped') {
+      // Filter by original API status for shipped tab
+      return allOrders
+          .where((order) => order['apiStatus'] == 'shipped')
+          .toList();
     }
 
     return allOrders.where((order) => order['status'] == statusFilter).toList();
@@ -159,10 +230,6 @@ class OrderManagementController extends GetxController {
   void rejectOrder(String orderId) {}
 
   void reviewOrder(String orderId) {}
-
-  void markAsPrepared(String orderId) {
-    disabledButtons.add(orderId);
-  }
 
   void markAsShipped(String orderId) {
     disabledButtons.add(orderId);

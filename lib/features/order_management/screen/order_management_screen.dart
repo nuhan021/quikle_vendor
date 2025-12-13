@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
+import 'package:quikle_vendor/core/widgets/shimmer_widget.dart';
 import 'package:quikle_vendor/features/order_management/widget/list/order_card_widget.dart';
 import '../../appbar/screen/appbar_screen.dart';
 import '../controller/order_management_controller.dart';
@@ -23,7 +24,15 @@ class OrderManagementScreen extends StatelessWidget {
             Expanded(
               child: Obx(() {
                 if (controller.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
+                  // Show a list of ShimmerOrderCard placeholders while orders load
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: 6,
+                    itemBuilder: (context, index) => const Padding(
+                      padding: EdgeInsets.only(bottom: 16.0),
+                      child: ShimmerOrderCard(),
+                    ),
+                  );
                 }
 
                 if (controller.errorMessage.value.isNotEmpty) {

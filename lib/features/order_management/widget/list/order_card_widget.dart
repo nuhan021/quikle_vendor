@@ -54,7 +54,7 @@ class OrderCardWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Order $orderId',
+                  orderId,
                   style: getTextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
@@ -70,16 +70,16 @@ class OrderCardWidget extends StatelessWidget {
             SizedBox(height: 16),
 
             // Status Badges
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: tags
-                  .map(
-                    (tag) => OrderStatusBadgeWidget(tag: tag, status: status),
-                  )
-                  .toList(),
-            ),
-            SizedBox(height: 16),
+            // Wrap(
+            //   spacing: 8,
+            //   runSpacing: 8,
+            //   children: tags
+            //       .map(
+            //         (tag) => OrderStatusBadgeWidget(tag: tag, status: status),
+            //       )
+            //       .toList(),
+            // ),
+            // SizedBox(height: 16),
 
             // Customer Info
             Row(
