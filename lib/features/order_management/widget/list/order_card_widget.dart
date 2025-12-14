@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/features/order_management/controller/order_management_controller.dart';
 import '../../../../core/common/styles/global_text_style.dart';
@@ -56,14 +57,17 @@ class OrderCardWidget extends StatelessWidget {
                 Text(
                   orderId,
                   style: getTextStyle(
-                    fontSize: 20,
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF111827),
                   ),
                 ),
                 Text(
                   timeAgo,
-                  style: getTextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                  style: getTextStyle(
+                    fontSize: 14.sp,
+                    color: Color(0xFF6B7280),
+                  ),
                 ),
               ],
             ),

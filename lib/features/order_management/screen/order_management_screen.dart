@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/core/widgets/shimmer_widget.dart';
+import 'package:quikle_vendor/core/services/storage_service.dart';
+import 'package:quikle_vendor/features/order_management/prescription_order_management/presentation/screens/prescription_list_screen.dart';
+import 'package:quikle_vendor/features/order_management/prescription_order_management/presentation/widget/prescription_order_widget.dart';
 import 'package:quikle_vendor/features/order_management/widget/list/order_card_widget.dart';
 import '../../appbar/screen/appbar_screen.dart';
 import '../controller/order_management_controller.dart';
@@ -14,6 +17,15 @@ class OrderManagementScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(OrderManagementController());
 
+    // Get vendor type from StorageService
+    final vendorData = StorageService.getVendorDetails();
+    final vendorType = vendorData?['type'] as String? ?? '';
+    final isMedicineVendor = vendorType.toLowerCase() == 'medicine';
+
+    print(
+      'DEBUG ORDER_MANAGEMENT: Vendor Type = "$vendorType", Is Medicine = $isMedicineVendor',
+    );
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const AppbarScreen(title: "Order Management"),
@@ -21,6 +33,26 @@ class OrderManagementScreen extends StatelessWidget {
         child: Column(
           children: [
             OrdersTabNavigationWidget(),
+            // Show prescription orders widget only for medicine vendors in "New" tab
+            Obx(() {
+              if (controller.selectedTab.value == 0 && isMedicineVendor) {
+                return GestureDetector(
+                  onTap: () {
+                    Get.to(() => PrescriptionListScreen());
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                      top: 16,
+                      bottom: 8,
+                    ),
+                    child: PrescriptionOrdersWidget(pendingCount: 5),
+                  ),
+                );
+              }
+              return SizedBox.shrink();
+            }),
             Expanded(
               child: Obx(() {
                 // Pull-to-refresh should refresh only the currently selected tab's data
