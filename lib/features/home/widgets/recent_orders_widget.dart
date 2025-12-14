@@ -36,17 +36,21 @@ class RecentOrdersWidget extends StatelessWidget {
             ),
             GestureDetector(
               onTap: controller.seeAllRecentOrders,
-              child: Text(
-                'See All',
-                style: getTextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.backgroundDark,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Text(
+                  'See All',
+                  style: getTextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.backgroundDark,
+                  ),
                 ),
               ),
             ),
           ],
         ),
+        SizedBox(height: 16),
         Obx(() {
           final omc = Get.find<OrderManagementController>();
 

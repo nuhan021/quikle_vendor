@@ -21,7 +21,7 @@ class ProductsLowStockAlertWidget extends StatelessWidget {
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          // borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: Color.fromARGB(255, 233, 233, 233),
             width: 1,
