@@ -1,4 +1,10 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
+import 'package:quikle_vendor/features/earnings/model/beneficiary_model.dart';
+import 'package:quikle_vendor/features/earnings/services/add_beneficiary_services.dart';
+import 'package:quikle_vendor/core/models/response_data.dart';
+import 'package:quikle_vendor/core/utils/logging/logger.dart';
 
 class PayoutsController extends GetxController {
   /// -------------------- Observables --------------------
@@ -10,6 +16,12 @@ class PayoutsController extends GetxController {
   var selectedDay = "".obs;
   var paymentMethod = "".obs;
   var bankAccount = "".obs;
+
+  Rx<BeneficiaryModel?> beneficiary = Rx<BeneficiaryModel?>(null);
+
+  var isBeneficiarySelected = false.obs;
+
+  bool get hasBeneficiary => beneficiary.value != null;
 
   /// Dropdown options
   final withdrawalDays = [
@@ -31,6 +43,55 @@ class PayoutsController extends GetxController {
   }
 
   /// -------------------- Actions --------------------
+
+  void addBeneficiary(BeneficiaryModel beneficiary) {
+    this.beneficiary.value = beneficiary;
+  }
+
+  /// Add beneficiary via API and update local state
+  Future<ResponseData> addBeneficiaryRemote(
+    BeneficiaryModel model, {
+    String? refreshToken,
+  }) async {
+    final service = AddBeneficiaryServices();
+    try {
+      AppLoggerHelper.info('Calling addBeneficiaryRemote for ${model.name}');
+      final response = await service.addBeneficiary(
+        beneficiaryName: model.name,
+        bankAccountNumber: model.bankAccount,
+        bankIfsc: model.ifsc,
+        email: model.email.isNotEmpty ? model.email : null,
+        phone: model.phone.isNotEmpty ? model.phone : null,
+        refreshToken: refreshToken,
+      );
+
+      if (response.isSuccess) {
+        // Update local beneficiary on success
+        beneficiary.value = model;
+        isBeneficiarySelected.value = true;
+        log('Beneficiary added successfully: ${response.responseData}');
+      } else {
+        AppLoggerHelper.error(
+          'Add beneficiary failed: ${response.errorMessage}',
+        );
+      }
+
+      return response;
+    } catch (e) {
+      AppLoggerHelper.error('Exception in addBeneficiaryRemote', e);
+      return ResponseData(
+        isSuccess: false,
+        statusCode: 500,
+        responseData: {},
+        errorMessage: e.toString(),
+      );
+    }
+  }
+
+  void selectBeneficiary() {
+    isBeneficiarySelected.value = true;
+  }
+
   void withdraw() {
     // Handled via show_withdraw_sheet
   }

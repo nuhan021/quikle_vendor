@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-import '../../../../core/common/styles/global_text_style.dart';
-import '../../../../core/common/widgets/custom_button.dart';
-import '../../../../core/common/widgets/custom_textfield.dart';
-import '../../controller/payouts_controller.dart';
-import 'show_withdraw_sheet.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:quikle_vendor/features/earnings/controller/payouts_controller.dart';
+import 'package:quikle_vendor/features/earnings/widget/payouts/available_balance_card.dart';
+import 'package:quikle_vendor/features/earnings/widget/payouts/beneficiary_card_view.dart';
+import 'package:quikle_vendor/features/earnings/widget/payouts/no_beneficiary_view.dart';
+import 'package:quikle_vendor/features/earnings/widget/payouts/show_withdraw_sheet.dart';
+import 'package:quikle_vendor/features/earnings/widget/payouts/withdrawal_config_view.dart';
+import 'package:quikle_vendor/routes/app_routes.dart';
 
 class PayoutsTab extends StatelessWidget {
   const PayoutsTab({super.key});
@@ -14,238 +18,52 @@ class PayoutsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(PayoutsController());
 
-    return SingleChildScrollView(
-      child: Obx(
-        () => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Obx(() {
+      if (!controller.hasBeneficiary) {
+        return NoBeneficiaryView(
+          title: "No beneficiary added",
+          onAddBeneficiary: () => Get.toNamed(AppRoute.addBeneficiaryScreen),
+        );
+      }
+
+      return SingleChildScrollView(
+        child: Column(
           children: [
-            /// Available Balance Card
-            Container(
-              padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: .05),
-                    blurRadius: 6,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Available Balance",
-                        style: getTextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        "\$${controller.availableBalance.value.toStringAsFixed(2)}",
-                        style: getTextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        "Next auto-withdrawal: ${controller.nextAutoWithdrawal.value}",
-                        style: getTextStyle(
-                          fontSize: 12,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  /// Withdraw Button
-                  CustomButton(
-                    height: 32,
-                    width: 87,
-                    text: "Withdraw",
-                    onPressed: () => showWithdrawDialog(context, controller),
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white,
-                    fontSize: 12,
-                    borderRadius: 8,
-                  ),
-                ],
-              ),
+            AvailableBalanceCard(
+              title: "Available Balance",
+              balanceText:
+                  "\$${controller.availableBalance.value.toStringAsFixed(2)}",
+              subtitle:
+                  "Next auto-withdrawal: ${controller.nextAutoWithdrawal.value}",
+              onWithdraw: () => showWithdrawDialog(context, controller),
             ),
-
             const SizedBox(height: 16),
 
-            /// Withdrawal Configuration
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: .05),
-                    blurRadius: 6,
-                    offset: const Offset(0, 3),
+            controller.isBeneficiarySelected.value
+                ? WithdrawalConfigView(
+                    minAmount: controller.minWithdrawalAmount.value,
+                    onMinAmountChanged: controller.updateMinWithdrawal,
+                    autoWithdrawalEnabled:
+                        controller.autoWithdrawalEnabled.value,
+                    onToggleAutoWithdrawal: controller.toggleAutoWithdrawal,
+                    selectedDay: controller.selectedDay.value,
+                    days: controller.withdrawalDays,
+                    onDayChanged: controller.changeDay,
+                    paymentMethod: controller.paymentMethod.value,
+                    paymentMethods: controller.paymentMethods,
+                    onPaymentMethodChanged: controller.changePaymentMethod,
+                    bankAccount: controller.bankAccount.value,
+                    onBankAccountChanged: controller.updateBankAccount,
+                  )
+                : BeneficiaryCardView(
+                    name: controller.beneficiary.value!.name,
+                    account: controller.beneficiary.value!.bankAccount,
+                    ifsc: controller.beneficiary.value!.ifsc,
+                    onTap: controller.selectBeneficiary,
                   ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Withdrawal Configuration",
-                    style: getTextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  /// Minimum Withdrawal Amount
-                  CustomTextField(
-                    label: "Minimum Withdrawal Amount",
-                    hintText: "Enter minimum amount",
-                    hintTextStyle: getTextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.grey.shade500,
-                    ),
-                    controller: TextEditingController(
-                      text: controller.minWithdrawalAmount.value,
-                    ),
-                    onChanged: controller.updateMinWithdrawal,
-                  ),
-                  const SizedBox(height: 16),
-
-                  /// Auto Withdrawal Day
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Auto Withdrawal Day",
-                        style: getTextStyle(
-                          fontSize: 14,
-                          color: Colors.black87,
-                        ),
-                      ),
-
-                      /// Scaled Switch
-                      Transform.scale(
-                        scale: 0.65,
-                        child: Switch(
-                          value: controller.autoWithdrawalEnabled.value,
-                          onChanged: controller.toggleAutoWithdrawal,
-                          activeTrackColor: Colors.green,
-                          inactiveThumbColor: Colors.white,
-                          inactiveTrackColor: Colors.grey.shade300,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-
-                  /// Day Dropdown
-                  DropdownButtonFormField<String>(
-                    dropdownColor: Colors.white,
-                    value: controller.selectedDay.value.isEmpty
-                        ? null
-                        : controller.selectedDay.value,
-                    style: getTextStyle(fontSize: 14, color: Colors.black87),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    items: controller.withdrawalDays
-                        .map(
-                          (day) => DropdownMenuItem(
-                            value: day,
-                            child: Text(
-                              day,
-                              style: getTextStyle(
-                                fontSize: 14,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (val) {
-                      if (val != null) controller.changeDay(val);
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  /// Payment Method
-                  Text(
-                    "Payment Method",
-                    style: getTextStyle(fontSize: 14, color: Colors.black87),
-                  ),
-                  const SizedBox(height: 6),
-
-                  DropdownButtonFormField<String>(
-                    dropdownColor: Colors.white,
-                    value: controller.paymentMethod.value.isEmpty
-                        ? null
-                        : controller.paymentMethod.value,
-                    style: getTextStyle(fontSize: 14, color: Colors.black87),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    items: controller.paymentMethods
-                        .map(
-                          (method) => DropdownMenuItem(
-                            value: method,
-                            child: Text(
-                              method,
-                              style: getTextStyle(
-                                fontSize: 14,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (val) {
-                      if (val != null) controller.changePaymentMethod(val);
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  /// Bank Account
-                  CustomTextField(
-                    label: "Bank Account",
-                    hintText: "Enter bank account details",
-                    hintTextStyle: getTextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.grey.shade500,
-                    ),
-                    controller: TextEditingController(
-                      text: controller.bankAccount.value,
-                    ),
-                    onChanged: controller.updateBankAccount,
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 80.h),
           ],
         ),
-      ),
-    );
+      );
+    });
   }
 }

@@ -23,47 +23,104 @@ class OrderManagementScreen extends StatelessWidget {
             OrdersTabNavigationWidget(),
             Expanded(
               child: Obx(() {
+                // Pull-to-refresh should refresh only the currently selected tab's data
+                Future<void> _onRefresh() async {
+                  final apiStatus = controller.apiStatusForTabIndex(
+                    controller.selectedTab.value,
+                  );
+                  // Force a refresh even if cache exists so API is hit and shimmer shows
+                  await controller.fetchOrdersForApiStatus(
+                    apiStatus,
+                    force: true,
+                  );
+                }
+
                 if (controller.isLoading.value) {
                   // Show a list of ShimmerOrderCard placeholders while orders load
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: 6,
-                    itemBuilder: (context, index) => const Padding(
-                      padding: EdgeInsets.only(bottom: 16.0),
-                      child: ShimmerOrderCard(),
+                  return RefreshIndicator(
+                    onRefresh: _onRefresh,
+                    backgroundColor: Colors.white,
+                    color: Colors.amber,
+                    displacement:
+                        kToolbarHeight +
+                        MediaQuery.of(context).padding.top +
+                        8.0,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: 6,
+                      itemBuilder: (context, index) => const Padding(
+                        padding: EdgeInsets.only(bottom: 16.0),
+                        child: ShimmerOrderCard(),
+                      ),
                     ),
                   );
                 }
 
                 if (controller.errorMessage.value.isNotEmpty) {
-                  return Center(
-                    child: Text(
-                      controller.errorMessage.value,
-                      textAlign: TextAlign.center,
+                  return RefreshIndicator(
+                    onRefresh: _onRefresh,
+                    backgroundColor: Colors.white,
+                    color: Colors.amber,
+                    displacement:
+                        kToolbarHeight +
+                        MediaQuery.of(context).padding.top +
+                        8.0,
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(16),
+                      children: [
+                        Center(
+                          child: Text(
+                            controller.errorMessage.value,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 }
 
                 final orders = controller.filteredOrders;
                 if (orders.isEmpty) {
-                  return const Center(child: Text("No orders found"));
+                  return RefreshIndicator(
+                    onRefresh: _onRefresh,
+                    backgroundColor: Colors.white,
+                    color: Colors.amber,
+                    displacement:
+                        kToolbarHeight +
+                        MediaQuery.of(context).padding.top +
+                        8.0,
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(16),
+                      children: const [Center(child: Text("No orders found"))],
+                    ),
+                  );
                 }
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: orders.length,
-                  itemBuilder: (context, index) {
-                    final order = orders[index];
-                    return OrderCardWidget(
-                      orderId: order['id']!,
-                      customerName: order['customerName']!,
-                      timeAgo: order['timeAgo']!,
-                      deliveryTime: order['deliveryTime']!,
-                      tags: List<String>.from(order['tags']),
-                      status: order['status']!,
-                      isUrgent: order['isUrgent']!,
-                      requiresPrescription: order['requiresPrescription']!,
-                    );
-                  },
+
+                return RefreshIndicator(
+                  onRefresh: _onRefresh,
+                  backgroundColor: Colors.white,
+                  color: Colors.amber,
+                  displacement:
+                      kToolbarHeight + MediaQuery.of(context).padding.top + 8.0,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: orders.length,
+                    itemBuilder: (context, index) {
+                      final order = orders[index];
+                      return OrderCardWidget(
+                        orderId: order['id']!,
+                        customerName: order['customerName']!,
+                        timeAgo: order['timeAgo']!,
+                        deliveryTime: order['deliveryTime']!,
+                        tags: List<String>.from(order['tags']),
+                        status: order['status']!,
+                        isUrgent: order['isUrgent']!,
+                        requiresPrescription: order['requiresPrescription']!,
+                      );
+                    },
+                  ),
                 );
               }),
             ),

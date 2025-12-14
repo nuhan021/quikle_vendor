@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:quikle_vendor/features/cupons/screen/cupon_screen.dart';
+import 'package:quikle_vendor/features/earnings/screen/add_beneficiary_screen.dart';
 import 'package:quikle_vendor/features/home/screen/home_screen.dart';
 import 'package:quikle_vendor/features/kyc_approval/screen/kyc_approval_screen.dart';
 import 'package:quikle_vendor/features/kyc_verification/screen/kyc_verification_screen.dart';
@@ -46,6 +47,7 @@ class AppRoute {
   static String productManagementScreen = '/productManagementScreen';
   static String productEditScreen = '/productEditScreen';
   static String cuponsScreen = '/cuponsScreen';
+  static String addBeneficiaryScreen = '/addBeneficiaryScreen';
 
   static String getSplashScreen() => splash;
   static String getLoginScreen() => login;
@@ -64,6 +66,7 @@ class AppRoute {
   static String getOrderManagementScreen() => orderManagementScreen;
   static String getCompletedOrderDetailsScreen() => completedOrderDetailsScreen;
   static String getCuponScreen() => cuponsScreen;
+  static String getAddBeneficiaryScreen() => addBeneficiaryScreen;
 
   static List<GetPage> routes = [
     GetPage(name: splash, page: () => SplashScreen()),
@@ -93,5 +96,6 @@ class AppRoute {
     GetPage(name: productManagementScreen, page: () => ProductsScreen()),
     GetPage(name: productEditScreen, page: () => EditProductScreen()),
     GetPage(name: cuponsScreen, page: () => CuponScreen()),
+    GetPage(name: addBeneficiaryScreen, page: () => AddBeneficiaryScreen()),
   ];
 }

@@ -23,7 +23,7 @@ class OrdersTabNavigationWidget extends StatelessWidget {
               () => GestureDetector(
                 onTap: () => controller.changeTab(index),
                 child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.only(top: 12, bottom: 8),
                   decoration: BoxDecoration(
                     gradient: controller.selectedTab.value == index
                         ? LinearGradient(
@@ -41,16 +41,22 @@ class OrdersTabNavigationWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                  child: Text(
-                    controller.tabs[index],
-                    style: getTextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: controller.selectedTab.value == index
-                          ? Color(0xFF111827)
-                          : Color(0xFF9CA3AF),
-                    ),
-                    textAlign: TextAlign.center,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        controller.tabs[index],
+                        style: getTextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: controller.selectedTab.value == index
+                              ? Color(0xFF111827)
+                              : Color(0xFF9CA3AF),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 6),
+                    ],
                   ),
                 ),
               ),

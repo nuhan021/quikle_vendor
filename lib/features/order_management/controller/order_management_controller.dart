@@ -5,7 +5,7 @@ import '../services/order_services.dart';
 
 class OrderManagementController extends GetxController {
   /// -------------------- Tabs --------------------
-  final tabs = ["New", "In Progress", "Shipped", "Completed"];
+  final tabs = ["New", "Confirmed", "Shipped", "Completed"];
   final selectedTab = 0.obs;
 
   /// -------------------- Orders (Mock Data) --------------------
@@ -48,7 +48,6 @@ class OrderManagementController extends GetxController {
 
     // Fire off prefetches (await sequentially to avoid rate limits)
     for (var i = 0; i < tabs.length; i++) {
-      final apiStatus = _mapTabIndexToApiStatus(i);
       await _fetchOrdersByStatus(i, offset: 0, limit: 20);
     }
 
@@ -161,23 +160,50 @@ class OrderManagementController extends GetxController {
     }
   }
 
+  /// Public helper: map tab index to API status string (exposes private mapper)
+  String apiStatusForTabIndex(int tabIndex) =>
+      _mapTabIndexToApiStatus(tabIndex);
+
   /// Public helper: ensure orders for a given API status are loaded into the cache.
   /// Safe to call repeatedly; it will noop if cache already populated or loading is in progress.
-  Future<void> fetchOrdersForApiStatus(String apiStatus) async {
+  /// Fetch orders for a given API status. If [force] is true, clear the
+  /// existing cache for that status and re-fetch from offset 0.
+  /// When the currently selected tab is being refreshed with [force]=true,
+  /// `isLoading` will be set true so UI can show shimmer placeholders.
+  Future<void> fetchOrdersForApiStatus(
+    String apiStatus, {
+    bool force = false,
+  }) async {
     // find tab index corresponding to this apiStatus
     final tabIndex = tabs.indexWhere(
       (t) => _mapTabIndexToApiStatus(tabs.indexOf(t)) == apiStatus,
     );
     if (tabIndex < 0) return;
 
-    // If already have cached data or currently loading, do nothing
-    if ((_statusCache[apiStatus]?.isNotEmpty ?? false) ||
-        (_statusLoading[apiStatus] == true))
+    // If not forcing and we already have cached data or currently loading, do nothing
+    if (!force &&
+        ((_statusCache[apiStatus]?.isNotEmpty ?? false) ||
+            (_statusLoading[apiStatus] == true)))
       return;
 
-    await _fetchOrdersByStatus(tabIndex, offset: 0, limit: 20);
-    // ensure recent cache updated after fetch
-    _updateRecentOrdersCache();
+    if (force) {
+      // clear cache and reset offset so API is hit for fresh data
+      _statusCache[apiStatus] = [];
+      _statusOffsets[apiStatus] = 0;
+      _statusHasMore[apiStatus] = true;
+    }
+
+    final bool isActiveTab =
+        _mapTabIndexToApiStatus(selectedTab.value) == apiStatus;
+
+    try {
+      if (isActiveTab && force) isLoading.value = true;
+      await _fetchOrdersByStatus(tabIndex, offset: 0, limit: 20);
+      // ensure recent cache updated after fetch
+      _updateRecentOrdersCache();
+    } finally {
+      if (isActiveTab && force) isLoading.value = false;
+    }
   }
 
   /// Public: check if a specific API status is currently loading.

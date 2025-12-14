@@ -112,7 +112,7 @@ class _NavbarScreenState extends State<NavbarScreen>
               right: 0,
               bottom: 0,
               height: MediaQuery.of(context).padding.bottom,
-              child: Container(color: Colors.black87),
+              child: Container(color: Colors.black),
             ),
 
             Positioned(
@@ -133,7 +133,7 @@ class _NavbarScreenState extends State<NavbarScreen>
                           // remove SafeArea from here
                           height: 83.h,
                           decoration: BoxDecoration(
-                            color: Colors.black87,
+                            color: Colors.black,
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(28),
                               topRight: Radius.circular(28),
