@@ -1,4 +1,4 @@
-package com.example.quikle_vendor
+package com.quikle.quiklevendor
 
 import io.flutter.embedding.android.FlutterActivity
 
