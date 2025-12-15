@@ -1,6 +1,6 @@
 class ApiConstants {
   // Base URL
-  static const String baseUrl = "https://quikle-dev.onrender.com/";
+  static const String baseUrl = "https://quikle-u4dv.onrender.com/";
 
   static const String sendOtp = "${baseUrl}auth/send_otp/";
   static const String login = "${baseUrl}auth/login/";
