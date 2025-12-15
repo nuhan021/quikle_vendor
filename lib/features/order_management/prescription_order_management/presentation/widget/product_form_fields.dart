@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:quikle_vendor/core/common/styles/global_text_style.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 
 class ProductFormFields extends StatefulWidget {
@@ -11,7 +12,7 @@ class ProductFormFields extends StatefulWidget {
   final Map<String, String> productNotes;
   final bool isMedicineReady;
   final VoidCallback onProductSelectorTap;
-  final Function(int) onQuantityChange;
+  final Function(int, int) onQuantityChange;
   final Function(int, String) onBrandChange;
   final Function(int, String) onDosageChange;
   final Function(int, String) onNotesChange;
@@ -39,6 +40,45 @@ class ProductFormFields extends StatefulWidget {
 }
 
 class _ProductFormFieldsState extends State<ProductFormFields> {
+  final Map<String, TextEditingController> _brandControllers = {};
+  final Map<String, TextEditingController> _dosageControllers = {};
+  final Map<String, TextEditingController> _notesControllers = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeControllers();
+  }
+
+  void _initializeControllers() {
+    for (int i = 0; i < widget.selectedProductIds.length; i++) {
+      final productId = widget.selectedProductIds[i];
+      _brandControllers[productId] ??= TextEditingController(
+        text: widget.productBrands[productId] ?? '',
+      );
+      _dosageControllers[productId] ??= TextEditingController(
+        text: widget.productDosages[productId] ?? '',
+      );
+      _notesControllers[productId] ??= TextEditingController(
+        text: widget.productNotes[productId] ?? '',
+      );
+    }
+  }
+
+  @override
+  void didUpdateWidget(ProductFormFields oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _initializeControllers();
+  }
+
+  @override
+  void dispose() {
+    _brandControllers.forEach((_, controller) => controller.dispose());
+    _dosageControllers.forEach((_, controller) => controller.dispose());
+    _notesControllers.forEach((_, controller) => controller.dispose());
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -126,7 +166,7 @@ class _ProductFormFieldsState extends State<ProductFormFields> {
             flex: 1,
             child: Text(
               name,
-              style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w700),
+              style: getTextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500),
             ),
           ),
           SizedBox(width: 8.w),
@@ -147,13 +187,15 @@ class _ProductFormFieldsState extends State<ProductFormFields> {
               : () {
                   final currentQty = widget.productQuantities[productId] ?? 1;
                   if (currentQty > 1) {
-                    widget.onQuantityChange(currentQty - 1);
+                    widget.onQuantityChange(index, currentQty - 1);
                   }
                 },
           child: Container(
             padding: EdgeInsets.all(6.r),
             decoration: BoxDecoration(
-              color: widget.isMedicineReady ? Colors.grey : AppColors.primary,
+              color: widget.isMedicineReady
+                  ? Colors.grey
+                  : AppColors.ebonyBlack,
               borderRadius: BorderRadius.circular(4.r),
             ),
             child: Icon(Icons.remove, color: Colors.white, size: 16.sp),
@@ -168,7 +210,7 @@ class _ProductFormFieldsState extends State<ProductFormFields> {
             textAlign: TextAlign.center,
             onChanged: (value) {
               final qty = int.tryParse(value) ?? 1;
-              widget.onQuantityChange(qty > 0 ? qty : 1);
+              widget.onQuantityChange(index, qty > 0 ? qty : 1);
             },
             decoration: InputDecoration(
               hintText: 'Qty',
@@ -191,12 +233,14 @@ class _ProductFormFieldsState extends State<ProductFormFields> {
               ? null
               : () {
                   final currentQty = widget.productQuantities[productId] ?? 1;
-                  widget.onQuantityChange(currentQty + 1);
+                  widget.onQuantityChange(index, currentQty + 1);
                 },
           child: Container(
             padding: EdgeInsets.all(6.r),
             decoration: BoxDecoration(
-              color: widget.isMedicineReady ? Colors.grey : AppColors.primary,
+              color: widget.isMedicineReady
+                  ? Colors.grey
+                  : AppColors.ebonyBlack,
               borderRadius: BorderRadius.circular(4.r),
             ),
             child: Icon(Icons.add, color: Colors.white, size: 16.sp),
@@ -225,13 +269,10 @@ class _ProductFormFieldsState extends State<ProductFormFields> {
         SizedBox(height: 10.h),
         Row(
           children: [
-            SizedBox(width: 10.w),
             Expanded(
               child: TextField(
                 enabled: !widget.isMedicineReady,
-                controller: TextEditingController(
-                  text: widget.productBrands[productId] ?? '',
-                ),
+                controller: _brandControllers[productId],
                 onChanged: (value) => widget.onBrandChange(index, value),
                 decoration: _inputDecoration('Brand'),
                 style: TextStyle(fontSize: 12.sp),
@@ -241,34 +282,30 @@ class _ProductFormFieldsState extends State<ProductFormFields> {
             Expanded(
               child: TextField(
                 enabled: !widget.isMedicineReady,
-                controller: TextEditingController(
-                  text: widget.productDosages[productId] ?? '',
-                ),
+                controller: _dosageControllers[productId],
                 onChanged: (value) => widget.onDosageChange(index, value),
                 decoration: _inputDecoration('Dosage'),
                 style: TextStyle(fontSize: 12.sp),
               ),
             ),
-            SizedBox(width: 10.w),
+            // SizedBox(width: 10.w),
           ],
         ),
         SizedBox(height: 8.h),
         Row(
           children: [
-            SizedBox(width: 10.w),
+            // SizedBox(width: 10.w),
             Expanded(
               child: TextField(
                 enabled: !widget.isMedicineReady,
-                controller: TextEditingController(
-                  text: widget.productNotes[productId] ?? '',
-                ),
+                controller: _notesControllers[productId],
                 onChanged: (value) => widget.onNotesChange(index, value),
                 maxLines: 2,
                 decoration: _inputDecoration('Notes for this medicine'),
                 style: TextStyle(fontSize: 12.sp),
               ),
             ),
-            SizedBox(width: 10.w),
+            // SizedBox(width: 10.w),
           ],
         ),
       ],

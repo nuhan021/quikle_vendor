@@ -79,9 +79,11 @@ class RestaurantHeaderWidget extends StatelessWidget {
                     SizedBox(width: 8),
                     Obx(
                       () => Text(
-                        controller.vendorCloseTime.value ??
-                            vendorDetails?.closeTime ??
-                            '7:00 PM',
+                        _formatTo12Hour(
+                          controller.vendorCloseTime.value ??
+                              vendorDetails?.closeTime ??
+                              '19:00',
+                        ),
                         style: getTextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
@@ -119,6 +121,41 @@ class RestaurantHeaderWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _formatTo12Hour(String? rawTime) {
+    if (rawTime == null || rawTime.trim().isEmpty) return '--';
+
+    final value = rawTime.trim();
+    final lower = value.toLowerCase();
+
+    // If the backend already sends AM/PM, normalize casing and spacing.
+    if (lower.contains('am') || lower.contains('pm')) {
+      final match = RegExp(r'(\d{1,2}):(\d{2})').firstMatch(value);
+      if (match != null) {
+        final hour = match.group(1)!.padLeft(2, '0');
+        final minute = match.group(2)!.padLeft(2, '0');
+        final suffix = lower.contains('pm') ? 'PM' : 'AM';
+        return '$hour:$minute $suffix';
+      }
+      return value.toUpperCase();
+    }
+
+    // Parse 24-hour input like 19:00 or 08:30:15
+    final match = RegExp(r'^(\d{1,2}):(\d{2})(?::\d{2})?$').firstMatch(value);
+    if (match == null) return value; // Unknown format; return as-is.
+
+    final hour24 = int.tryParse(match.group(1) ?? '') ?? 0;
+    final minute = int.tryParse(match.group(2) ?? '') ?? 0;
+
+    final isPm = hour24 >= 12;
+    var hour12 = hour24 % 12;
+    if (hour12 == 0) hour12 = 12;
+
+    final hourStr = hour12.toString().padLeft(2, '0');
+    final minuteStr = minute.toString().padLeft(2, '0');
+
+    return '$hourStr:$minuteStr ${isPm ? 'PM' : 'AM'}';
   }
 
   /// Build restaurant image from photo URL or default asset
