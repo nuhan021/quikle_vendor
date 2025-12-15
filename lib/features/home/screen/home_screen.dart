@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/features/home/widgets/rider_assign/rider_assignment_dialogs_widget.dart';
@@ -39,6 +40,7 @@ class HomeScreen extends StatelessWidget {
                         PendingActionsWidget(),
                         SizedBox(height: 20),
                         RecentOrdersWidget(),
+                        SizedBox(height: 80.h),
                       ],
                     ),
                   ),
