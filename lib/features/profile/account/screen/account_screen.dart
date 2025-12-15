@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -9,6 +10,7 @@ import '../../../../core/utils/widgets/network_image_with_fallback.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../appbar/screen/appbar_screen.dart';
 import '../../../home/controller/home_controller.dart';
+import '../../my_profile/controller/my_profile_controller.dart';
 import '../controller/account_controller.dart';
 import '../widget/account_items.dart';
 import '../widget/language_dialog.dart';
@@ -62,13 +64,13 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
               child: Column(
                 children: [
-                  Obx(
-                    () => ClipRRect(
+                  GetX<HomeController>(
+                    builder: (controller) => ClipRRect(
                       borderRadius: BorderRadius.circular(45),
                       child: SizedBox(
                         width: 90,
                         height: 90,
-                        child: _buildProfileImage(homeController),
+                        child: _buildProfileImage(controller),
                       ),
                     ),
                   ),
@@ -175,11 +177,31 @@ class _AccountScreenState extends State<AccountScreen> {
 
   /// Build profile image widget with fallback
   Widget _buildProfileImage(HomeController controller) {
-    // Priority 1: Photo URL from reactive HomeController
+    // Priority 1: Check if MyProfileController has a local file (recently picked)
+    try {
+      final myProfileController = Get.find<MyProfileController>();
+      if (myProfileController.profileImagePath.value != null) {
+        return Image.file(
+          File(myProfileController.profileImagePath.value!),
+          fit: BoxFit.cover,
+          width: 90,
+          height: 90,
+        );
+      }
+    } catch (e) {
+      // MyProfileController not found, continue to next priority
+    }
+
+    // Priority 2: Photo URL from reactive HomeController
     if (controller.vendorPhotoUrl.value != null &&
         controller.vendorPhotoUrl.value!.isNotEmpty) {
+      // Add timestamp to bust cache - use controller's timestamp for consistency
+      final timestamp = controller.imageUpdateTimestamp.value;
+      final imageUrl = controller.vendorPhotoUrl.value!.contains('?')
+          ? '${controller.vendorPhotoUrl.value!}&t=$timestamp'
+          : '${controller.vendorPhotoUrl.value!}?t=$timestamp';
       return NetworkImageWithFallback(
-        controller.vendorPhotoUrl.value!,
+        imageUrl,
         fallback: ImagePath.shopImage,
         fit: BoxFit.cover,
         width: 90,
@@ -187,7 +209,7 @@ class _AccountScreenState extends State<AccountScreen> {
       );
     }
 
-    // Priority 2: Default asset image
+    // Priority 3: Default asset image
     return Image.asset(
       ImagePath.shopImage,
       fit: BoxFit.cover,

@@ -35,11 +35,13 @@ class RestaurantHeaderWidget extends StatelessWidget {
       child: Row(
         children: [
           Obx(
-            () => Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-              child: _buildRestaurantImage(controller),
+            () => ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                width: 60,
+                height: 60,
+                child: _buildRestaurantImage(controller),
+              ),
             ),
           ),
           SizedBox(width: 12),
