@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:quikle_vendor/core/common/styles/global_text_style.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 
 class SectionTitle extends StatelessWidget {
@@ -11,9 +12,9 @@ class SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: TextStyle(
-        fontSize: 14.sp,
-        fontWeight: FontWeight.w600,
+      style: getTextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w700,
         color: Colors.black87,
       ),
     );

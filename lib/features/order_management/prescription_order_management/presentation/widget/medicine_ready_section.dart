@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:http/http.dart';
+import 'package:quikle_vendor/core/common/styles/global_text_style.dart';
 import 'package:quikle_vendor/features/order_management/prescription_order_management/models/prescription_model.dart';
 
 class MedicineReadySection extends StatelessWidget {
@@ -68,16 +70,16 @@ class MedicineReadySection extends StatelessWidget {
                       children: [
                         Text(
                           medicine.brand ?? 'N/A',
-                          style: TextStyle(
+                          style: getTextStyle(
                             fontSize: 13.sp,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         Text(
                           'Qty: ${medicine.quantity ?? 1}',
                           style: TextStyle(
                             fontSize: 12.sp,
-                            color: Colors.grey[700],
+                            color: Colors.grey[700] ?? Colors.grey,
                           ),
                         ),
                       ],
@@ -85,9 +87,9 @@ class MedicineReadySection extends StatelessWidget {
                     SizedBox(height: 6.h),
                     Text(
                       'Dosage: ${medicine.dosage ?? 'N/A'}',
-                      style: TextStyle(
+                      style: getTextStyle(
                         fontSize: 12.sp,
-                        color: Colors.grey[700],
+                        color: Colors.grey[700] ?? Colors.grey,
                       ),
                     ),
                     if (medicine.notes != null &&
@@ -97,7 +99,7 @@ class MedicineReadySection extends StatelessWidget {
                         'Notes: ${medicine.notes}',
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: Colors.grey[700],
+                          color: Colors.grey[700] ?? Colors.grey,
                         ),
                       ),
                     ],
@@ -118,7 +120,7 @@ class MedicineReadySection extends StatelessWidget {
   Widget _buildSectionTitle(String text) {
     return Text(
       text,
-      style: TextStyle(
+      style: getTextStyle(
         fontSize: 14.sp,
         fontWeight: FontWeight.w600,
         color: Colors.black87,

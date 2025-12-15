@@ -44,9 +44,13 @@ class SubmitResponseButton extends StatelessWidget {
           final currentStatus = (prescription.status?.toLowerCase() ?? '')
               .replaceAll(' ', '')
               .replaceAll('_', '');
-          final isMedicineReady = currentStatus == 'medicineready';
+          final isMedicineReady =
+              currentStatus.contains('medicine') &&
+                  currentStatus.contains('ready') ||
+              currentStatus == 'medicineready';
           final isInvalid = currentStatus == 'invalid';
 
+          // Hide button if invalid or medicine is ready
           if (isInvalid || isMedicineReady) {
             return const SizedBox.shrink();
           }
@@ -55,15 +59,11 @@ class SubmitResponseButton extends StatelessWidget {
             color: const Color(0xFFF6F7F8),
             padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
             child: CustomButton(
-              text: isMedicineReady ? 'Submitted' : 'Submit Response',
-              onPressed: isMedicineReady
-                  ? () {}
-                  : () => _submitResponse(controller, prescriptionId),
+              text: 'Submit Response',
+              onPressed: () => _submitResponse(controller, prescriptionId),
               height: 48.h,
               borderRadius: 14,
-              backgroundColor: isMedicineReady
-                  ? Colors.grey
-                  : AppColors.primary,
+              backgroundColor: AppColors.primary,
               textColor: Colors.white,
               fontSize: 14.sp,
             ),

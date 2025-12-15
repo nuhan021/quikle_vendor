@@ -1,5 +1,5 @@
 class IconPath {
-  static String logo = '';
+  static String logo = 'assets/images/logo.png';
   static String home = 'assets/icons/home.svg';
   static String order = 'assets/icons/order.svg';
   static String earning = 'assets/icons/earnings.svg';

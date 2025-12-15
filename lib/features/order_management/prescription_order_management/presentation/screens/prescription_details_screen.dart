@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:quikle_vendor/features/order_management/prescription_order_management/models/prescription_model.dart';
 
 import '../../../../appbar/screen/appbar_screen.dart';
+import '../../../../../core/common/widgets/custom_button.dart';
 import '../../controller/prescription_controller.dart';
 import '../widget/common_widgets.dart';
 import '../widget/medicine_ready_section.dart';
@@ -11,7 +13,7 @@ import '../widget/prescription_image_card.dart';
 import '../widget/prescription_status_buttons.dart';
 import '../widget/product_form_fields.dart';
 import '../widget/product_selection_dialog.dart';
-import '../widget/submit_response_button.dart';
+import 'package:quikle_vendor/core/utils/constants/colors.dart';
 
 class PrescriptionDetailsScreen extends StatelessWidget {
   const PrescriptionDetailsScreen({super.key});
@@ -37,6 +39,7 @@ class _PrescriptionDetailsBodyState extends State<_PrescriptionDetailsBody> {
   final productNotes = <String, String>{};
 
   late final TextEditingController _prescriptionNotesController;
+  bool _isSubmitting = false;
 
   PrescriptionController get _prescriptionController =>
       Get.find<PrescriptionController>();
@@ -125,52 +128,70 @@ class _PrescriptionDetailsBodyState extends State<_PrescriptionDetailsBody> {
         if (prescription == null) {
           return const SizedBox.shrink();
         }
+        final isInvalidStatus =
+            (prescription.status ?? '').toLowerCase() == 'invalid';
 
-        final currentStatus = (prescription.status ?? '')
-            .toLowerCase()
-            .replaceAll(' ', '')
-            .replaceAll('_', '');
+        final textTheme = Theme.of(context).textTheme;
 
-        return Stack(
-          children: [
-            ListView(
-              padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 96.h),
-              children: [
-                PrescriptionImageCard(imagePath: prescription.imagePath),
-                SizedBox(height: 24.h),
-                PrescriptionStatusButtons(prescription: prescription),
-                SizedBox(height: 24.h),
-                if (currentStatus != 'invalid' &&
-                    currentStatus != 'medicineready')
-                  GetBuilder<PrescriptionController>(
-                    builder: (_) => _buildBottomSection(prescription),
-                  ),
-              ],
-            ),
-            GetBuilder<PrescriptionController>(
-              builder: (_) {
-                final refreshed = _currentPrescription;
-                if (refreshed == null) return const SizedBox.shrink();
+        return DefaultTextStyle(
+          style: GoogleFonts.poppins(
+            textStyle: textTheme.bodyMedium ?? const TextStyle(),
+          ),
+          child: Stack(
+            children: [
+              ListView(
+                padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 96.h),
+                children: [
+                  PrescriptionImageCard(imagePath: prescription.imagePath),
+                  SizedBox(height: 24.h),
+                  PrescriptionStatusButtons(prescription: prescription),
+                  SizedBox(height: 24.h),
+                  if (!isInvalidStatus)
+                    GetBuilder<PrescriptionController>(
+                      builder: (_) => _buildBottomSection(prescription),
+                    ),
+                ],
+              ),
+              GetBuilder<PrescriptionController>(
+                builder: (_) {
+                  final refreshed = _currentPrescription;
+                  if (refreshed == null) return const SizedBox.shrink();
 
-                final status = (refreshed.status ?? '')
-                    .toLowerCase()
-                    .replaceAll(' ', '')
-                    .replaceAll('_', '');
-                if (status == 'invalid' || status == 'medicineready') {
-                  return const SizedBox.shrink();
-                }
+                  final isInvalid =
+                      (refreshed.status ?? '').toLowerCase() == 'invalid';
+                  final isMedReady = _isMedicineReadyStatus(refreshed.status);
+                  if (isInvalid || isMedReady) {
+                    return const SizedBox.shrink();
+                  }
 
-                return SubmitResponseButton(
-                  selectedProductIds: selectedProductIds,
-                  productQuantities: productQuantities,
-                  productBrands: productBrands,
-                  productDosages: productDosages,
-                  productNotes: productNotes,
-                  prescriptionNotesController: _prescriptionNotesController,
-                );
-              },
-            ),
-          ],
+                  final isDisabled = _isSubmitting;
+
+                  return Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      color: const Color(0xFFF6F7F8),
+                      padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
+                      child: CustomButton(
+                        text: _isSubmitting
+                            ? 'Submitting...'
+                            : 'Submit Response',
+                        onPressed: isDisabled ? () {} : () => _submitResponse(),
+                        height: 48.h,
+                        borderRadius: 14,
+                        backgroundColor: isDisabled
+                            ? Colors.grey
+                            : AppColors.ebonyBlack,
+                        textColor: Colors.white,
+                        fontSize: 14.sp,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         );
       }),
     );
@@ -187,12 +208,20 @@ class _PrescriptionDetailsBodyState extends State<_PrescriptionDetailsBody> {
     );
   }
 
-  Widget _buildBottomSection(PrescriptionModel prescription) {
-    final currentStatus = (prescription.status ?? '')
+  bool _isMedicineReadyStatus(String? status) {
+    final normalized = (status ?? '')
         .toLowerCase()
         .replaceAll(' ', '')
         .replaceAll('_', '');
-    final isMedicineReady = currentStatus == 'medicineready';
+    return normalized == 'medicineready' || normalized == 'medicinesready';
+  }
+
+  Widget _buildBottomSection(PrescriptionModel prescription) {
+    final isMedicineReady = _isMedicineReadyStatus(prescription.status);
+    final normalizedStatus = (prescription.status ?? '')
+        .toLowerCase()
+        .replaceAll(' ', '')
+        .replaceAll('_', '');
 
     final formSection = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,7 +234,7 @@ class _PrescriptionDetailsBodyState extends State<_PrescriptionDetailsBody> {
           enabled: !isMedicineReady,
         ),
         SizedBox(height: 24.h),
-        if (currentStatus != 'valid' && !isMedicineReady) ...[
+        if (normalizedStatus != 'valid' && !isMedicineReady) ...[
           const VerificationWarning(),
           SizedBox(height: 24.h),
         ],
@@ -225,8 +254,8 @@ class _PrescriptionDetailsBodyState extends State<_PrescriptionDetailsBody> {
             selectedProductNames,
             () => setState(() {}),
           ),
-          onQuantityChange: (qty) => setState(() {
-            final productId = selectedProductIds[0];
+          onQuantityChange: (index, qty) => setState(() {
+            final productId = selectedProductIds[index];
             productQuantities[productId] = qty;
           }),
           onBrandChange: (index, value) => setState(() {
@@ -263,5 +292,52 @@ class _PrescriptionDetailsBodyState extends State<_PrescriptionDetailsBody> {
     }
 
     return formSection;
+  }
+
+  Future<void> _submitResponse() async {
+    if (selectedProductIds.isEmpty) {
+      Get.snackbar(
+        'Validation Error',
+        'Please select at least one medicine',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    final prescriptionId = Get.arguments?['prescriptionId'] as int?;
+    if (prescriptionId == null) {
+      setState(() => _isSubmitting = false);
+      return;
+    }
+
+    final medicines = <Map<String, dynamic>>[];
+    for (int i = 0; i < selectedProductIds.length; i++) {
+      final productId = selectedProductIds[i];
+      medicines.add({
+        'item_id': int.tryParse(productId) ?? 0,
+        'brand': productBrands[productId] ?? '',
+        'dosage': productDosages[productId] ?? '',
+        'quantity': productQuantities[productId] ?? 1,
+        'notes': productNotes[productId] ?? '',
+      });
+    }
+
+    final success = await _prescriptionController.submitVendorResponse(
+      prescriptionId: prescriptionId,
+      medicines: medicines,
+      prescriptionNotes: _prescriptionNotesController.text,
+    );
+
+    if (success) {
+      Future.delayed(const Duration(milliseconds: 800), () {
+        // Refresh the prescriptions list before going back
+        _prescriptionController.loadPrescriptions();
+        Get.back();
+      });
+    } else {
+      setState(() => _isSubmitting = false);
+    }
   }
 }
