@@ -304,8 +304,13 @@ class ProductsController extends GetxController {
         // log('🆕 Initial load complete. Total products: ${products.length}');
       }
 
-      // Update low stock count
-      lowStockCountValue.value = products.where((p) => p.stock <= 10).length;
+      // Prefer API-provided low stock count when available, fallback to computed
+      if (response.containsKey('low_stock_count') &&
+          response['low_stock_count'] is int) {
+        lowStockCountValue.value = response['low_stock_count'] as int;
+      } else {
+        lowStockCountValue.value = products.where((p) => p.stock <= 10).length;
+      }
     } catch (e) {
       // log('Error fetching products: $e');
     } finally {
@@ -428,9 +433,6 @@ class ProductsController extends GetxController {
   }
 
   int get lowStockCount {
-    final productsToCheck = searchText.value.isNotEmpty
-        ? searchResults
-        : products;
-    return productsToCheck.where((p) => p.stock <= 10).length;
+    return lowStockCountValue.value;
   }
 }

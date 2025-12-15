@@ -6,7 +6,6 @@ import '../../../core/common/styles/global_text_style.dart';
 import '../controller/home_controller.dart';
 import 'package:quikle_vendor/features/order_management/controller/order_management_controller.dart';
 import 'new_order_card_widget.dart';
-import 'ongoing_delivery_card_widget.dart';
 import 'package:quikle_vendor/core/widgets/shimmer_widget.dart';
 
 class OrdersOverviewWidget extends StatelessWidget {
@@ -132,15 +131,21 @@ class OrdersOverviewWidget extends StatelessWidget {
                   final omc = Get.find<OrderManagementController>();
                   if (omc.isStatusLoading('processing')) {
                     return Column(
-                      children: List.generate(
-                        2,
-                        (_) => const NewOrderShimmer(),
-                      ),
+                      children: List.generate(2, (index) {
+                        final widget = const NewOrderShimmer();
+                        if (index < 1) {
+                          return Column(
+                            children: [widget, SizedBox(height: 16)],
+                          );
+                        }
+                        return widget;
+                      }),
                     );
                   }
                 }
                 return Column(
-                  children: newOrders.map((order) {
+                  children: List.generate(newOrders.length, (index) {
+                    final order = newOrders[index];
                     // Normalize items into a short string for the overview card
                     final rawItems = order['items'];
                     String itemsText;
@@ -152,11 +157,15 @@ class OrdersOverviewWidget extends StatelessWidget {
                     } else {
                       itemsText = rawItems?.toString() ?? '';
                     }
-                    return NewOrderCardWidget(
+                    final card = NewOrderCardWidget(
                       orderId: order['id']!,
                       items: itemsText,
                     );
-                  }).toList(),
+                    if (index < newOrders.length - 1) {
+                      return Column(children: [card, SizedBox(height: 16)]);
+                    }
+                    return card;
+                  }),
                 );
               }),
             ],

@@ -79,12 +79,15 @@ class RecentOrdersWidget extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
             child: Column(
-              children: displayOrders.map((order) {
-                // customer
-                // show order id instead of customer name
-                // if order map is empty -> show shimmer placeholder
+              children: List.generate(displayOrders.length, (index) {
+                final order = displayOrders[index];
+
                 if (order.isEmpty) {
-                  return const RecentOrderShimmer();
+                  final widget = const RecentOrderShimmer();
+                  if (index < displayOrders.length - 1) {
+                    return Column(children: [widget, SizedBox(height: 16)]);
+                  }
+                  return widget;
                 }
 
                 final rawOrderId =
@@ -93,7 +96,6 @@ class RecentOrdersWidget extends StatelessWidget {
                     ? rawOrderId
                     : (rawOrderId != null ? rawOrderId.toString() : '');
 
-                // items (could be a String or a List)
                 String items;
                 final rawItems = order['items'];
                 if (rawItems is String) {
@@ -109,7 +111,6 @@ class RecentOrdersWidget extends StatelessWidget {
                   }
                 }
 
-                // amount (could be num or String)
                 String amount;
                 final rawTotal = order['total'] ?? order['subtotal'];
                 if (rawTotal is num) {
@@ -122,21 +123,16 @@ class RecentOrdersWidget extends StatelessWidget {
                   amount = '\$0';
                 }
 
-                // time
                 final time = order['created_at'] is String
                     ? order['created_at'] as String
                     : (order['time'] is String ? order['time'] as String : '');
 
-                // status
                 final status = order['status'] is String
                     ? order['status'] as String
                     : (order['apiStatus'] is String
                           ? order['apiStatus'] as String
                           : 'Unknown');
 
-                // statusColor (may be provided as int or Color). If absent,
-                // map common statuses to colors: in-progress/processing/shipped -> amber,
-                // delivered/completed -> green, otherwise default grey.
                 Color statusColor = const Color(0xFF6B7280);
                 final sc = order['statusColor'];
                 if (sc is int) {
@@ -157,7 +153,7 @@ class RecentOrdersWidget extends StatelessWidget {
                   }
                 }
 
-                return RecentOrderCardWidget(
+                final card = RecentOrderCardWidget(
                   customer: customer,
                   items: items,
                   amount: amount,
@@ -165,7 +161,12 @@ class RecentOrdersWidget extends StatelessWidget {
                   status: status,
                   statusColor: statusColor,
                 );
-              }).toList(),
+
+                if (index < displayOrders.length - 1) {
+                  return Column(children: [card, SizedBox(height: 16)]);
+                }
+                return card;
+              }),
             ),
           );
         }),

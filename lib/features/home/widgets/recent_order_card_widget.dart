@@ -24,8 +24,8 @@ class RecentOrderCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.all(16),
+      margin: EdgeInsets.zero,
+      padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 4),
       decoration: BoxDecoration(
         color: AppColors.background,
         borderRadius: BorderRadius.circular(8),

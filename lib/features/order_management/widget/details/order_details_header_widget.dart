@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../list/order_status_badge_widget.dart';
 
@@ -18,6 +19,27 @@ class OrderDetailsHeaderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String _formatEstimated(String raw) {
+      if (raw.isEmpty) return 'N/A';
+
+      DateTime? dt;
+      // try ISO-8601 / standard DateTime
+      dt = DateTime.tryParse(raw);
+      if (dt == null) {
+        // try parsing as milliseconds since epoch
+        final ms = int.tryParse(raw);
+        if (ms != null) dt = DateTime.fromMillisecondsSinceEpoch(ms);
+      }
+
+      if (dt == null) return raw;
+
+      final dateStr = DateFormat('EEEE, d MMM yyyy').format(dt);
+      final timeStr = DateFormat('hh:mm a').format(dt);
+      return '$dateStr • $timeStr';
+    }
+
+    final formattedEstimated = _formatEstimated(estimatedDelivery);
+
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -25,7 +47,7 @@ class OrderDetailsHeaderWidget extends StatelessWidget {
         children: [
           /// 🔹 Order ID
           Text(
-            'Order $orderId',
+            orderId,
             style: getTextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w700,
@@ -45,26 +67,18 @@ class OrderDetailsHeaderWidget extends StatelessWidget {
           const SizedBox(height: 16),
 
           /// 🔹 Estimated Delivery
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: "Estimated Delivery Time: ",
-                  style: getTextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF111827),
-                  ),
-                ),
-                TextSpan(
-                  text: estimatedDelivery,
-                  style: getTextStyle(
-                    fontSize: 16,
-                    color: const Color(0xFF6B7280),
-                  ),
-                ),
-              ],
+          Text(
+            'Estimated Delivery',
+            style: getTextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF111827),
             ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            formattedEstimated,
+            style: getTextStyle(fontSize: 16, color: const Color(0xFF6B7280)),
           ),
         ],
       ),

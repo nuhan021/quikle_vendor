@@ -121,7 +121,7 @@ class RecentOrderShimmer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ShimmerPlaceholder(width: 120, height: 14),
-                ShimmerPlaceholder(width: 60, height: 14),
+                // ShimmerPlaceholder(width: 60, height: 14),
               ],
             ),
           ],

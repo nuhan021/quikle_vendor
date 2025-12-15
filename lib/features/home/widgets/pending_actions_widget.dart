@@ -3,13 +3,16 @@ import 'package:get/get.dart';
 import '../../../core/common/styles/global_text_style.dart';
 import '../controller/home_controller.dart';
 import 'pending_action_card_widget.dart';
+import '../../product_management/controllers/products_controller.dart';
+import 'package:quikle_vendor/core/widgets/shimmer_widget.dart';
 
 class PendingActionsWidget extends StatelessWidget {
-  PendingActionsWidget({super.key});
+  const PendingActionsWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<HomeController>();
+    final productsController = Get.put(ProductsController());
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,13 +40,20 @@ class PendingActionsWidget extends StatelessWidget {
           ),
           child: Column(
             children: [
-              PendingActionCardWidget(
-                title: 'Update Inventory',
-                subtitle: '0 items low in stock',
-                buttonText: 'Update',
-                buttonColor: const Color(0xFFEF4444),
-                onTap: controller.updateInventory,
-              ),
+              Obx(() {
+                if (productsController.isLoading.value) {
+                  return const RecentOrderShimmer();
+                }
+
+                return PendingActionCardWidget(
+                  title: 'Update Inventory',
+                  subtitle:
+                      '${productsController.lowStockCount} items low in stock',
+                  buttonText: 'Update',
+                  buttonColor: const Color(0xFFEF4444),
+                  onTap: controller.updateInventory,
+                );
+              }),
             ],
           ),
         ),

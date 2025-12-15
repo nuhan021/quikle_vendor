@@ -24,7 +24,7 @@ class PendingActionCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.zero,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.background,

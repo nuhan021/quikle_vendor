@@ -19,7 +19,7 @@ class NewOrderCardWidget extends StatelessWidget {
     final controller = Get.find<HomeController>();
 
     return Container(
-      margin: EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.zero,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.background,
@@ -34,7 +34,7 @@ class NewOrderCardWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          SizedBox(width: 12),
+          // SizedBox(width: 4),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
