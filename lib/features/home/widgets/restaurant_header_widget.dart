@@ -50,7 +50,7 @@ class RestaurantHeaderWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  vendorDetails?.shopName ?? 'Tandoori Tarang',
+                  vendorDetails?.shopName ?? 'Your Shop Name',
                   style: getTextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -169,12 +169,12 @@ class RestaurantHeaderWidget extends StatelessWidget {
         controller.vendorPhotoUrl.value!,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          return Image.asset(ImagePath.shopImage, fit: BoxFit.cover);
+          return Image.asset(ImagePath.logo, fit: BoxFit.cover);
         },
       );
     }
 
     // Fallback to default asset image
-    return Image.asset(ImagePath.shopImage, fit: BoxFit.cover);
+    return Image.asset(ImagePath.logo, fit: BoxFit.cover);
   }
 }

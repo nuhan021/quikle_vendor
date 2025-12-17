@@ -90,12 +90,12 @@ class OverviewController extends GetxController {
   }
 
   void _applyMockData() {
-    totalEarnings.value = 4250.80;
-    netEarnings.value = 325.72;
-    paymentReceived.value = 3890.40;
-    pending.value = 360.40;
-    commission.value = 425.08;
-    avgOrder.value = 29.93;
-    ordersCount.value = 142;
+    totalEarnings.value = 0.0;
+    netEarnings.value = 0.0;
+    paymentReceived.value = 0.0;
+    pending.value = 0.0;
+    commission.value = 0.0;
+    avgOrder.value = 0.0;
+    ordersCount.value = 0;
   }
 }

@@ -28,6 +28,11 @@ class MyProfileController extends GetxController {
   final accountStatusDisplay = "Active".obs;
   final phoneNumberDisplay = "".obs;
   final nidNumberDisplay = "".obs;
+  final kycStatus = "".obs;
+  final kycDocumentUrl = "".obs;
+
+  // Profile completion percentage
+  final profileCompletionPercentage = 0.0.obs;
 
   // Vendor Details Observable
   late VendorDetailsModel vendorDetails;
@@ -138,6 +143,11 @@ class MyProfileController extends GetxController {
             : "Inactive";
         phoneNumberDisplay.value = vendorDetails.phone;
         nidNumberDisplay.value = vendorDetails.nid;
+        kycStatus.value = vendorDetails.kycStatus ?? "";
+        kycDocumentUrl.value = vendorDetails.kycDocument ?? "";
+
+        // Calculate profile completion percentage
+        _calculateProfileCompletion();
 
         // Load profile image path from storage if available
         final imagePath = vendorData?['profile_image_path'] as String?;
@@ -382,6 +392,58 @@ class MyProfileController extends GetxController {
     } finally {
       isUpdatingProfile.value = false;
     }
+  }
+
+  /// Calculate profile completion percentage based on required fields
+  void _calculateProfileCompletion() {
+    int completedFields = 0;
+    int totalFields = 7; // Total required fields
+
+    // 1. Location/Address
+    if (vendorDetails.locationName != null &&
+        vendorDetails.locationName!.isNotEmpty) {
+      completedFields++;
+    }
+
+    // 2. Shop Name
+    if (vendorDetails.shopName.isNotEmpty) {
+      completedFields++;
+    }
+
+    // 3. Owner Name
+    if (vendorDetails.ownerName != null &&
+        vendorDetails.ownerName!.isNotEmpty) {
+      completedFields++;
+    }
+
+    // 4. Vendor Phone Number
+    if (vendorDetails.phone.isNotEmpty) {
+      completedFields++;
+    }
+
+    // 5. NID Number
+    if (vendorDetails.nid.isNotEmpty) {
+      completedFields++;
+    }
+
+    // 6. Opening Hours (both open and close time)
+    if (vendorDetails.openTime != null &&
+        vendorDetails.openTime!.isNotEmpty &&
+        vendorDetails.closeTime != null &&
+        vendorDetails.closeTime!.isNotEmpty) {
+      completedFields++;
+    }
+
+    // 7. KYC Document
+    if (vendorDetails.kycDocument != null &&
+        vendorDetails.kycDocument!.isNotEmpty &&
+        vendorDetails.kycStatus != null &&
+        vendorDetails.kycStatus != 'pending') {
+      completedFields++;
+    }
+
+    // Calculate percentage
+    profileCompletionPercentage.value = (completedFields / totalFields) * 100;
   }
 
   @override

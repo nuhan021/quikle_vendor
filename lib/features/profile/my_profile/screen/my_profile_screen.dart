@@ -2,9 +2,12 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:quikle_vendor/core/common/widgets/custom_button.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
+import 'package:quikle_vendor/core/utils/constants/image_path.dart';
 import 'package:quikle_vendor/features/profile/my_profile/widget/contactInfoCard.dart';
+import 'package:quikle_vendor/features/profile/my_profile/widget/kyc_status_card.dart';
 import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/core/utils/widgets/network_image_with_fallback.dart';
@@ -53,43 +56,42 @@ class MyProfileScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Obx(
-                    () => Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(45),
-                          child: SizedBox(
-                            width: 90,
-                            height: 90,
-                            child: _buildProfileImage(
-                              controller,
-                              vendorDetails,
-                            ),
+                    () => CircularPercentIndicator(
+                      radius: 55.0,
+                      lineWidth: 5.0,
+                      animation: true,
+                      animationDuration: 1000,
+                      percent:
+                          controller.profileCompletionPercentage.value / 100,
+                      center: ClipRRect(
+                        borderRadius: BorderRadius.circular(45),
+                        child: SizedBox(
+                          width: 90,
+                          height: 90,
+                          child: _buildProfileImage(controller, vendorDetails),
+                        ),
+                      ),
+                      footer: Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          '${controller.profileCompletionPercentage.value.toStringAsFixed(0)}% Complete',
+                          style: getTextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black54,
                           ),
                         ),
-                        // Positioned(
-                        //   bottom: 0,
-                        //   right: 0,
-                        //   child: GestureDetector(
-                        //     onTap: controller.pickImage,
-                        //     child: Container(
-                        //       padding: const EdgeInsets.all(6),
-                        //       decoration: BoxDecoration(
-                        //         color: Colors.black,
-                        //         shape: BoxShape.circle,
-                        //         border: Border.all(
-                        //           color: Colors.white,
-                        //           width: 2,
-                        //         ),
-                        //       ),
-                        //       child: const Icon(
-                        //         Icons.camera_alt,
-                        //         color: Colors.white,
-                        //         size: 16,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                      ],
+                      ),
+                      circularStrokeCap: CircularStrokeCap.round,
+                      progressColor:
+                          controller.profileCompletionPercentage.value == 100
+                          ? Colors.green
+                          : controller.profileCompletionPercentage.value >= 70
+                          ? AppColors.beakYellow
+                          : controller.profileCompletionPercentage.value >= 40
+                          ? Colors.orange
+                          : Colors.red,
+                      backgroundColor: Colors.grey.shade200,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -107,18 +109,31 @@ class MyProfileScreen extends StatelessWidget {
                     child: Text(
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      vendorDetails?.locationName ?? '',
+                      vendorDetails?.locationName != null &&
+                              vendorDetails!.locationName!.isNotEmpty
+                          ? vendorDetails!.locationName!
+                          : 'Add your business location',
                       textAlign: TextAlign.center,
-                      style: getTextStyle(fontSize: 14, color: Colors.black54),
+                      style: getTextStyle(
+                        fontSize: 14,
+                        color:
+                            vendorDetails?.locationName != null &&
+                                vendorDetails!.locationName!.isNotEmpty
+                            ? Colors.black54
+                            : Colors.grey,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
 
             /// Profile Info Card
             // const BasicInfoCard(),
+            const SizedBox(height: 20),
+
+            /// KYC Status Card
+            const KycStatusCard(),
             const SizedBox(height: 20),
 
             /// Contact Info
@@ -167,13 +182,13 @@ class MyProfileScreen extends StatelessWidget {
       if (photoUrl.isNotEmpty) {
         return NetworkImageWithFallback(
           photoUrl,
-          fallback: "assets/images/profile.png",
+          fallback: "assets/images/logo.png",
           fit: BoxFit.cover,
         );
       }
     }
 
     // Priority 3: Default asset image
-    return Image.asset("assets/images/profile.png", fit: BoxFit.cover);
+    return Image.asset(ImagePath.logo, fit: BoxFit.cover);
   }
 }

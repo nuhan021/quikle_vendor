@@ -6,6 +6,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:quikle_vendor/core/services/storage_service.dart';
+import 'package:quikle_vendor/features/auth/data/services/auth_service.dart';
 import 'package:quikle_vendor/features/kyc_verification/services/kyc_verification_service.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
 
@@ -226,10 +228,60 @@ class KycVerificationController extends GetxController {
 
       if (response.isSuccess) {
         log('✅ KYC submitted successfully');
+        log('📦 Response Data: ${response.responseData}');
+
+        // ✅ Extract and save tokens if present in response
+        if (response.responseData is Map) {
+          final responseData = response.responseData as Map<String, dynamic>;
+
+          final accessToken = responseData['access_token'];
+          final userId =
+              responseData['id']?.toString() ??
+              responseData['user_id']?.toString() ??
+              StorageService.userId ??
+              '';
+
+          if (accessToken != null) {
+            await StorageService.saveToken(accessToken, userId);
+            log('✅ Tokens saved from KYC response');
+          }
+
+          // ✅ Save vendor profile if available in response
+          if (responseData['vendor_profile'] != null) {
+            await StorageService.saveVendorDetails(
+              responseData['vendor_profile'] as Map<String, dynamic>,
+            );
+            log('✅ Vendor profile saved from KYC response');
+          }
+        }
+
+        // ✅ Fetch fresh vendor details from API to ensure we have latest data
+        log('🔄 Fetching fresh vendor details after KYC...');
+        try {
+          final auth = Get.find<AuthService>();
+          final vendorDetailsResponse = await auth.getVendorDetails();
+
+          if (vendorDetailsResponse.isSuccess &&
+              vendorDetailsResponse.responseData is Map) {
+            final vendorData =
+                vendorDetailsResponse.responseData as Map<String, dynamic>;
+
+            if (vendorData['vendor_profile'] != null) {
+              await StorageService.saveVendorDetails(
+                vendorData['vendor_profile'] as Map<String, dynamic>,
+              );
+              log('✅ Fresh vendor details saved after KYC');
+            }
+          }
+        } catch (e) {
+          log('⚠️  Error fetching vendor details: $e');
+        }
+
+        isSubmitting.value = false;
         await Future.delayed(const Duration(seconds: 1));
-        // Pass the new kyc_status to KYC Approval screen
+        // Navigate to Navbar screen
         Get.offAllNamed(
-          AppRoute.kycApprovalScreen,
+          AppRoute.navbarScreen,
           arguments: {'kycStatus': 'pending'},
         );
       } else {
@@ -240,6 +292,12 @@ class KycVerificationController extends GetxController {
       log('❌ Error: $e');
       isSubmitting.value = false;
     }
+  }
+
+  /// Skip KYC and go to navbar without saving anything
+  void skipKyc() {
+    log('⏭️  Skipping KYC verification');
+    Get.offAllNamed(AppRoute.navbarScreen, arguments: {'kycStatus': 'skipped'});
   }
 
   @override

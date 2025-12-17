@@ -183,8 +183,8 @@ class _NavbarScreenState extends State<NavbarScreen>
                                   onTap: () => controller.changeTab(3),
                                 ),
                                 ProfileNavbarItem(
-                                  imagePath: ImagePath.profile,
-                                  label: 'Ananya',
+                                  imagePath: ImagePath.logo,
+                                  label: 'Owner',
                                   selected: controller.currentIndex.value == 4,
                                   onTap: () => controller.changeTab(4),
                                 ),

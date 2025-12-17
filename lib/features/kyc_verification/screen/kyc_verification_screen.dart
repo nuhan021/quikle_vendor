@@ -246,9 +246,6 @@ class KycVerificationScreen extends StatelessWidget {
                     ? () {}
                     : () async {
                         await controller.submitKyc();
-                        // Ensure navigation even if controller fails
-                        // (controller already calls navigation, but this is a fallback)
-                        Get.offAllNamed(AppRoute.kycApprovalScreen);
                       },
                 height: 50,
                 borderRadius: 10,
@@ -257,6 +254,23 @@ class KycVerificationScreen extends StatelessWidget {
                     : Colors.black,
                 textColor: Colors.white,
                 fontSize: 16,
+              ),
+              const SizedBox(height: 16),
+
+              /// Skip Button
+              CustomButton(
+                text: "Skip for Now",
+                onPressed: controller.isSubmitting.value
+                    ? () {}
+                    : () {
+                        controller.skipKyc();
+                      },
+                height: 50,
+                borderRadius: 10,
+                backgroundColor: Colors.transparent,
+                textColor: Colors.black,
+                fontSize: 16,
+                borderColor: Colors.grey,
               ),
             ],
           ),

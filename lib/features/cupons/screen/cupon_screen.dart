@@ -32,7 +32,7 @@ class CuponScreen extends StatelessWidget {
                   : c.coupons.isEmpty
                   ? Center(
                       child: Text(
-                        'No coupons yet.\nCreate your first coupon!',
+                        'No coupons yet.\n You need to verify your shop to create coupons.',
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 14.sp, color: Colors.grey),
                       ),

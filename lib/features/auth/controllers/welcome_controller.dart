@@ -21,71 +21,24 @@ class WelcomeController extends GetxController {
   Future<void> _handleNavigation() async {
     try {
       if (StorageService.hasToken()) {
-        // Call vendor details API
+        // Fetch vendor details if available
         final auth = Get.find<AuthService>();
         final vendorDetailsResponse = await auth.getVendorDetails();
 
         final vendorData =
             vendorDetailsResponse.responseData as Map<String, dynamic>;
 
-        // Case 1: Profile is completed
-        if (vendorData['message'] == 'Vendor profile fetched successfully' &&
-            vendorData['vendor_profile']['is_completed'] == true) {
-          log('✅ Navigated to Navbar Screen - Profile Completed');
+        // Save vendor profile if exists
+        if (vendorData['vendor_profile'] != null) {
           await StorageService.saveVendorDetails(vendorData['vendor_profile']);
-          Get.offAllNamed(AppRoute.navbarScreen);
-          return;
-        }
-        // Case 2: Vendor profile not found
-        if (vendorData['detail'] == 'Vendor profile not found.') {
-          log('📋 Navigating to Vendor Selection');
-          Get.offAllNamed(AppRoute.vendorSelectionScreen);
-          return;
+          log('✅ Vendor profile saved');
+        } else {
+          log('ℹ️ No vendor profile in response');
         }
 
-        // Case 3: KYC Status is verified
-        if (vendorDetailsResponse.statusCode == 200 &&
-            vendorData['message'] == 'Vendor profile fetched successfully' &&
-            vendorData['vendor_profile']['kyc_status'] == 'verified') {
-          log('✅ Navigated to Navbar Screen - KYC Verified');
-          await StorageService.saveVendorDetails(vendorData['vendor_profile']);
-          // Get.offAllNamed(AppRoute.navbarScreen);
-          Get.offAllNamed(
-            AppRoute.kycApprovalScreen,
-            arguments: {'kycStatus': 'verified'},
-          );
-          return;
-        }
-
-        // Case 4: KYC Status is submitted
-        if (vendorDetailsResponse.statusCode == 200 &&
-            vendorData['message'] == 'Vendor profile fetched successfully' &&
-            vendorData['vendor_profile']['kyc_status'] == 'submitted') {
-          log('⏳ Navigating to KYC Approval - Submitted');
-          await StorageService.saveVendorDetails(vendorData['vendor_profile']);
-          Get.offAllNamed(
-            AppRoute.kycApprovalScreen,
-            arguments: {'kycStatus': 'submitted'},
-          );
-          return;
-        }
-
-        // Case 5: KYC Status is rejected
-        if (vendorDetailsResponse.statusCode == 200 &&
-            vendorData['message'] == 'Vendor profile fetched successfully' &&
-            vendorData['vendor_profile']['kyc_status'] == 'rejected') {
-          log('❌ Navigating to KYC Approval - Rejected');
-          await StorageService.saveVendorDetails(vendorData['vendor_profile']);
-          Get.offAllNamed(
-            AppRoute.kycApprovalScreen,
-            arguments: {'kycStatus': 'rejected'},
-          );
-          return;
-        }
-
-        // Default case: If none of the above, navigate to vendor selection
-        log('Default navigation - Profile incomplete or unknown status');
-        Get.offAllNamed(AppRoute.vendorSelectionScreen);
+        // Always navigate to navbar if token exists
+        log('✅ Navigating to Navbar Screen');
+        Get.offAllNamed(AppRoute.navbarScreen);
         return;
       } else {
         log('🔓 No token found - Navigating to Login');

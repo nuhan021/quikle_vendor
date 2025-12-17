@@ -118,8 +118,7 @@ class VerificationController extends GetxController {
             vendorData['vendor_profile']['kyc_status'] == 'verified') {
           isVerifying.value = false;
           Get.offAllNamed(
-            // AppRoute.navbarScreen,
-            AppRoute.kycApprovalScreen,
+            AppRoute.navbarScreen,
             arguments: {'kycStatus': 'verified'},
           );
         }
@@ -129,7 +128,7 @@ class VerificationController extends GetxController {
             vendorData['vendor_profile']['kyc_status'] == 'submitted') {
           isVerifying.value = false;
           Get.offAllNamed(
-            AppRoute.kycApprovalScreen,
+            AppRoute.navbarScreen,
             arguments: {'kycStatus': 'submitted'},
           );
         }
@@ -139,7 +138,7 @@ class VerificationController extends GetxController {
             vendorData['vendor_profile']['kyc_status'] == 'rejected') {
           isVerifying.value = false;
           Get.offAllNamed(
-            AppRoute.kycApprovalScreen,
+            AppRoute.navbarScreen,
             arguments: {'kycStatus': 'rejected'},
           );
         }
@@ -166,7 +165,100 @@ class VerificationController extends GetxController {
     response = await _auth.vendorSignup(shopName!, phone, otp);
 
     if (response.isSuccess) {
-      Get.offAllNamed(AppRoute.login);
+      // Extract token and id from response
+      if (response.responseData is Map) {
+        final responseData = response.responseData as Map<String, dynamic>;
+        final token = responseData['access_token'];
+        final id =
+            responseData['id']?.toString() ??
+            responseData['user_id']?.toString() ??
+            '';
+
+        log('🔍 Signup Response - Token: $token, ID: $id');
+
+        // Save token and id to storage
+        if (token != null) {
+          await StorageService.saveToken(token, id);
+          log('✅ Token saved after signup');
+        }
+      }
+
+      // Call vendor details API to check if profile exists
+      log('🔄 Fetching vendor details after signup...');
+      final vendorDetailsResponse = await _auth.getVendorDetails();
+      log('Vendor Details Response: ${vendorDetailsResponse.responseData}');
+
+      // Check if response data is a Map
+      if (vendorDetailsResponse.responseData is Map) {
+        final vendorData =
+            vendorDetailsResponse.responseData as Map<String, dynamic>;
+
+        // Save vendor details to SharedPreferences if exists
+        if (vendorData['vendor_profile'] != null) {
+          await StorageService.saveVendorDetails(
+            vendorData['vendor_profile'] as Map<String, dynamic>,
+          );
+          log('✅ Vendor profile saved after signup');
+        }
+
+        // Case 1: Profile is completed
+        if (vendorData['message'] == 'Vendor profile fetched successfully' &&
+            vendorData['vendor_profile']['is_completed'] == true) {
+          log('✅ Profile completed - Navigating to Navbar');
+          isVerifying.value = false;
+          Get.offAllNamed(AppRoute.navbarScreen);
+          return;
+        }
+
+        // Case 2: Vendor profile not found - need vendor selection
+        if (vendorData['detail'] == 'Vendor profile not found.') {
+          log('📋 Vendor profile not found - Navigating to Vendor Selection');
+          isVerifying.value = false;
+          Get.offAllNamed(AppRoute.vendorSelectionScreen);
+          return;
+        }
+
+        // Case 3: KYC verified
+        if (vendorDetailsResponse.statusCode == 200 &&
+            vendorData['message'] == 'Vendor profile fetched successfully' &&
+            vendorData['vendor_profile']['kyc_status'] == 'verified') {
+          log('✅ KYC verified - Navigating to Navbar');
+          isVerifying.value = false;
+          Get.offAllNamed(AppRoute.navbarScreen);
+          return;
+        }
+
+        // Case 4: KYC submitted
+        if (vendorDetailsResponse.statusCode == 200 &&
+            vendorData['message'] == 'Vendor profile fetched successfully' &&
+            vendorData['vendor_profile']['kyc_status'] == 'submitted') {
+          log('⏳ KYC submitted - Navigating to Navbar');
+          isVerifying.value = false;
+          Get.offAllNamed(
+            AppRoute.navbarScreen,
+            arguments: {'kycStatus': 'submitted'},
+          );
+          return;
+        }
+
+        // Case 5: KYC rejected
+        if (vendorDetailsResponse.statusCode == 200 &&
+            vendorData['message'] == 'Vendor profile fetched successfully' &&
+            vendorData['vendor_profile']['kyc_status'] == 'rejected') {
+          log('❌ KYC rejected - Navigating to Navbar');
+          isVerifying.value = false;
+          Get.offAllNamed(
+            AppRoute.navbarScreen,
+            arguments: {'kycStatus': 'rejected'},
+          );
+          return;
+        }
+      }
+
+      // Default: Navigate to vendor selection for new accounts
+      log('📋 Default - Navigating to Vendor Selection');
+      isVerifying.value = false;
+      Get.offAllNamed(AppRoute.vendorSelectionScreen);
     } else {
       isVerifying.value = false;
     }

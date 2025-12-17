@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/products_controller.dart';
 import 'product_card_widget.dart';
 import '../../../core/widgets/shimmer_widget.dart';
+import '../../../core/common/styles/global_text_style.dart';
 
 class ProductsListWidget extends StatelessWidget {
   const ProductsListWidget({super.key});
@@ -26,6 +27,24 @@ class ProductsListWidget extends StatelessWidget {
 
       final isSearching = controller.searchText.value.isNotEmpty;
       final isLoadingSearch = controller.isLoadingSearch.value;
+
+      // Show empty state when no products
+      if (displayedProducts.isEmpty && !isLoadingSearch) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Text(
+              'You have to verify your KYC to upload products or add products.',
+              textAlign: TextAlign.center,
+              style: getTextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+        );
+      }
 
       return ListView.builder(
         controller: isSearching

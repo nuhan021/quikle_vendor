@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/core/utils/constants/image_path.dart';
 import '../../../../core/common/styles/global_text_style.dart';
@@ -64,15 +66,61 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
               child: Column(
                 children: [
-                  GetX<HomeController>(
-                    builder: (controller) => ClipRRect(
-                      borderRadius: BorderRadius.circular(45),
-                      child: SizedBox(
-                        width: 90,
-                        height: 90,
-                        child: _buildProfileImage(controller),
-                      ),
-                    ),
+                  GetX<MyProfileController>(
+                    init: MyProfileController(),
+                    builder: (profileController) {
+                      final homeController = Get.find<HomeController>();
+
+                      return CircularPercentIndicator(
+                        radius: 55.0,
+                        lineWidth: 5.0,
+                        animation: true,
+                        animationDuration: 1000,
+                        percent:
+                            profileController
+                                .profileCompletionPercentage
+                                .value /
+                            100,
+                        center: ClipRRect(
+                          borderRadius: BorderRadius.circular(45),
+                          child: SizedBox(
+                            width: 90,
+                            height: 90,
+                            child: _buildProfileImage(homeController),
+                          ),
+                        ),
+                        footer: Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            '${profileController.profileCompletionPercentage.value.toStringAsFixed(0)}% Complete',
+                            style: getTextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ),
+                        circularStrokeCap: CircularStrokeCap.round,
+                        progressColor:
+                            profileController
+                                    .profileCompletionPercentage
+                                    .value ==
+                                100
+                            ? Colors.green
+                            : profileController
+                                      .profileCompletionPercentage
+                                      .value >=
+                                  70
+                            ? AppColors.beakYellow
+                            : profileController
+                                      .profileCompletionPercentage
+                                      .value >=
+                                  40
+                            ? Colors.orange
+                            : Colors.red,
+                        backgroundColor: Colors.grey.shade200,
+                      );
+                    },
                   ),
                   SizedBox(height: 12),
                   Text(
@@ -90,8 +138,27 @@ class _AccountScreenState extends State<AccountScreen> {
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      _controller.vendorDetails.value?.locationName ?? '',
-                      style: getTextStyle(fontSize: 14, color: Colors.black54),
+                      _controller.vendorDetails.value?.locationName != null &&
+                              _controller
+                                  .vendorDetails
+                                  .value!
+                                  .locationName!
+                                  .isNotEmpty
+                          ? _controller.vendorDetails.value!.locationName!
+                          : 'Add your business location',
+                      style: getTextStyle(
+                        fontSize: 14.sp,
+                        color:
+                            _controller.vendorDetails.value?.locationName !=
+                                    null &&
+                                _controller
+                                    .vendorDetails
+                                    .value!
+                                    .locationName!
+                                    .isNotEmpty
+                            ? Colors.black54
+                            : Colors.grey,
+                      ),
                     ),
                   ),
                   // Text(
@@ -202,7 +269,7 @@ class _AccountScreenState extends State<AccountScreen> {
           : '${controller.vendorPhotoUrl.value!}?t=$timestamp';
       return NetworkImageWithFallback(
         imageUrl,
-        fallback: ImagePath.shopImage,
+        fallback: ImagePath.logo,
         fit: BoxFit.cover,
         width: 90,
         height: 90,
@@ -211,7 +278,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
     // Priority 3: Default asset image
     return Image.asset(
-      ImagePath.shopImage,
+      ImagePath.logo,
       fit: BoxFit.cover,
       width: 90,
       height: 90,
