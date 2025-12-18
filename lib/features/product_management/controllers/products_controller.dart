@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:quikle_vendor/routes/app_routes.dart';
+import 'package:quikle_vendor/features/profile/my_profile/controller/my_profile_controller.dart';
 import '../widgets/create_discount_modal_widget.dart';
 import '../services/get_product_services.dart';
 import '../services/delete_product_services.dart';
@@ -263,6 +264,19 @@ class ProductsController extends GetxController {
   }
 
   Future<void> fetchProducts({bool isLoadMore = false}) async {
+    // Check if features are disabled (profile incomplete or KYC not verified)
+    try {
+      final myProfileController = Get.find<MyProfileController>();
+      if (myProfileController.areFeauresDisabled()) {
+        // Set loading to false so disabled message shows instead of shimmer
+        isLoading.value = false;
+        isLoadingMore.value = false;
+        return; // Skip API call if features are disabled
+      }
+    } catch (e) {
+      // Controller not found, continue anyway
+    }
+
     if (isLoadMore) {
       isLoadingMore.value = true;
     } else {
@@ -357,6 +371,23 @@ class ProductsController extends GetxController {
   }
 
   Future<void> deleteProduct() async {
+    // Check if features are disabled
+    try {
+      final myProfileController = Get.find<MyProfileController>();
+      if (myProfileController.areFeauresDisabled()) {
+        Get.snackbar(
+          'Profile Incomplete',
+          'Please complete your profile and verify KYC before proceeding',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+    } catch (e) {
+      // Controller not found, continue anyway
+    }
+
     isDeleting.value = true;
     try {
       final productId = productToDelete.value;

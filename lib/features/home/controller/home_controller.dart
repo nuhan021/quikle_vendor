@@ -97,8 +97,8 @@ class HomeController extends GetxController {
 
   // Ongoing Deliveries Data
   var ongoingDeliveries = [
-    {'id': '#12345', 'status': 'On the Way'},
-    {'id': '#12339', 'status': 'On the Way'},
+    // {'id': '#12345', 'status': 'On the Way'},
+    // {'id': '#12339', 'status': 'On the Way'},
   ].obs;
 
   // Pending Actions Data
@@ -106,22 +106,22 @@ class HomeController extends GetxController {
 
   // Recent Orders Data
   var recentOrders = [
-    {
-      'customer': 'Rahul M.',
-      'items': '3 items',
-      'amount': '\$5.50',
-      'time': '15 mins ago',
-      'status': 'Delivered',
-      'statusColor': Color(0xFF10B981),
-    },
-    {
-      'customer': 'Priya S.',
-      'items': '3 items',
-      'amount': '\$5.50',
-      'time': '15 mins ago',
-      'status': 'Processing',
-      'statusColor': Color(0xFFF59E0B),
-    },
+    // {
+    //   'customer': 'Rahul M.',
+    //   'items': '3 items',
+    //   'amount': '\$5.50',
+    //   'time': '15 mins ago',
+    //   'status': 'Delivered',
+    //   'statusColor': Color(0xFF10B981),
+    // },
+    // {
+    //   'customer': 'Priya S.',
+    //   'items': '3 items',
+    //   'amount': '\$5.50',
+    //   'time': '15 mins ago',
+    //   'status': 'Processing',
+    //   'statusColor': Color(0xFFF59E0B),
+    // },
   ].obs;
 
   void navigateDashboard(String name) {

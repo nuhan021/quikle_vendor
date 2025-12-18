@@ -20,7 +20,6 @@ class CuponScreen extends StatelessWidget {
       appBar: AppbarScreen(title: "Cupons"),
       body: Column(
         children: [
-          SizedBox(height: 8.h),
           Expanded(
             child: Obx(
               () => c.isLoading.value
@@ -180,14 +179,22 @@ class CuponScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.edit_outlined, size: 20.sp),
+                      icon: Icon(
+                        Icons.edit_outlined,
+                        size: 20.sp,
+                        color: Colors.black54,
+                      ),
                       onPressed: () {
                         c.openEditForm(coupon);
                         _showCouponModal();
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete_outline, size: 20.sp),
+                      icon: Icon(
+                        Icons.delete_outline,
+                        size: 20.sp,
+                        color: Colors.black54,
+                      ),
                       onPressed: () => _showDeleteConfirmationDialog(coupon),
                     ),
                   ],

@@ -54,7 +54,10 @@ class KycStatusCard extends StatelessWidget {
                   ),
                   onPressed: () {
                     // Navigate to vendor selection screen to start KYC update flow
-                    Get.toNamed(AppRoute.vendorSelectionScreen);
+                    Get.toNamed(
+                      AppRoute.vendorSelectionScreen,
+                      arguments: {'fromProfile': true},
+                    );
                   },
                   backgroundColor: Colors.black,
                   textColor: Colors.white,

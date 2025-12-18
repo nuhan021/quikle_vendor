@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
+import 'package:quikle_vendor/features/profile/my_profile/controller/my_profile_controller.dart';
 import '../../../core/services/storage_service.dart';
 import '../services/order_services.dart';
 
@@ -28,6 +29,16 @@ class OrderManagementController extends GetxController {
 
   /// -------------------- Fetch Orders from API --------------------
   Future<void> fetchOrders() async {
+    // Check if features are disabled
+    try {
+      final myProfileController = Get.find<MyProfileController>();
+      if (myProfileController.areFeauresDisabled()) {
+        return; // Skip API call if features are disabled
+      }
+    } catch (e) {
+      // Controller not found, continue anyway
+    }
+
     isLoading.value = true;
     errorMessage.value = '';
 
@@ -49,7 +60,7 @@ class OrderManagementController extends GetxController {
             .toList();
         allOrders.assignAll(uiOrders);
       } else {
-        errorMessage.value = 'No orders found or API returned an error';
+        errorMessage.value = 'You have to complete your profile to get orders.';
         // If token missing or invalid, give actionable message
         if (authHeader == null) {
           errorMessage.value = 'Authentication token missing. Please login.';
@@ -76,6 +87,16 @@ class OrderManagementController extends GetxController {
 
   /// -------------------- Fetch Orders by Tab Status --------------------
   Future<void> _fetchOrdersByStatus(int tabIndex) async {
+    // Check if features are disabled
+    try {
+      final myProfileController = Get.find<MyProfileController>();
+      if (myProfileController.areFeauresDisabled()) {
+        return; // Skip API call if features are disabled
+      }
+    } catch (e) {
+      // Controller not found, continue anyway
+    }
+
     isLoading.value = true;
     errorMessage.value = '';
 

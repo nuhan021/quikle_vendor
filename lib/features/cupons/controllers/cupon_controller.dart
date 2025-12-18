@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:quikle_vendor/features/cupons/models/cupon_model.dart';
 import 'package:quikle_vendor/features/cupons/services/cupon_service.dart';
 import 'package:quikle_vendor/features/product_management/controllers/products_controller.dart';
+import 'package:quikle_vendor/features/profile/my_profile/controller/my_profile_controller.dart';
 
 class CouponController extends GetxController {
   final coupons = <CouponModel>[].obs;
@@ -60,6 +61,16 @@ class CouponController extends GetxController {
   }
 
   Future<void> fetchCoupons() async {
+    // Check if features are disabled
+    try {
+      final myProfileController = Get.find<MyProfileController>();
+      if (myProfileController.areFeauresDisabled()) {
+        return; // Skip API call if features are disabled
+      }
+    } catch (e) {
+      // Controller not found, continue anyway
+    }
+
     try {
       isLoading.value = true;
       final response = await couponService.fetchCoupons();
@@ -218,6 +229,23 @@ class CouponController extends GetxController {
   }
 
   void saveCoupon() async {
+    // Check if features are disabled
+    try {
+      final myProfileController = Get.find<MyProfileController>();
+      if (myProfileController.areFeauresDisabled()) {
+        Get.snackbar(
+          'Profile Incomplete',
+          'Please complete your profile and verify KYC before proceeding',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+    } catch (e) {
+      // Controller not found, continue anyway
+    }
+
     isSaving.value = true;
     errorMessage.value = '';
     hasError.value = false;
@@ -406,6 +434,23 @@ class CouponController extends GetxController {
   }
 
   void deleteCoupon(int id) async {
+    // Check if features are disabled
+    try {
+      final myProfileController = Get.find<MyProfileController>();
+      if (myProfileController.areFeauresDisabled()) {
+        Get.snackbar(
+          'Profile Incomplete',
+          'Please complete your profile and verify KYC before proceeding',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+    } catch (e) {
+      // Controller not found, continue anyway
+    }
+
     try {
       final success = await couponService.deleteCoupon(id);
       if (success) {

@@ -5,7 +5,6 @@ import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_textfield.dart';
 import '../../../routes/app_routes.dart';
-import '../../appbar/screen/appbar_screen.dart';
 import '../controller/kyc_verification_controller.dart';
 
 class KycVerificationScreen extends StatelessWidget {
@@ -14,10 +13,34 @@ class KycVerificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(KycVerificationController());
+    // Check if coming from profile
+    final fromProfile = Get.arguments?['fromProfile'] == true;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8F8),
-      appBar: const AppbarScreen(title: "KYC Verification"),
+      appBar: AppBar(
+        title: Text(
+          "KYC Verification",
+          style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        ),
+        centerTitle: false,
+        leading: fromProfile
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Get.back(),
+              )
+            : null,
+        shape: RoundedRectangleBorder(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+          side: BorderSide(
+            color: const Color(0xFFFFD700), // yellow line
+            width: 1,
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Obx(
