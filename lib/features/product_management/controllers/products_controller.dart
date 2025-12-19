@@ -11,6 +11,8 @@ import '../services/get_product_services.dart';
 import '../services/delete_product_services.dart';
 import '../model/products_model.dart';
 import '../../../core/services/storage_service.dart';
+import '../services/subcategory_services.dart';
+import '../model/subcategory_model.dart';
 
 class ProductsController extends GetxController {
   // Vendor
@@ -22,6 +24,10 @@ class ProductsController extends GetxController {
   // Filters / search
   final searchText = ''.obs;
   final selectedCategory = 'All Categories'.obs;
+  final selectedCategoryId = 0.obs;
+  final selectedSubCategory = ''.obs;
+  final selectedSubCategoryId = 0.obs;
+  final subCategorySearchText = ''.obs;
   final selectedStockStatus = 'All Status'.obs;
   final selectedStockQuantity = '1'.obs;
 
@@ -53,6 +59,12 @@ class ProductsController extends GetxController {
   final GetProductServices _productServices = GetProductServices();
   late final DeleteMedicineProductServices _deleteMedicineProductServices;
   late final DeleteFoodProductServices _deleteFoodProductServices;
+  final SubcategoryServices _subcategoryServices = SubcategoryServices();
+
+  // Categories and subcategories
+  final categories = <Map<String, dynamic>>[].obs;
+  final subCategories = <Map<String, dynamic>>[].obs;
+  final subcategoriesList = <SubcategoryModel>[].obs;
 
   // Controllers / timers
   final ScrollController scrollController = ScrollController();
@@ -67,12 +79,52 @@ class ProductsController extends GetxController {
     _deleteFoodProductServices = DeleteFoodProductServices();
 
     if (!_isDataInitialized) {
+      _loadSubcategories();
       fetchProducts();
       _isDataInitialized = true;
     }
 
     _startAutoLoadTimer();
     scrollController.addListener(_scrollListener);
+  }
+
+  Future<void> _loadSubcategories() async {
+    try {
+      final categoryId = _getCategoryIdForVendorType();
+      if (categoryId == null) {
+        log("Unknown or null vendor type: $vendorType");
+        return;
+      }
+
+      final subcategories = await _subcategoryServices.getSubcategories(
+        categoryId,
+      );
+      subcategoriesList.value = subcategories;
+
+      // Convert to the format expected by the UI
+      subCategories.value = subcategories
+          .map(
+            (sub) => {'id': sub.id, 'categoryId': categoryId, 'name': sub.name},
+          )
+          .toList();
+
+      log(
+        'Loaded ${subcategories.length} subcategories for category $categoryId',
+      );
+    } catch (e) {
+      log('Error loading subcategories: $e');
+    }
+  }
+
+  int? _getCategoryIdForVendorType() {
+    switch (vendorType) {
+      case 'medicine':
+        return 6;
+      case 'food':
+        return 1;
+      default:
+        return null;
+    }
   }
 
   @override
@@ -353,7 +405,13 @@ class ProductsController extends GetxController {
   }
 
   void showFilterProductDialog() {
-    showFilterProductModal.value = true;
+    if (hasActiveFilters) {
+      // If filters are active, clear them instead of opening dialog
+      clearAllFilters();
+    } else {
+      // If no filters are active, open the filter dialog
+      showFilterProductModal.value = true;
+    }
   }
 
   void hideFilterProductDialog() {
@@ -455,7 +513,61 @@ class ProductsController extends GetxController {
   }
 
   void applyFilters() {
-    // Implement category / status / quantity filter logic here if needed
+    // Close the filter modal
+    hideFilterProductDialog();
+    // Filtering will be applied in the UI based on selected filters
+  }
+
+  List<Map<String, dynamic>> getFilteredSubCategories() {
+    if (subCategorySearchText.value.isEmpty) {
+      return subCategories;
+    }
+    return subCategories
+        .where(
+          (subCategory) => subCategory['name']
+              .toString()
+              .toLowerCase()
+              .contains(subCategorySearchText.value.toLowerCase()),
+        )
+        .toList();
+  }
+
+  void changeSubCategory(String subCategoryName) {
+    if (subCategoryName == 'All Categories') {
+      selectedCategory.value = 'All Categories';
+      selectedCategoryId.value = 0;
+      selectedSubCategory.value = '';
+      selectedSubCategoryId.value = 0;
+      return;
+    }
+
+    final subCategory = subCategories.firstWhere(
+      (sc) => sc['name'] == subCategoryName,
+      orElse: () => {'id': 0, 'name': '', 'categoryId': 0},
+    );
+
+    selectedSubCategory.value = subCategory['name'] ?? '';
+    selectedSubCategoryId.value = subCategory['id'] ?? 0;
+    selectedCategoryId.value = subCategory['categoryId'] ?? 0;
+    selectedCategory.value =
+        subCategory['name'] ??
+        'All Categories'; // Show subcategory name as category
+  }
+
+  bool get hasActiveFilters {
+    return selectedCategoryId.value > 0 ||
+        selectedSubCategoryId.value > 0 ||
+        showLowStockFilter.value ||
+        selectedStockStatus.value != 'All Status';
+  }
+
+  void clearAllFilters() {
+    selectedCategory.value = 'All Categories';
+    selectedCategoryId.value = 0;
+    selectedSubCategory.value = '';
+    selectedSubCategoryId.value = 0;
+    showLowStockFilter.value = false;
+    selectedStockStatus.value = 'All Status';
   }
 
   int get lowStockCount {

@@ -51,6 +51,43 @@ class ProductsListWidget extends StatelessWidget {
             .toList();
       }
 
+      // Apply category filtering
+      if (controller.selectedCategoryId.value > 0) {
+        displayedProducts = displayedProducts
+            .where(
+              (product) =>
+                  product.categoryId == controller.selectedCategoryId.value,
+            )
+            .toList();
+      }
+
+      // Apply subcategory filtering
+      if (controller.selectedSubCategoryId.value > 0) {
+        displayedProducts = displayedProducts
+            .where(
+              (product) =>
+                  product.subcategoryId ==
+                  controller.selectedSubCategoryId.value,
+            )
+            .toList();
+      }
+
+      // Apply stock status filtering
+      if (controller.selectedStockStatus.value != 'All Status') {
+        displayedProducts = displayedProducts.where((product) {
+          switch (controller.selectedStockStatus.value) {
+            case 'In Stock':
+              return product.stock > 10;
+            case 'Low Stock':
+              return product.stock > 0 && product.stock <= 10;
+            case 'Out of Stock':
+              return product.stock == 0;
+            default:
+              return true;
+          }
+        }).toList();
+      }
+
       final isSearching = controller.searchText.value.isNotEmpty;
       final isLoadingSearch = controller.isLoadingSearch.value;
 
@@ -89,7 +126,7 @@ class ProductsListWidget extends StatelessWidget {
         padding: EdgeInsets.only(
           left: 10.w,
           right: 10.w,
-          bottom: 30.w,
+          bottom: 65.w,
           top: 10.w,
         ),
         child: Column(

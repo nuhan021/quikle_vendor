@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/common/styles/global_text_style.dart';
+import '../../../core/utils/constants/colors.dart';
 import '../controllers/products_controller.dart';
 
 class ProductsSearchWidget extends StatelessWidget {
@@ -54,25 +55,37 @@ class ProductsSearchWidget extends StatelessWidget {
             ),
           ),
           SizedBox(width: 12),
-          // GestureDetector(
-          //   onTap: () => controller.showFilterProductDialog(),
-          //   child: Container(
-          //     width: 55,
-          //     height: 55,
-          //     decoration: BoxDecoration(
-          //       color: Colors.white,
-          //       borderRadius: BorderRadius.circular(12),
-          //       boxShadow: [
-          //         BoxShadow(
-          //           color: Colors.black.withValues(alpha: 0.05),
-          //           blurRadius: 6,
-          //           offset: Offset(0, 2),
-          //         ),
-          //       ],
-          //     ),
-          //     child: Icon(Icons.tune, color: Color(0xFF374151), size: 24),
-          //   ),
-          // ),
+          GestureDetector(
+            onTap: () => controller.showFilterProductDialog(),
+            child: Obx(
+              () => Container(
+                width: 55,
+                height: 55,
+                decoration: BoxDecoration(
+                  color: controller.hasActiveFilters
+                      ? AppColors
+                            .beakYellow // Active filter color
+                      : Colors.white, // Inactive filter color
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 6,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.tune,
+                  color: controller.hasActiveFilters
+                      ? Colors
+                            .white // White icon on dark background
+                      : Color(0xFF374151), // Dark icon on white background
+                  size: 24,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
