@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
-import 'package:quikle_vendor/features/profile/my_profile/controller/my_profile_controller.dart';
 import '../../../core/services/storage_service.dart';
 import '../services/order_services.dart';
 
@@ -29,15 +28,7 @@ class OrderManagementController extends GetxController {
 
   /// -------------------- Fetch Orders from API --------------------
   Future<void> fetchOrders() async {
-    // Check if features are disabled
-    try {
-      final myProfileController = Get.find<MyProfileController>();
-      if (myProfileController.areFeauresDisabled()) {
-        return; // Skip API call if features are disabled
-      }
-    } catch (e) {
-      // Controller not found, continue anyway
-    }
+    // Always fetch orders; do not gate on profile/KYC
 
     isLoading.value = true;
     errorMessage.value = '';
@@ -47,103 +38,69 @@ class OrderManagementController extends GetxController {
       final storedToken = StorageService.token;
       final authHeader = storedToken != null ? 'Bearer $storedToken' : null;
 
+      print('🔍 [ORDER FETCH] Starting fetch...');
+      print('🔍 [ORDER FETCH] Token present: ${storedToken != null}');
+      print('🔍 [ORDER FETCH] Auth header: $authHeader');
+
       final response = await _orderService.fetchOrders(
         offset: 0,
         limit: 50,
         token: authHeader,
       );
 
+      print('🔍 [ORDER FETCH] Response received: $response');
+      print('🔍 [ORDER FETCH] Response is null: ${response == null}');
+
       if (response != null && response.orders.isNotEmpty) {
+        print('✅ [ORDER FETCH] Found ${response.orders.length} orders');
         // Convert API response to UI format
         final uiOrders = response.orders
             .map((order) => OrderService.orderModelToMap(order))
             .toList();
         allOrders.assignAll(uiOrders);
+        print('✅ [ORDER FETCH] Assigned ${uiOrders.length} orders to UI');
       } else {
-        errorMessage.value = 'You have to complete your profile to get orders.';
-        // If token missing or invalid, give actionable message
+        print('❌ [ORDER FETCH] No orders in response');
+        if (response == null) {
+          print(
+            '❌ [ORDER FETCH] Response object is null - API call likely failed',
+          );
+        } else {
+          print(
+            '❌ [ORDER FETCH] Response exists but orders list is empty: ${response.orders.length} orders',
+          );
+        }
+        errorMessage.value = 'No orders found';
         if (authHeader == null) {
           errorMessage.value = 'Authentication token missing. Please login.';
         }
-        // Remove dummy data: clear any existing orders so UI shows empty state
         allOrders.clear();
       }
     } catch (e) {
       errorMessage.value = 'Failed to load orders: $e';
-      print('Error fetching orders: $e');
+      print('❌ [ORDER FETCH] Exception caught: $e');
+      print('❌ [ORDER FETCH] Stack trace: ${StackTrace.current}');
       // Remove dummy data fallback: clear orders so UI can display empty/error state
       allOrders.clear();
     } finally {
       isLoading.value = false;
+      print(
+        '🔍 [ORDER FETCH] Fetch complete. Total orders in UI: ${allOrders.length}',
+      );
     }
   }
 
   /// -------------------- Tab Switch with API Call --------------------
   void changeTab(int index) {
+    // Switch tab and rely on client-side filtering (no extra API call)
     selectedTab.value = index;
-    // Fetch orders for the selected tab
-    _fetchOrdersByStatus(index);
   }
 
   /// -------------------- Fetch Orders by Tab Status --------------------
   Future<void> _fetchOrdersByStatus(int tabIndex) async {
-    // Check if features are disabled
-    try {
-      final myProfileController = Get.find<MyProfileController>();
-      if (myProfileController.areFeauresDisabled()) {
-        return; // Skip API call if features are disabled
-      }
-    } catch (e) {
-      // Controller not found, continue anyway
-    }
-
-    isLoading.value = true;
-    errorMessage.value = '';
-
-    try {
-      final tabName = tabs[tabIndex].toLowerCase();
-
-      // Map UI tab to a single API status (one status → one tab)
-      String? apiStatus;
-      switch (tabName) {
-        case 'new':
-          apiStatus = 'processing';
-          break;
-        case 'in progress':
-          apiStatus = 'confirmed';
-          break;
-        case 'completed':
-          apiStatus = 'delivered';
-          break;
-      }
-
-      final storedToken = StorageService.token;
-      final authHeader = storedToken != null ? 'Bearer $storedToken' : null;
-
-      final response = await _orderService.fetchOrders(
-        offset: 0,
-        limit: 50,
-        status: apiStatus,
-        token: authHeader,
-      );
-
-      if (response != null && response.orders.isNotEmpty) {
-        final uiOrders = response.orders
-            .map((order) => OrderService.orderModelToMap(order))
-            .toList();
-        allOrders.assignAll(uiOrders);
-      } else {
-        errorMessage.value = 'No orders found for this status';
-        if (authHeader == null) {
-          errorMessage.value = 'Authentication token missing. Please login.';
-        }
-      }
-    } catch (e) {
-      errorMessage.value = 'Failed to load orders: $e';
-      print('Error fetching orders by status: $e');
-    } finally {
-      isLoading.value = false;
-    }
+    // Not used: tab-specific server fetch. The controller fetches all orders once
+    // and `filteredOrders` performs client-side filtering.
+    return;
   }
 
   /// -------------------- Filtered Orders by Selected Tab --------------------
