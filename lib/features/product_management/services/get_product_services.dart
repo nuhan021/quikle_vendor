@@ -10,6 +10,8 @@ class GetProductServices {
     required String vendorType,
     int offset = 0,
     int limit = 20,
+    int? categoryId,
+    int? subcategoryId,
   }) async {
     try {
       final String url;
@@ -20,13 +22,25 @@ class GetProductServices {
       }
 
       log(
-        '🌐 Fetching products from URL: $url for vendorType: $vendorType, offset: $offset, limit: $limit',
+        '🌐 Fetching products from URL: $url for vendorType: $vendorType, offset: $offset, limit: $limit, categoryId: $categoryId, subcategoryId: $subcategoryId',
       );
+
+      final Map<String, String> queryParams = {
+        'offset': offset.toString(),
+        'limit': limit.toString(),
+      };
+
+      if (categoryId != null) {
+        queryParams['categoryId'] = categoryId.toString();
+      }
+      if (subcategoryId != null) {
+        queryParams['subcategoryId'] = subcategoryId.toString();
+      }
 
       final response = await networkCaller.getRequest(
         url,
         headers: {'Authorization': 'Bearer ${StorageService.token}'},
-        queryParams: {'offset': offset.toString(), 'limit': limit.toString()},
+        queryParams: queryParams,
       );
 
       if (response.statusCode == 200) {

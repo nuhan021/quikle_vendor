@@ -41,7 +41,7 @@ class OrderManagementScreen extends StatelessWidget {
                     Get.to(() => PrescriptionListScreen());
                   },
                   child: Padding(
-                    padding: EdgeInsets.only(
+                    padding: const EdgeInsets.only(
                       left: 16,
                       right: 16,
                       top: 16,
@@ -51,7 +51,7 @@ class OrderManagementScreen extends StatelessWidget {
                   ),
                 );
               }
-              return SizedBox.shrink();
+              return const SizedBox.shrink();
             }),
             Expanded(
               child: Obx(() {
@@ -84,6 +84,9 @@ class OrderManagementScreen extends StatelessWidget {
                         padding: EdgeInsets.only(bottom: 16.0),
                         child: ShimmerOrderCard(),
                       ),
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.beakYellow,
                     ),
                   );
                 }
@@ -129,13 +132,9 @@ class OrderManagementScreen extends StatelessWidget {
                     ),
                   );
                 }
-
                 return RefreshIndicator(
-                  onRefresh: _onRefresh,
-                  backgroundColor: Colors.white,
-                  color: Colors.amber,
-                  displacement:
-                      kToolbarHeight + MediaQuery.of(context).padding.top + 8.0,
+                  color: AppColors.beakYellow,
+                  onRefresh: () => controller.fetchOrders(),
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: orders.length,

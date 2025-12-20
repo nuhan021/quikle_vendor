@@ -97,6 +97,19 @@ class OrderModel {
       }
     }
 
+    // Handle shipping_address which could be a String, Map, or null
+    String? shippingAddressStr;
+    final shippingAddr = json['shipping_address'];
+    if (shippingAddr is String?) {
+      shippingAddressStr = shippingAddr;
+    } else if (shippingAddr is Map<String, dynamic>) {
+      // Extract address from map, use city as fallback
+      shippingAddressStr =
+          shippingAddr['address'] as String? ??
+          shippingAddr['city'] as String? ??
+          'Address provided';
+    }
+
     return OrderModel(
       orderId: json['order_id'] as String? ?? '',
       userId: json['user_id'] is int
@@ -111,7 +124,7 @@ class OrderModel {
           : (json['vendor_id'] is String
                 ? int.tryParse(json['vendor_id'] as String)
                 : null),
-      shippingAddress: json['shipping_address'] as String?,
+      shippingAddress: shippingAddressStr,
       deliveryType: json['delivery_type'] as String?,
       paymentMethod: json['payment_method'] as String?,
       subtotal: json['subtotal'] as String?,

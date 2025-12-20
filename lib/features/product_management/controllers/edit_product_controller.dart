@@ -16,8 +16,9 @@ import '../../../core/utils/logging/logger.dart';
 class EditProductController extends GetxController {
   // Vendor
   final vendorData = StorageService.getVendorDetails();
-  late final String? vendorType =
-      vendorData != null ? vendorData!['type'] as String? : null;
+  late final String? vendorType = vendorData != null
+      ? vendorData!['type'] as String?
+      : null;
 
   // UI state
   final showRemoveDiscountDialog = false.obs;
@@ -69,8 +70,9 @@ class EditProductController extends GetxController {
     _editMedicineProductServices = EditMedicineProductServices();
     _editFoodProductServices = EditFoodProductServices();
 
-    selectedCategory =
-        (categories.first['id'] as int).toString().obs; // default category
+    selectedCategory = (categories.first['id'] as int)
+        .toString()
+        .obs; // default category
 
     _loadInitialSubcategories();
 
@@ -282,8 +284,8 @@ class EditProductController extends GetxController {
       final discountValue = int.tryParse(discountController.text) ?? 0;
       final File? imageFile =
           productImage.value.isNotEmpty && productImage.value.startsWith('/')
-              ? File(productImage.value)
-              : null;
+          ? File(productImage.value)
+          : null;
 
       final success = await _updateProduct(discountValue, imageFile);
 
@@ -291,6 +293,13 @@ class EditProductController extends GetxController {
 
       if (success) {
         AppLoggerHelper.info('Product updated successfully');
+        // Refresh products list after successful update
+        try {
+          final productsController = Get.find<ProductsController>();
+          productsController.fetchProducts();
+        } catch (e) {
+          log('Error refreshing products: $e');
+        }
         Future.delayed(const Duration(milliseconds: 500), Get.back);
       } else {
         AppLoggerHelper.error('Failed to update product');

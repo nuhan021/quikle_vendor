@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/features/earnings/screen/earnings_screen.dart';
+import 'package:quikle_vendor/features/profile/my_profile/controller/my_profile_controller.dart';
 
 import '../../../core/utils/constants/colors.dart';
 import '../../../core/utils/constants/icon_path.dart';
@@ -25,6 +26,9 @@ class NavbarScreen extends StatefulWidget {
 class _NavbarScreenState extends State<NavbarScreen>
     with TickerProviderStateMixin {
   final NavbarController controller = Get.put(NavbarController());
+
+  // Initialize MyProfileController to load KYC data on app startup
+  final myProfileController = Get.put(MyProfileController());
 
   late final AnimationController _navController;
   final GlobalKey _navKey = GlobalKey();
@@ -183,8 +187,8 @@ class _NavbarScreenState extends State<NavbarScreen>
                                   onTap: () => controller.changeTab(3),
                                 ),
                                 ProfileNavbarItem(
-                                  imagePath: ImagePath.profile,
-                                  label: 'Ananya',
+                                  imagePath: ImagePath.logo,
+                                  label: 'Owner',
                                   selected: controller.currentIndex.value == 4,
                                   onTap: () => controller.changeTab(4),
                                 ),

@@ -16,9 +16,15 @@ class VendorSelectionController extends GetxController {
       return;
     }
 
-    Get.offAllNamed(
+    // Check if coming from profile
+    final fromProfile = Get.arguments?['fromProfile'] == true;
+
+    Get.toNamed(
       AppRoute.kycVerificationScreen,
-      arguments: {"vendorType": selectedVendor.value},
+      arguments: {
+        "vendorType": selectedVendor.value,
+        "fromProfile": fromProfile,
+      },
     );
   }
 }

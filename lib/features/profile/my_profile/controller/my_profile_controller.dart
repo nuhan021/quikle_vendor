@@ -20,17 +20,28 @@ class MyProfileController extends GetxController {
   final isUpdatingProfile = false.obs;
 
   // Observable display values
-  final shopName = "Tandoori Tarang".obs;
+  final shopName = "Shop Name".obs;
   final address = "House 34, Road 12, Dhanmondi, Dhaka".obs;
   final ownerNameDisplay = "".obs;
-  final openingHoursDisplay = "9:00 AM - 8:00 PM".obs;
+  final openingHoursDisplay = "".obs;
   final vendorTypeDisplay = "".obs;
-  final accountStatusDisplay = "Active".obs;
+  final accountStatusDisplay = "".obs;
   final phoneNumberDisplay = "".obs;
   final nidNumberDisplay = "".obs;
+  final kycStatus = "".obs;
+  final kycDocumentUrl = "".obs;
+
+  // Profile completion percentage
+  final profileCompletionPercentage = 0.0.obs;
 
   // Vendor Details Observable
   late VendorDetailsModel vendorDetails;
+
+  // Observable to track if features should be disabled
+  final shouldDisableFeatures = false.obs;
+
+  // Observable for KYC status message
+  final kycStatusMessage = "".obs;
 
   // Text Controllers - Basic Info
   late TextEditingController shopNameController;
@@ -66,6 +77,10 @@ class MyProfileController extends GetxController {
   void onReady() {
     super.onReady();
     _loadVendorDetails();
+
+    // Make shouldDisableFeatures reactive to both profileCompletionPercentage and kycStatus changes
+    ever(profileCompletionPercentage, (_) => _updateFeatureDisabledStatus());
+    ever(kycStatus, (_) => _updateFeatureDisabledStatus());
   }
 
   /// Refresh vendor details (public method)
@@ -138,6 +153,8 @@ class MyProfileController extends GetxController {
             : "Inactive";
         phoneNumberDisplay.value = vendorDetails.phone;
         nidNumberDisplay.value = vendorDetails.nid;
+        kycStatus.value = vendorDetails.kycStatus ?? "";
+        kycDocumentUrl.value = vendorDetails.kycDocument ?? "";
 
         // Load profile image path from storage if available
         final imagePath = vendorData?['profile_image_path'] as String?;
@@ -155,6 +172,9 @@ class MyProfileController extends GetxController {
         } else {
           AppLoggerHelper.debug('No image path in storage');
         }
+
+        // Calculate profile completion percentage - must be called AFTER setting kycStatus
+        _calculateProfileCompletion();
       } else {
         // Use default values if no vendor details
         shopNameController = TextEditingController(text: "Tandoori Tarang");
@@ -382,6 +402,101 @@ class MyProfileController extends GetxController {
     } finally {
       isUpdatingProfile.value = false;
     }
+  }
+
+  /// Calculate profile completion percentage based on required fields
+  void _calculateProfileCompletion() {
+    int completedFields = 0;
+    int totalFields = 7; // Total required fields
+
+    // 1. Location/Address
+    if (vendorDetails.locationName != null &&
+        vendorDetails.locationName!.isNotEmpty) {
+      completedFields++;
+    }
+
+    // 2. Shop Name
+    if (vendorDetails.shopName.isNotEmpty) {
+      completedFields++;
+    }
+
+    // 3. Owner Name
+    if (vendorDetails.ownerName != null &&
+        vendorDetails.ownerName!.isNotEmpty) {
+      completedFields++;
+    }
+
+    // 4. Vendor Phone Number
+    if (vendorDetails.phone.isNotEmpty) {
+      completedFields++;
+    }
+
+    // 5. NID Number
+    if (vendorDetails.nid.isNotEmpty) {
+      completedFields++;
+    }
+
+    // 6. Opening Hours (both open and close time)
+    if (vendorDetails.openTime != null &&
+        vendorDetails.openTime!.isNotEmpty &&
+        vendorDetails.closeTime != null &&
+        vendorDetails.closeTime!.isNotEmpty) {
+      completedFields++;
+    }
+
+    // 7. KYC Document
+    if (vendorDetails.kycDocument != null &&
+        vendorDetails.kycDocument!.isNotEmpty &&
+        vendorDetails.kycStatus != null &&
+        vendorDetails.kycStatus != 'pending') {
+      completedFields++;
+    }
+
+    // Calculate percentage
+    profileCompletionPercentage.value = (completedFields / totalFields) * 100;
+
+    // Update shouldDisableFeatures: disable if profile incomplete OR KYC not verified
+    _updateFeatureDisabledStatus();
+  }
+
+  /// Check if features should be disabled
+  /// Features are disabled if KYC status is not "verified"
+  void _updateFeatureDisabledStatus() {
+    final kycStatusLower = kycStatus.value.toLowerCase();
+
+    // Determine KYC status message and feature availability
+    String message = "";
+    bool disableFeatures = false;
+
+    if (kycStatusLower == 'submitted') {
+      message = 'KYC status is submitted. Wait for approval.';
+      disableFeatures = true;
+    } else if (kycStatusLower == 'pending') {
+      message = 'KYC verification is pending.';
+      disableFeatures = true;
+    } else if (kycStatusLower == 'rejected') {
+      message =
+          'KYC verification was rejected. Please re-submit your documents.';
+      disableFeatures = true;
+    } else if (kycStatusLower != 'verified') {
+      message = 'KYC verification required.';
+      disableFeatures = true;
+    }
+
+    // Features are disabled only when KYC is not verified
+    shouldDisableFeatures.value = disableFeatures;
+    kycStatusMessage.value = message;
+
+    // Debug logging
+    print('🔐 Feature Status Check:');
+    print('   Profile Completion: ${profileCompletionPercentage.value}%');
+    print('   KYC Status: "${kycStatus.value}"');
+    print('   KYC Message: "${kycStatusMessage.value}"');
+  }
+
+  /// Public method to check if features should be disabled
+  bool areFeauresDisabled() {
+    return shouldDisableFeatures.value;
   }
 
   @override

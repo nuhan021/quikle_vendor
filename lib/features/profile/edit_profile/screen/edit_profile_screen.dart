@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
+import 'package:quikle_vendor/core/utils/constants/image_path.dart';
 import 'package:quikle_vendor/core/utils/widgets/network_image_with_fallback.dart';
 import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
 import '../../../../core/common/styles/global_text_style.dart';
@@ -296,6 +297,6 @@ class EditProfileScreen extends StatelessWidget {
     }
 
     // Priority 3: Default asset image
-    return Image.asset("assets/images/profile.png", fit: BoxFit.cover);
+    return Image.asset(ImagePath.logo, fit: BoxFit.cover);
   }
 }

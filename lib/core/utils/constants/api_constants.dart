@@ -1,6 +1,6 @@
 class ApiConstants {
   // Base URL
-  static const String baseUrl = "https://quikle-u4dv.onrender.com/";
+  static const String baseUrl = "https://quikle-dev.onrender.com/";
 
   static const String sendOtp = "${baseUrl}auth/send_otp/";
   static const String login = "${baseUrl}auth/login/";
@@ -23,6 +23,8 @@ class ApiConstants {
   static const String getFoodProducts = "${baseUrl}items/food/my-product/";
   static const String updateProductMedicine =
       "${baseUrl}items/medicine/{itemId}";
+  static const String patchMedicineStock = "${baseUrl}items/medicine/{itemId}";
+  static const String patchFoodStock = "${baseUrl}items/food/{itemId}";
   static const String updateProductFood = "${baseUrl}items/food/{itemId}";
   static const String deleteProductMedicine =
       "${baseUrl}items/medicine/{itemId}";

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quikle_vendor/core/utils/logging/logger.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
+import 'package:quikle_vendor/features/product_management/controllers/products_controller.dart';
 import 'package:quikle_vendor/features/product_management/services/add_product_services.dart';
 import '../model/subcategory_model.dart';
 import '../services/subcategory_services.dart';
@@ -17,8 +18,9 @@ class AddProductController extends GetxController {
 
   // Vendor data
   final vendorData = StorageService.getVendorDetails();
-  late final String? vendorType =
-      vendorData != null ? vendorData!['type'] as String? : null;
+  late final String? vendorType = vendorData != null
+      ? vendorData!['type'] as String?
+      : null;
 
   // UI state
   final selectedSubCategoryId = 0.obs;
@@ -71,10 +73,9 @@ class AddProductController extends GetxController {
     selectedCategory = defaultCategory.obs;
 
     final defaultSubcats = subCategories[defaultCategory] ?? [];
-    selectedSubCategory = (defaultSubcats.isNotEmpty
-            ? defaultSubcats.first
-            : 'All Categories')
-        .obs;
+    selectedSubCategory =
+        (defaultSubcats.isNotEmpty ? defaultSubcats.first : 'All Categories')
+            .obs;
 
     _loadSubcategories();
   }
@@ -131,8 +132,9 @@ class AddProductController extends GetxController {
 
     selectedCategory.value = categories.first;
     final defaultSubcats = subCategories[categories.first] ?? [];
-    selectedSubCategory.value =
-        defaultSubcats.isNotEmpty ? defaultSubcats.first : '';
+    selectedSubCategory.value = defaultSubcats.isNotEmpty
+        ? defaultSubcats.first
+        : '';
 
     productImage.value = '';
     subCategorySearchText.value = '';
@@ -170,6 +172,13 @@ class AddProductController extends GetxController {
 
       if (success) {
         hideAddProductDialog();
+        // Refresh products list after successful addition
+        try {
+          final productsController = Get.find<ProductsController>();
+          productsController.fetchProducts();
+        } catch (e) {
+          log('Error refreshing products: $e');
+        }
       } else {
         // Optional: handle failure silently or via UI
       }
@@ -189,8 +198,9 @@ class AddProductController extends GetxController {
         return;
       }
 
-      final subcategories =
-          await _subcategoryServices.getSubcategories(categoryId);
+      final subcategories = await _subcategoryServices.getSubcategories(
+        categoryId,
+      );
       subCategoriesList.value = subcategories;
     } catch (e) {
       log('Error loading subcategories: $e');
@@ -240,8 +250,9 @@ class AddProductController extends GetxController {
     final weight = weightController.text.isNotEmpty
         ? double.tryParse(weightController.text)
         : null;
-    final File? imageFile =
-        productImage.value.isNotEmpty ? File(productImage.value) : null;
+    final File? imageFile = productImage.value.isNotEmpty
+        ? File(productImage.value)
+        : null;
 
     switch (vendorType) {
       case 'medicine':

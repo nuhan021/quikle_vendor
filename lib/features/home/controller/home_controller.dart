@@ -20,6 +20,7 @@ class HomeController extends GetxController {
   var vendorPhotoUrl = Rx<String?>(null);
   var vendorOwnerName = Rx<String?>(null);
   var vendorCloseTime = Rx<String?>(null);
+  var imageUpdateTimestamp = 0.obs;
 
   @override
   void onInit() {
@@ -49,11 +50,16 @@ class HomeController extends GetxController {
     if (vendorData != null) {
       final isActive = vendorData['is_active'] as bool? ?? false;
       isShopOpen.value = isActive;
-      vendorPhotoUrl.value = vendorData['photo'] as String?;
+      final newPhotoUrl = vendorData['photo'] as String?;
+      if (newPhotoUrl != vendorPhotoUrl.value) {
+        vendorPhotoUrl.value = newPhotoUrl;
+        imageUpdateTimestamp.value = DateTime.now().millisecondsSinceEpoch;
+      }
       vendorOwnerName.value = vendorData['owner_name'] as String?;
       vendorCloseTime.value = vendorData['close_time'] as String?;
       log('Vendor data reloaded from SharedPreferences');
       log('Updated photo URL: ${vendorPhotoUrl.value}');
+      log('Updated timestamp: ${imageUpdateTimestamp.value}');
       log('Updated owner name: ${vendorOwnerName.value}');
       log('Updated close time: ${vendorCloseTime.value}');
       // Force rebuild by updating a dummy observable
@@ -91,8 +97,8 @@ class HomeController extends GetxController {
 
   // Ongoing Deliveries Data
   var ongoingDeliveries = [
-    {'id': '#12345', 'status': 'On the Way'},
-    {'id': '#12339', 'status': 'On the Way'},
+    // {'id': '#12345', 'status': 'On the Way'},
+    // {'id': '#12339', 'status': 'On the Way'},
   ].obs;
 
   // Pending Actions Data
@@ -100,22 +106,22 @@ class HomeController extends GetxController {
 
   // Recent Orders Data
   var recentOrders = [
-    {
-      'customer': 'Rahul M.',
-      'items': '3 items',
-      'amount': '\$5.50',
-      'time': '15 mins ago',
-      'status': 'Delivered',
-      'statusColor': Color(0xFF10B981),
-    },
-    {
-      'customer': 'Priya S.',
-      'items': '3 items',
-      'amount': '\$5.50',
-      'time': '15 mins ago',
-      'status': 'Processing',
-      'statusColor': Color(0xFFF59E0B),
-    },
+    // {
+    //   'customer': 'Rahul M.',
+    //   'items': '3 items',
+    //   'amount': '\$5.50',
+    //   'time': '15 mins ago',
+    //   'status': 'Delivered',
+    //   'statusColor': Color(0xFF10B981),
+    // },
+    // {
+    //   'customer': 'Priya S.',
+    //   'items': '3 items',
+    //   'amount': '\$5.50',
+    //   'time': '15 mins ago',
+    //   'status': 'Processing',
+    //   'statusColor': Color(0xFFF59E0B),
+    // },
   ].obs;
 
   void navigateDashboard(String name) {

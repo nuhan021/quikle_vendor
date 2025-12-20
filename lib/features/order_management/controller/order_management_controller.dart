@@ -60,11 +60,71 @@ class OrderManagementController extends GetxController {
   /// -------------------- Fetch Orders from API --------------------
   Future<void> fetchOrders() async {
     // Deprecated: use per-status prefetch and _fetchOrdersByStatus instead
-    return;
+    // Always fetch orders; do not gate on profile/KYC
+
+    isLoading.value = true;
+    errorMessage.value = '';
+
+    try {
+      // Pass stored token (if available) as Bearer token
+      final storedToken = StorageService.token;
+      final authHeader = storedToken != null ? 'Bearer $storedToken' : null;
+
+      print('🔍 [ORDER FETCH] Starting fetch...');
+      print('🔍 [ORDER FETCH] Token present: ${storedToken != null}');
+      print('🔍 [ORDER FETCH] Auth header: $authHeader');
+
+      final response = await _orderService.fetchOrders(
+        offset: 0,
+        limit: 50,
+        token: authHeader,
+      );
+
+      print('🔍 [ORDER FETCH] Response received: $response');
+      print('🔍 [ORDER FETCH] Response is null: ${response == null}');
+
+      if (response != null && response.orders.isNotEmpty) {
+        print('✅ [ORDER FETCH] Found ${response.orders.length} orders');
+        // Convert API response to UI format
+        final uiOrders = response.orders
+            .map((order) => OrderService.orderModelToMap(order))
+            .toList();
+        allOrders.assignAll(uiOrders);
+        print('✅ [ORDER FETCH] Assigned ${uiOrders.length} orders to UI');
+      } else {
+        print('❌ [ORDER FETCH] No orders in response');
+        if (response == null) {
+          print(
+            '❌ [ORDER FETCH] Response object is null - API call likely failed',
+          );
+        } else {
+          print(
+            '❌ [ORDER FETCH] Response exists but orders list is empty: ${response.orders.length} orders',
+          );
+        }
+        errorMessage.value = 'No orders found';
+        if (authHeader == null) {
+          errorMessage.value = 'Authentication token missing. Please login.';
+        }
+        allOrders.clear();
+      }
+    } catch (e) {
+      errorMessage.value = 'Failed to load orders: $e';
+      print('❌ [ORDER FETCH] Exception caught: $e');
+      print('❌ [ORDER FETCH] Stack trace: ${StackTrace.current}');
+      // Remove dummy data fallback: clear orders so UI can display empty/error state
+      allOrders.clear();
+    } finally {
+      isLoading.value = false;
+      print(
+        '🔍 [ORDER FETCH] Fetch complete. Total orders in UI: ${allOrders.length}',
+      );
+    }
   }
 
   /// -------------------- Tab Switch with API Call --------------------
   void changeTab(int index) {
+    // Switch tab and rely on client-side filtering (no extra API call)
     selectedTab.value = index;
     // If we have cached orders for this tab, use them; otherwise fetch
     final apiStatus = _mapTabIndexToApiStatus(index);
@@ -151,8 +211,6 @@ class OrderManagementController extends GetxController {
         return 'processing';
       case 'in progress':
         return 'confirmed';
-      case 'shipped':
-        return 'shipped';
       case 'completed':
         return 'delivered';
       default:

@@ -23,29 +23,60 @@ class OrderService {
         if (type != null) 'type': type,
       };
 
+      print('📡 [ORDER SERVICE] Fetching from: ${ApiConstants.myOrders}');
+      print('📡 [ORDER SERVICE] Query params: $queryParams');
+      print('📡 [ORDER SERVICE] Token: $token');
+
       final response = await _networkCaller.getRequest(
         ApiConstants.myOrders,
         queryParams: queryParams,
         token: token,
       );
 
+      print('📡 [ORDER SERVICE] Network response received');
+      print('📡 [ORDER SERVICE] isSuccess: ${response.isSuccess}');
+      print('📡 [ORDER SERVICE] statusCode: ${response.statusCode}');
+      print('📡 [ORDER SERVICE] responseData: ${response.responseData}');
+      print(
+        '📡 [ORDER SERVICE] responseData type: ${response.responseData.runtimeType}',
+      );
+
       if (response.isSuccess && response.responseData != null) {
         // Handle both String and Map responses
-        final jsonData = response.responseData is String
-            ? jsonDecode(response.responseData as String)
-                  as Map<String, dynamic>
-            : response.responseData as Map<String, dynamic>;
+        Map<String, dynamic> jsonData;
 
+        if (response.responseData is String) {
+          jsonData =
+              jsonDecode(response.responseData as String)
+                  as Map<String, dynamic>;
+        } else {
+          jsonData = response.responseData as Map<String, dynamic>;
+        }
+
+        print('✅ [ORDER SERVICE] Parsed JSON: ${jsonEncode(jsonData)}');
         // Log the API response
-        log('✅ Order API Response: ${jsonEncode(jsonData)}');
+        // log('✅ Order API Response: ${jsonEncode(jsonData)}');
 
-        return OrderResponse.fromJson(jsonData);
+        final orderResponse = OrderResponse.fromJson(jsonData);
+        print(
+          '✅ [ORDER SERVICE] OrderResponse created: ${orderResponse.orders.length} orders',
+        );
+        return orderResponse;
+      } else {
+        print(
+          '❌ [ORDER SERVICE] API not successful. isSuccess: ${response.isSuccess}',
+        );
+        print(
+          '❌ [ORDER SERVICE] responseData null: ${response.responseData == null}',
+        );
       }
 
       log('❌ Order API Error: ${response.responseData}');
 
       return null;
     } catch (e) {
+      print('❌ [ORDER SERVICE] Exception: $e');
+      print('❌ [ORDER SERVICE] Stack: ${StackTrace.current}');
       log('Error fetching orders: $e');
       return null;
     }
@@ -58,8 +89,6 @@ class OrderService {
         return 'new';
       case 'confirmed':
         return 'in-progress';
-      // case 'prepared':
-      //   return 'in-progress';
       case 'shipped':
       case 'outfordelivery':
         return 'in-progress';
@@ -78,10 +107,8 @@ class OrderService {
     switch (uiStatus) {
       case 'new':
         return 'New';
-      case 'confirmed':
+      case 'in-progress':
         return 'In Progress';
-      // case 'in-progress':
-      //   return 'In Progress';
       case 'completed':
         return 'Completed';
       default:

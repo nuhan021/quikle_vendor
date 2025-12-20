@@ -40,6 +40,7 @@ class _PrescriptionDetailsBodyState extends State<_PrescriptionDetailsBody> {
 
   late final TextEditingController _prescriptionNotesController;
   bool _isSubmitting = false;
+  bool _isSubmitted = false;
 
   PrescriptionController get _prescriptionController =>
       Get.find<PrescriptionController>();
@@ -139,18 +140,25 @@ class _PrescriptionDetailsBodyState extends State<_PrescriptionDetailsBody> {
           ),
           child: Stack(
             children: [
-              ListView(
-                padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 96.h),
-                children: [
-                  PrescriptionImageCard(imagePath: prescription.imagePath),
-                  SizedBox(height: 24.h),
-                  PrescriptionStatusButtons(prescription: prescription),
-                  SizedBox(height: 24.h),
-                  if (!isInvalidStatus)
-                    GetBuilder<PrescriptionController>(
-                      builder: (_) => _buildBottomSection(prescription),
-                    ),
-                ],
+              RefreshIndicator(
+                onRefresh: _fetchPrescriptionDetails,
+                backgroundColor: Colors.white,
+                color: Colors.amber,
+                displacement:
+                    kToolbarHeight + MediaQuery.of(context).padding.top + 8.0,
+                child: ListView(
+                  padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 96.h),
+                  children: [
+                    PrescriptionImageCard(imagePath: prescription.imagePath),
+                    SizedBox(height: 24.h),
+                    PrescriptionStatusButtons(prescription: prescription),
+                    SizedBox(height: 24.h),
+                    if (!isInvalidStatus)
+                      GetBuilder<PrescriptionController>(
+                        builder: (_) => _buildBottomSection(prescription),
+                      ),
+                  ],
+                ),
               ),
               GetBuilder<PrescriptionController>(
                 builder: (_) {
@@ -160,7 +168,7 @@ class _PrescriptionDetailsBodyState extends State<_PrescriptionDetailsBody> {
                   final isInvalid =
                       (refreshed.status ?? '').toLowerCase() == 'invalid';
                   final isMedReady = _isMedicineReadyStatus(refreshed.status);
-                  if (isInvalid || isMedReady) {
+                  if (isInvalid || isMedReady || _isSubmitted) {
                     return const SizedBox.shrink();
                   }
 
@@ -331,6 +339,10 @@ class _PrescriptionDetailsBodyState extends State<_PrescriptionDetailsBody> {
     );
 
     if (success) {
+      setState(() {
+        _isSubmitting = false;
+        _isSubmitted = true;
+      });
       Future.delayed(const Duration(milliseconds: 800), () {
         // Refresh the prescriptions list before going back
         _prescriptionController.loadPrescriptions();

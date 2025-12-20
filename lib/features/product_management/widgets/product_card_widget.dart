@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../../core/common/styles/global_text_style.dart';
 import '../controllers/products_controller.dart';
@@ -132,13 +133,66 @@ class ProductCardWidget extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 8),
-                    Text(
-                      '\$${double.tryParse(product.sellPrice)?.toStringAsFixed(2) ?? product.sellPrice}',
-                      style: getTextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF111827),
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          '\$${double.tryParse(product.sellPrice)?.toStringAsFixed(2) ?? product.sellPrice}',
+                          style: getTextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF111827),
+                          ),
+                        ),
+
+                        Spacer(),
+
+                        OutlinedButton(
+                          onPressed: (product.stock == 0)
+                              ? null
+                              : () async {
+                                  await controller.toggleStockOut(
+                                    product.id.toString(),
+                                    !product.isInStock,
+                                  );
+                                },
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                              color: (product.stock == 0)
+                                  ? Colors.red
+                                  : (!product.isInStock
+                                        ? Colors.red
+                                        : Colors.grey[400]!),
+                              width: 1,
+                            ),
+                            backgroundColor: (product.stock == 0)
+                                ? Colors.red.withOpacity(0.1)
+                                : (!product.isInStock
+                                      ? Colors.red.withOpacity(0.1)
+                                      : Colors.grey[100]),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            minimumSize: Size(0, 32),
+                          ),
+                          child: Text(
+                            (product.stock == 0)
+                                ? 'Out of Stock'
+                                : (!product.isInStock
+                                      ? 'Restore'
+                                      : 'Stock Out'),
+                            style: TextStyle(
+                              color: (product.stock == 0)
+                                  ? Colors.red
+                                  : (!product.isInStock
+                                        ? Colors.red
+                                        : Colors.grey[400]!),
+                              fontSize: 9.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

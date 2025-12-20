@@ -58,7 +58,7 @@ class CouponModalWidget extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                       borderSide: const BorderSide(
-                        color: AppColors.ebonyBlack,
+                        color: Colors.grey,
                         width: 1,
                       ),
                     ),
@@ -104,7 +104,7 @@ class CouponModalWidget extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                       borderSide: const BorderSide(
-                        color: AppColors.ebonyBlack,
+                        color: Colors.grey,
                         width: 1,
                       ),
                     ),
@@ -150,7 +150,7 @@ class CouponModalWidget extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                       borderSide: const BorderSide(
-                        color: AppColors.ebonyBlack,
+                        color: Colors.grey,
                         width: 1,
                       ),
                     ),

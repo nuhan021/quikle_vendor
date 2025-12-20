@@ -5,11 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:quikle_vendor/routes/app_routes.dart';
+import 'package:quikle_vendor/features/profile/my_profile/controller/my_profile_controller.dart';
 import '../widgets/create_discount_modal_widget.dart';
 import '../services/get_product_services.dart';
 import '../services/delete_product_services.dart';
+import '../services/edit_product_services.dart';
 import '../model/products_model.dart';
 import '../../../core/services/storage_service.dart';
+import '../services/subcategory_services.dart';
+import '../model/subcategory_model.dart';
 
 class ProductsController extends GetxController {
   // Vendor
@@ -21,6 +25,10 @@ class ProductsController extends GetxController {
   // Filters / search
   final searchText = ''.obs;
   final selectedCategory = 'All Categories'.obs;
+  final selectedCategoryId = 0.obs;
+  final selectedSubCategory = ''.obs;
+  final selectedSubCategoryId = 0.obs;
+  final subCategorySearchText = ''.obs;
   final selectedStockStatus = 'All Status'.obs;
   final selectedStockQuantity = '1'.obs;
 
@@ -52,6 +60,14 @@ class ProductsController extends GetxController {
   final GetProductServices _productServices = GetProductServices();
   late final DeleteMedicineProductServices _deleteMedicineProductServices;
   late final DeleteFoodProductServices _deleteFoodProductServices;
+  late final EditMedicineProductServices _editMedicineProductServices;
+  late final EditFoodProductServices _editFoodProductServices;
+  final SubcategoryServices _subcategoryServices = SubcategoryServices();
+
+  // Categories and subcategories
+  final categories = <Map<String, dynamic>>[].obs;
+  final subCategories = <Map<String, dynamic>>[].obs;
+  final subcategoriesList = <SubcategoryModel>[].obs;
 
   // Controllers / timers
   final ScrollController scrollController = ScrollController();
@@ -64,14 +80,56 @@ class ProductsController extends GetxController {
 
     _deleteMedicineProductServices = DeleteMedicineProductServices();
     _deleteFoodProductServices = DeleteFoodProductServices();
+    _editMedicineProductServices = EditMedicineProductServices();
+    _editFoodProductServices = EditFoodProductServices();
 
     if (!_isDataInitialized) {
+      _loadSubcategories();
       fetchProducts();
       _isDataInitialized = true;
     }
 
     _startAutoLoadTimer();
     scrollController.addListener(_scrollListener);
+  }
+
+  Future<void> _loadSubcategories() async {
+    try {
+      final categoryId = _getCategoryIdForVendorType();
+      if (categoryId == null) {
+        log("Unknown or null vendor type: $vendorType");
+        return;
+      }
+
+      final subcategories = await _subcategoryServices.getSubcategories(
+        categoryId,
+      );
+      subcategoriesList.value = subcategories;
+
+      // Convert to the format expected by the UI
+      subCategories.value = subcategories
+          .map(
+            (sub) => {'id': sub.id, 'categoryId': categoryId, 'name': sub.name},
+          )
+          .toList();
+
+      log(
+        'Loaded ${subcategories.length} subcategories for category $categoryId',
+      );
+    } catch (e) {
+      log('Error loading subcategories: $e');
+    }
+  }
+
+  int? _getCategoryIdForVendorType() {
+    switch (vendorType) {
+      case 'medicine':
+        return 6;
+      case 'food':
+        return 1;
+      default:
+        return null;
+    }
   }
 
   @override
@@ -263,6 +321,19 @@ class ProductsController extends GetxController {
   }
 
   Future<void> fetchProducts({bool isLoadMore = false}) async {
+    // Check if features are disabled (profile incomplete or KYC not verified)
+    try {
+      final myProfileController = Get.find<MyProfileController>();
+      if (myProfileController.areFeauresDisabled()) {
+        // Set loading to false so disabled message shows instead of shimmer
+        isLoading.value = false;
+        isLoadingMore.value = false;
+        return; // Skip API call if features are disabled
+      }
+    } catch (e) {
+      // Controller not found, continue anyway
+    }
+
     if (isLoadMore) {
       isLoadingMore.value = true;
     } else {
@@ -344,7 +415,13 @@ class ProductsController extends GetxController {
   }
 
   void showFilterProductDialog() {
-    showFilterProductModal.value = true;
+    if (hasActiveFilters) {
+      // If filters are active, clear them instead of opening dialog
+      clearAllFilters();
+    } else {
+      // If no filters are active, open the filter dialog
+      showFilterProductModal.value = true;
+    }
   }
 
   void hideFilterProductDialog() {
@@ -362,6 +439,23 @@ class ProductsController extends GetxController {
   }
 
   Future<void> deleteProduct() async {
+    // Check if features are disabled
+    try {
+      final myProfileController = Get.find<MyProfileController>();
+      if (myProfileController.areFeauresDisabled()) {
+        Get.snackbar(
+          'Profile Incomplete',
+          'Please complete your profile and verify KYC before proceeding',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+    } catch (e) {
+      // Controller not found, continue anyway
+    }
+
     isDeleting.value = true;
     try {
       final productId = productToDelete.value;
@@ -391,6 +485,123 @@ class ProductsController extends GetxController {
     } finally {
       isDeleting.value = false;
       hideDeleteConfirmation();
+    }
+  }
+
+  Future<void> toggleStockOut(
+    String productId,
+    bool isCurrentlyStockedOut,
+  ) async {
+    // Check if features are disabled
+    try {
+      final myProfileController = Get.find<MyProfileController>();
+      if (myProfileController.areFeauresDisabled()) {
+        Get.snackbar(
+          'Profile Incomplete',
+          'Please complete your profile and verify KYC before proceeding',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+    } catch (e) {
+      // Controller not found, continue anyway
+    }
+
+    try {
+      bool success = false;
+
+      if (vendorType == 'medicine') {
+        if (isCurrentlyStockedOut) {
+          // Restore stock - preserve the original stock quantity
+          final productIndex = products.indexWhere(
+            (p) => p.id.toString() == productId,
+          );
+          final originalStock = productIndex != -1
+              ? products[productIndex].stock
+              : 10;
+          success = await _editMedicineProductServices.restoreStock(
+            itemId: productId,
+            stock: originalStock, // Preserve original quantity
+          );
+        } else {
+          // Stock out the product
+          success = await _editMedicineProductServices
+              .stockOutAndDisableProduct(itemId: productId);
+        }
+      } else if (vendorType == 'food') {
+        if (isCurrentlyStockedOut) {
+          // Restore stock - preserve the original stock quantity
+          final productIndex = products.indexWhere(
+            (p) => p.id.toString() == productId,
+          );
+          final originalStock = productIndex != -1
+              ? products[productIndex].stock
+              : 10;
+          success = await _editFoodProductServices.restoreStock(
+            itemId: productId,
+            stock: originalStock, // Preserve original quantity
+          );
+        } else {
+          // Stock out the product
+          success = await _editFoodProductServices.stockOutAndDisableProduct(
+            itemId: productId,
+          );
+        }
+      } else {
+        Get.snackbar(
+          'Not Available',
+          'Stock management is currently only available for medicine and food products',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      if (success) {
+        // Immediately update the local product data for instant UI feedback
+        final productIndex = products.indexWhere(
+          (p) => p.id.toString() == productId,
+        );
+        if (productIndex != -1) {
+          final updatedProduct = products[productIndex].copyWith(
+            isInStock:
+                isCurrentlyStockedOut, // If currently stocked out, restore to in stock; if in stock, set to stocked out
+          );
+          products[productIndex] = updatedProduct;
+        }
+
+        // No need to refresh the entire list - optimistic update provides immediate feedback
+        // The data will be synced with server on next fetch or app refresh
+
+        Get.snackbar(
+          'Success',
+          isCurrentlyStockedOut
+              ? 'Product stock has been restored'
+              : 'Product has been stocked out and disabled',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+      } else {
+        Get.snackbar(
+          'Error',
+          'Failed to update product stock',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'An error occurred while processing your request',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -429,7 +640,61 @@ class ProductsController extends GetxController {
   }
 
   void applyFilters() {
-    // Implement category / status / quantity filter logic here if needed
+    // Close the filter modal
+    hideFilterProductDialog();
+    // Filtering will be applied in the UI based on selected filters
+  }
+
+  List<Map<String, dynamic>> getFilteredSubCategories() {
+    if (subCategorySearchText.value.isEmpty) {
+      return subCategories;
+    }
+    return subCategories
+        .where(
+          (subCategory) => subCategory['name']
+              .toString()
+              .toLowerCase()
+              .contains(subCategorySearchText.value.toLowerCase()),
+        )
+        .toList();
+  }
+
+  void changeSubCategory(String subCategoryName) {
+    if (subCategoryName == 'All Categories') {
+      selectedCategory.value = 'All Categories';
+      selectedCategoryId.value = 0;
+      selectedSubCategory.value = '';
+      selectedSubCategoryId.value = 0;
+      return;
+    }
+
+    final subCategory = subCategories.firstWhere(
+      (sc) => sc['name'] == subCategoryName,
+      orElse: () => {'id': 0, 'name': '', 'categoryId': 0},
+    );
+
+    selectedSubCategory.value = subCategory['name'] ?? '';
+    selectedSubCategoryId.value = subCategory['id'] ?? 0;
+    selectedCategoryId.value = subCategory['categoryId'] ?? 0;
+    selectedCategory.value =
+        subCategory['name'] ??
+        'All Categories'; // Show subcategory name as category
+  }
+
+  bool get hasActiveFilters {
+    return selectedCategoryId.value > 0 ||
+        selectedSubCategoryId.value > 0 ||
+        showLowStockFilter.value ||
+        selectedStockStatus.value != 'All Status';
+  }
+
+  void clearAllFilters() {
+    selectedCategory.value = 'All Categories';
+    selectedCategoryId.value = 0;
+    selectedSubCategory.value = '';
+    selectedSubCategoryId.value = 0;
+    showLowStockFilter.value = false;
+    selectedStockStatus.value = 'All Status';
   }
 
   int get lowStockCount {

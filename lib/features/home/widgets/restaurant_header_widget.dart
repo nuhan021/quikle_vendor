@@ -4,6 +4,7 @@ import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/core/utils/constants/colors.dart';
 import 'package:quikle_vendor/core/utils/constants/image_path.dart';
 import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
+import 'package:quikle_vendor/features/profile/my_profile/controller/my_profile_controller.dart';
 import '../../../core/common/styles/global_text_style.dart';
 import '../../../core/utils/constants/icon_path.dart';
 import '../controller/home_controller.dart';
@@ -17,6 +18,11 @@ class RestaurantHeaderWidget extends StatelessWidget {
     final vendorData = StorageService.getVendorDetails();
     final vendorDetails = vendorData != null
         ? VendorDetailsModel.fromJson(vendorData)
+        : null;
+
+    // Safe access to MyProfileController
+    final myProfileController = Get.isRegistered<MyProfileController>()
+        ? Get.find<MyProfileController>()
         : null;
 
     return Container(
@@ -35,11 +41,13 @@ class RestaurantHeaderWidget extends StatelessWidget {
       child: Row(
         children: [
           Obx(
-            () => Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-              child: _buildRestaurantImage(controller),
+            () => ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                width: 60,
+                height: 60,
+                child: _buildRestaurantImage(controller),
+              ),
             ),
           ),
           SizedBox(width: 12),
@@ -48,7 +56,7 @@ class RestaurantHeaderWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  vendorDetails?.shopName ?? 'Tandoori Tarang',
+                  vendorDetails?.shopName ?? 'Your Shop Name',
                   style: getTextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -81,8 +89,7 @@ class RestaurantHeaderWidget extends StatelessWidget {
                       () => Text(
                         _formatTo12Hour(
                           controller.vendorCloseTime.value ??
-                              vendorDetails?.closeTime ??
-                              '19:00',
+                              vendorDetails?.closeTime,
                         ),
                         style: getTextStyle(
                           fontSize: 12,
@@ -101,7 +108,10 @@ class RestaurantHeaderWidget extends StatelessWidget {
               scale: 0.76,
               child: Switch(
                 value: controller.isShopOpen.value,
-                onChanged: (value) => controller.toggleShopStatus(),
+                onChanged:
+                    (myProfileController?.shouldDisableFeatures.value ?? false)
+                    ? null
+                    : (value) => controller.toggleShopStatus(),
                 thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
                   if (states.contains(WidgetState.selected)) {
                     return AppColors.textWhite;
@@ -110,7 +120,10 @@ class RestaurantHeaderWidget extends StatelessWidget {
                 }),
                 trackColor: WidgetStateProperty.resolveWith<Color>((states) {
                   if (states.contains(WidgetState.selected)) {
-                    return Color.fromRGBO(3, 197, 32, 0.775);
+                    return (myProfileController?.shouldDisableFeatures.value ??
+                            false)
+                        ? Colors.grey
+                        : Color.fromRGBO(3, 197, 32, 0.775);
                   }
                   return Color.fromRGBO(0, 0, 0, 1);
                 }),
@@ -167,12 +180,12 @@ class RestaurantHeaderWidget extends StatelessWidget {
         controller.vendorPhotoUrl.value!,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          return Image.asset(ImagePath.shopImage, fit: BoxFit.cover);
+          return Image.asset(ImagePath.logo, fit: BoxFit.cover);
         },
       );
     }
 
     // Fallback to default asset image
-    return Image.asset(ImagePath.shopImage, fit: BoxFit.cover);
+    return Image.asset(ImagePath.logo, fit: BoxFit.cover);
   }
 }

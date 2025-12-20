@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// A lightweight, dependency-free shimmer/skeleton placeholder used across the app.
 class ShimmerPlaceholder extends StatefulWidget {
@@ -595,6 +596,7 @@ class ListShimmerSkeleton extends StatelessWidget {
                   ],
                 ),
               ),
+              SizedBox(height: 80.h),
             ],
           ),
         );
