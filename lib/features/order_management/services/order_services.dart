@@ -88,10 +88,10 @@ class OrderService {
       case 'processing':
         return 'new';
       case 'confirmed':
-        return 'confirmed';
+        return 'in-progress';
       case 'shipped':
       case 'outfordelivery':
-        return 'shipped';
+        return 'in-progress';
       case 'delivered':
         return 'completed';
       case 'cancelled':
@@ -107,10 +107,8 @@ class OrderService {
     switch (uiStatus) {
       case 'new':
         return 'New';
-      case 'confirmed':
-        return 'Confirmed';
-      case 'shipped':
-        return 'Shipped';
+      case 'in-progress':
+        return 'In Progress';
       case 'completed':
         return 'Completed';
       default:

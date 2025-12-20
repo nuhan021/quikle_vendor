@@ -13,6 +13,13 @@ class OrderManagementController extends GetxController {
   final isLoading = false.obs;
   final errorMessage = ''.obs;
 
+  // Per-status cache: apiStatus -> list of orders
+  final Map<String, List<Map<String, dynamic>>> _statusCache = {};
+  final Map<String, int> _statusOffsets = {};
+  final Map<String, bool> _statusHasMore = {};
+  final Map<String, bool> _statusLoading = {};
+  final recentOrdersCache = <Map<String, dynamic>>[].obs;
+
   /// -------------------- Button State Management --------------------
   final disabledButtons = <String>{}.obs;
   final confirmedOrders = <String>{}.obs;
@@ -97,12 +104,6 @@ class OrderManagementController extends GetxController {
   }
 
   /// -------------------- Fetch Orders by Tab Status --------------------
-<<<<<<< Updated upstream
-  Future<void> _fetchOrdersByStatus(int tabIndex) async {
-    // Not used: tab-specific server fetch. The controller fetches all orders once
-    // and `filteredOrders` performs client-side filtering.
-    return;
-=======
   Future<void> _fetchOrdersByStatus(
     int tabIndex, {
     int offset = 0,
@@ -175,10 +176,8 @@ class OrderManagementController extends GetxController {
     switch (tabName) {
       case 'new':
         return 'processing';
-      case 'confirmed':
+      case 'in progress':
         return 'confirmed';
-      case 'shipped':
-        return 'outfordelivery';
       case 'completed':
         return 'delivered';
       default:
@@ -235,7 +234,6 @@ class OrderManagementController extends GetxController {
   /// Public: check if a specific API status is currently loading.
   bool isStatusLoading(String apiStatus) {
     return _statusLoading[apiStatus] == true;
->>>>>>> Stashed changes
   }
 
   /// -------------------- Filtered Orders by Selected Tab --------------------
@@ -248,15 +246,9 @@ class OrderManagementController extends GetxController {
       case 'new':
         statusFilter = 'new';
         break;
-      case 'confirmed':
-        statusFilter = 'confirmed';
+      case 'in progress':
+        statusFilter = 'in-progress';
         break;
-<<<<<<< Updated upstream
-=======
-      case 'shipped':
-        statusFilter = 'shipped';
-        break;
->>>>>>> Stashed changes
       case 'completed':
         statusFilter = 'completed';
         break;
