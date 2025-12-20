@@ -55,7 +55,7 @@ class OrderService {
 
         print('✅ [ORDER SERVICE] Parsed JSON: ${jsonEncode(jsonData)}');
         // Log the API response
-        log('✅ Order API Response: ${jsonEncode(jsonData)}');
+        // log('✅ Order API Response: ${jsonEncode(jsonData)}');
 
         final orderResponse = OrderResponse.fromJson(jsonData);
         print(
@@ -88,12 +88,10 @@ class OrderService {
       case 'processing':
         return 'new';
       case 'confirmed':
-        return 'in-progress';
-      // case 'prepared':
-      //   return 'in-progress';
+        return 'confirmed';
       case 'shipped':
       case 'outfordelivery':
-        return 'in-progress';
+        return 'shipped';
       case 'delivered':
         return 'completed';
       case 'cancelled':
@@ -110,9 +108,9 @@ class OrderService {
       case 'new':
         return 'New';
       case 'confirmed':
-        return 'In Progress';
-      // case 'in-progress':
-      //   return 'In Progress';
+        return 'Confirmed';
+      case 'shipped':
+        return 'Shipped';
       case 'completed':
         return 'Completed';
       default:

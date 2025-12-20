@@ -97,10 +97,145 @@ class OrderManagementController extends GetxController {
   }
 
   /// -------------------- Fetch Orders by Tab Status --------------------
+<<<<<<< Updated upstream
   Future<void> _fetchOrdersByStatus(int tabIndex) async {
     // Not used: tab-specific server fetch. The controller fetches all orders once
     // and `filteredOrders` performs client-side filtering.
     return;
+=======
+  Future<void> _fetchOrdersByStatus(
+    int tabIndex, {
+    int offset = 0,
+    int limit = 20,
+  }) async {
+    // New implementation: support pagination and caching per status
+    final apiStatus = _mapTabIndexToApiStatus(tabIndex);
+    if (_statusLoading[apiStatus] == true) return;
+    _statusLoading[apiStatus] = true;
+
+    final currentOffset = _statusOffsets[apiStatus] ?? 0;
+    final fetchOffset = offset == 0 ? currentOffset : offset;
+
+    try {
+      final storedToken = StorageService.token;
+      final authHeader = storedToken != null ? 'Bearer $storedToken' : null;
+
+      final response = await _orderService.fetchOrders(
+        offset: fetchOffset,
+        limit: limit,
+        status: apiStatus,
+        token: authHeader,
+      );
+
+      if (response != null) {
+        final uiOrders = response.orders
+            .map((order) => OrderService.orderModelToMap(order))
+            .toList();
+        final existing = _statusCache[apiStatus] ?? [];
+        // append new
+        existing.addAll(uiOrders);
+        _statusCache[apiStatus] = existing;
+        // update offset
+        _statusOffsets[apiStatus] = existing.length;
+        // set hasMore
+        _statusHasMore[apiStatus] = (response.orders.length >= limit);
+
+        // if current selected tab, show cached
+        if (_mapTabIndexToApiStatus(selectedTab.value) == apiStatus) {
+          allOrders.assignAll(existing);
+        }
+        // update the recentOrdersCache (first shipped + first delivered)
+        _updateRecentOrdersCache();
+      } else {
+        // no response — mark no more
+        _statusHasMore[apiStatus] = false;
+      }
+    } catch (e) {
+      print('Error fetching orders by status: $e');
+    } finally {
+      _statusLoading[apiStatus] = false;
+    }
+  }
+
+  void _updateRecentOrdersCache() {
+    final shipped = _statusCache['shipped'] ?? [];
+    final delivered = _statusCache['delivered'] ?? [];
+
+    final List<Map<String, dynamic>> out = [];
+    if (shipped.isNotEmpty) out.add(shipped.first);
+    if (delivered.isNotEmpty) out.add(delivered.first);
+
+    // ensure length 2 when possible; do not fill with duplicates
+    recentOrdersCache.assignAll(out);
+  }
+
+  /// Helper to map tab index to API status string
+  String _mapTabIndexToApiStatus(int tabIndex) {
+    final tabName = tabs[tabIndex].toLowerCase();
+    switch (tabName) {
+      case 'new':
+        return 'processing';
+      case 'confirmed':
+        return 'confirmed';
+      case 'shipped':
+        return 'outfordelivery';
+      case 'completed':
+        return 'delivered';
+      default:
+        return 'processing';
+    }
+  }
+
+  /// Public helper: map tab index to API status string (exposes private mapper)
+  String apiStatusForTabIndex(int tabIndex) =>
+      _mapTabIndexToApiStatus(tabIndex);
+
+  /// Public helper: ensure orders for a given API status are loaded into the cache.
+  /// Safe to call repeatedly; it will noop if cache already populated or loading is in progress.
+  /// Fetch orders for a given API status. If [force] is true, clear the
+  /// existing cache for that status and re-fetch from offset 0.
+  /// When the currently selected tab is being refreshed with [force]=true,
+  /// `isLoading` will be set true so UI can show shimmer placeholders.
+  Future<void> fetchOrdersForApiStatus(
+    String apiStatus, {
+    bool force = false,
+  }) async {
+    // find tab index corresponding to this apiStatus
+    final tabIndex = tabs.indexWhere(
+      (t) => _mapTabIndexToApiStatus(tabs.indexOf(t)) == apiStatus,
+    );
+    if (tabIndex < 0) return;
+
+    // If not forcing and we already have cached data or currently loading, do nothing
+    if (!force &&
+        ((_statusCache[apiStatus]?.isNotEmpty ?? false) ||
+            (_statusLoading[apiStatus] == true)))
+      return;
+
+    if (force) {
+      // clear cache and reset offset so API is hit for fresh data
+      _statusCache[apiStatus] = [];
+      _statusOffsets[apiStatus] = 0;
+      _statusHasMore[apiStatus] = true;
+    }
+
+    final bool isActiveTab =
+        _mapTabIndexToApiStatus(selectedTab.value) == apiStatus;
+
+    try {
+      if (isActiveTab && force) isLoading.value = true;
+      await _fetchOrdersByStatus(tabIndex, offset: 0, limit: 20);
+      // ensure recent cache updated after fetch
+      _updateRecentOrdersCache();
+    } finally {
+      if (isActiveTab && force) isLoading.value = false;
+    }
+  }
+
+  /// Public: check if a specific API status is currently loading.
+  bool isStatusLoading(String apiStatus) {
+    return _statusLoading[apiStatus] == true;
+>>>>>>> Stashed changes
   }
 
   /// -------------------- Filtered Orders by Selected Tab --------------------
@@ -113,9 +248,15 @@ class OrderManagementController extends GetxController {
       case 'new':
         statusFilter = 'new';
         break;
-      case 'in progress':
-        statusFilter = 'in-progress';
+      case 'confirmed':
+        statusFilter = 'confirmed';
         break;
+<<<<<<< Updated upstream
+=======
+      case 'shipped':
+        statusFilter = 'shipped';
+        break;
+>>>>>>> Stashed changes
       case 'completed':
         statusFilter = 'completed';
         break;
