@@ -78,15 +78,13 @@ class OrderManagementScreen extends StatelessWidget {
                         MediaQuery.of(context).padding.top +
                         8.0,
                     child: ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.all(16),
                       itemCount: 6,
                       itemBuilder: (context, index) => const Padding(
                         padding: EdgeInsets.only(bottom: 16.0),
                         child: ShimmerOrderCard(),
                       ),
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.beakYellow,
                     ),
                   );
                 }
