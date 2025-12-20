@@ -209,8 +209,10 @@ class OrderManagementController extends GetxController {
     switch (tabName) {
       case 'new':
         return 'processing';
-      case 'in progress':
+      case 'confirmed':
         return 'confirmed';
+      case 'shipped':
+        return 'outfordelivery';
       case 'completed':
         return 'delivered';
       default:
@@ -279,11 +281,10 @@ class OrderManagementController extends GetxController {
       case 'new':
         statusFilter = 'new';
         break;
-      case 'in progress':
-        statusFilter = 'in-progress';
+      case 'confirmed':
+        statusFilter = 'confirmed';
         break;
       case 'shipped':
-        // We'll filter by apiStatus for shipped orders in UI mapping
         statusFilter = 'shipped';
         break;
       case 'completed':
