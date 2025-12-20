@@ -69,6 +69,54 @@ class EditMedicineProductServices {
     log('Status Code: ${response.statusCode}');
     return response.isSuccess;
   }
+
+  Future<bool> stockOutAndDisableProduct({required String itemId}) async {
+    final url = ApiConstants.patchMedicineStock.replaceFirst(
+      '{itemId}',
+      itemId,
+    );
+
+    // Build fields map - only change is_stock flag, keep stock quantity unchanged
+    final fields = <String, String>{'is_stock': 'false'};
+
+    final response = await networkCaller.multipartRequest(
+      url,
+      fields: fields,
+      token: 'Bearer ${StorageService.token}',
+      method: 'PATCH',
+    );
+
+    log('Stock Out Response: ${response.responseData}');
+    log('Status Code: ${response.statusCode}');
+    return response.isSuccess;
+  }
+
+  Future<bool> restoreStock({
+    required String itemId,
+    required int stock,
+  }) async {
+    final url = ApiConstants.patchMedicineStock.replaceFirst(
+      '{itemId}',
+      itemId,
+    );
+
+    // Build fields map
+    final fields = <String, String>{
+      'stock': stock.toString(),
+      'is_stock': 'true',
+    };
+
+    final response = await networkCaller.multipartRequest(
+      url,
+      fields: fields,
+      token: 'Bearer ${StorageService.token}',
+      method: 'PATCH',
+    );
+
+    log('Restore Stock Response: ${response.responseData}');
+    log('Status Code: ${response.statusCode}');
+    return response.isSuccess;
+  }
 }
 
 class EditFoodProductServices {
@@ -127,6 +175,48 @@ class EditFoodProductServices {
     );
 
     log('Update Product Response: ${response.responseData}');
+    log('Status Code: ${response.statusCode}');
+    return response.isSuccess;
+  }
+
+  Future<bool> stockOutAndDisableProduct({required String itemId}) async {
+    final url = ApiConstants.patchFoodStock.replaceFirst('{itemId}', itemId);
+
+    // Build fields map - only change is_stock flag, keep stock quantity unchanged
+    final fields = <String, String>{'is_stock': 'false'};
+
+    final response = await networkCaller.multipartRequest(
+      url,
+      fields: fields,
+      token: 'Bearer ${StorageService.token}',
+      method: 'PATCH',
+    );
+
+    log('Food Stock Out Response: ${response.responseData}');
+    log('Status Code: ${response.statusCode}');
+    return response.isSuccess;
+  }
+
+  Future<bool> restoreStock({
+    required String itemId,
+    required int stock,
+  }) async {
+    final url = ApiConstants.patchFoodStock.replaceFirst('{itemId}', itemId);
+
+    // Build fields map
+    final fields = <String, String>{
+      'stock': stock.toString(),
+      'is_stock': 'true',
+    };
+
+    final response = await networkCaller.multipartRequest(
+      url,
+      fields: fields,
+      token: 'Bearer ${StorageService.token}',
+      method: 'PATCH',
+    );
+
+    log('Food Restore Stock Response: ${response.responseData}');
     log('Status Code: ${response.statusCode}');
     return response.isSuccess;
   }

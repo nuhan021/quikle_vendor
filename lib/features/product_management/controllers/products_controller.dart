@@ -9,6 +9,7 @@ import 'package:quikle_vendor/features/profile/my_profile/controller/my_profile_
 import '../widgets/create_discount_modal_widget.dart';
 import '../services/get_product_services.dart';
 import '../services/delete_product_services.dart';
+import '../services/edit_product_services.dart';
 import '../model/products_model.dart';
 import '../../../core/services/storage_service.dart';
 import '../services/subcategory_services.dart';
@@ -59,6 +60,8 @@ class ProductsController extends GetxController {
   final GetProductServices _productServices = GetProductServices();
   late final DeleteMedicineProductServices _deleteMedicineProductServices;
   late final DeleteFoodProductServices _deleteFoodProductServices;
+  late final EditMedicineProductServices _editMedicineProductServices;
+  late final EditFoodProductServices _editFoodProductServices;
   final SubcategoryServices _subcategoryServices = SubcategoryServices();
 
   // Categories and subcategories
@@ -77,6 +80,8 @@ class ProductsController extends GetxController {
 
     _deleteMedicineProductServices = DeleteMedicineProductServices();
     _deleteFoodProductServices = DeleteFoodProductServices();
+    _editMedicineProductServices = EditMedicineProductServices();
+    _editFoodProductServices = EditFoodProductServices();
 
     if (!_isDataInitialized) {
       _loadSubcategories();
@@ -475,6 +480,123 @@ class ProductsController extends GetxController {
     } finally {
       isDeleting.value = false;
       hideDeleteConfirmation();
+    }
+  }
+
+  Future<void> toggleStockOut(
+    String productId,
+    bool isCurrentlyStockedOut,
+  ) async {
+    // Check if features are disabled
+    try {
+      final myProfileController = Get.find<MyProfileController>();
+      if (myProfileController.areFeauresDisabled()) {
+        Get.snackbar(
+          'Profile Incomplete',
+          'Please complete your profile and verify KYC before proceeding',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+    } catch (e) {
+      // Controller not found, continue anyway
+    }
+
+    try {
+      bool success = false;
+
+      if (vendorType == 'medicine') {
+        if (isCurrentlyStockedOut) {
+          // Restore stock - preserve the original stock quantity
+          final productIndex = products.indexWhere(
+            (p) => p.id.toString() == productId,
+          );
+          final originalStock = productIndex != -1
+              ? products[productIndex].stock
+              : 10;
+          success = await _editMedicineProductServices.restoreStock(
+            itemId: productId,
+            stock: originalStock, // Preserve original quantity
+          );
+        } else {
+          // Stock out the product
+          success = await _editMedicineProductServices
+              .stockOutAndDisableProduct(itemId: productId);
+        }
+      } else if (vendorType == 'food') {
+        if (isCurrentlyStockedOut) {
+          // Restore stock - preserve the original stock quantity
+          final productIndex = products.indexWhere(
+            (p) => p.id.toString() == productId,
+          );
+          final originalStock = productIndex != -1
+              ? products[productIndex].stock
+              : 10;
+          success = await _editFoodProductServices.restoreStock(
+            itemId: productId,
+            stock: originalStock, // Preserve original quantity
+          );
+        } else {
+          // Stock out the product
+          success = await _editFoodProductServices.stockOutAndDisableProduct(
+            itemId: productId,
+          );
+        }
+      } else {
+        Get.snackbar(
+          'Not Available',
+          'Stock management is currently only available for medicine and food products',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      if (success) {
+        // Immediately update the local product data for instant UI feedback
+        final productIndex = products.indexWhere(
+          (p) => p.id.toString() == productId,
+        );
+        if (productIndex != -1) {
+          final updatedProduct = products[productIndex].copyWith(
+            isInStock:
+                isCurrentlyStockedOut, // If currently stocked out, restore to in stock; if in stock, set to stocked out
+          );
+          products[productIndex] = updatedProduct;
+        }
+
+        // No need to refresh the entire list - optimistic update provides immediate feedback
+        // The data will be synced with server on next fetch or app refresh
+
+        Get.snackbar(
+          'Success',
+          isCurrentlyStockedOut
+              ? 'Product stock has been restored'
+              : 'Product has been stocked out and disabled',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+      } else {
+        Get.snackbar(
+          'Error',
+          'Failed to update product stock',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'An error occurred while processing your request',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 

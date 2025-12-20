@@ -13,7 +13,6 @@ class ProductCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<ProductsController>();
-    final isStockOutPressed = false.obs;
 
     return Container(
       margin: EdgeInsets.only(bottom: 16),
@@ -147,37 +146,49 @@ class ProductCardWidget extends StatelessWidget {
 
                         Spacer(),
 
-                        Obx(
-                          () => OutlinedButton(
-                            onPressed: () {
-                              isStockOutPressed.value =
-                                  !isStockOutPressed.value;
-                            },
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                color: isStockOutPressed.value
-                                    ? Colors.red
-                                    : Colors.grey[400]!,
-                                width: 1,
-                              ),
-                              backgroundColor: isStockOutPressed.value
-                                  ? Colors.red.withOpacity(0.1)
-                                  : Colors.transparent,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              minimumSize: Size(0, 32),
+                        OutlinedButton(
+                          onPressed: (product.stock == 0)
+                              ? null
+                              : () async {
+                                  await controller.toggleStockOut(
+                                    product.id.toString(),
+                                    !product.isInStock,
+                                  );
+                                },
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                              color: (product.stock == 0)
+                                  ? Colors.red
+                                  : (!product.isInStock
+                                        ? Colors.red
+                                        : Colors.grey[400]!),
+                              width: 1,
                             ),
-                            child: Text(
-                              'Stock Out',
-                              style: TextStyle(
-                                color: isStockOutPressed.value
-                                    ? Colors.red
-                                    : Colors.grey[400]!,
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
+                            backgroundColor: (product.stock == 0)
+                                ? Colors.red.withOpacity(0.1)
+                                : (!product.isInStock
+                                      ? Colors.red.withOpacity(0.1)
+                                      : Colors.grey[100]),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            minimumSize: Size(0, 32),
+                          ),
+                          child: Text(
+                            (product.stock == 0)
+                                ? 'Out of Stock'
+                                : (!product.isInStock
+                                      ? 'Restore'
+                                      : 'Stock Out'),
+                            style: TextStyle(
+                              color: (product.stock == 0)
+                                  ? Colors.red
+                                  : (!product.isInStock
+                                        ? Colors.red
+                                        : Colors.grey[400]!),
+                              fontSize: 9.sp,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
