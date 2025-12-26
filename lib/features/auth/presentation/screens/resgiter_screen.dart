@@ -110,9 +110,14 @@ class RegisterScreen extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 12.h),
-                            CommonWidgets.customTextField(
-                              controller: controller.nameController,
-                              hintText: 'John Doe',
+                            Obx(
+                              () => CommonWidgets.customTextField(
+                                controller: controller.nameController,
+                                hintText: 'John Doe',
+                                errorText: controller.nameError.value.isEmpty
+                                    ? null
+                                    : controller.nameError.value,
+                              ),
                             ),
                             SizedBox(height: 12.h),
                             Text(
@@ -125,15 +130,20 @@ class RegisterScreen extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 8.h),
-                            CommonWidgets.customTextField(
-                              controller: controller.phoneController,
-                              hintText: '(555) 123-4567',
-                              keyboardType: TextInputType.phone,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9+\s-]'),
-                                ),
-                              ],
+                            Obx(
+                              () => CommonWidgets.customTextField(
+                                controller: controller.phoneController,
+                                hintText: '(555) 123-4567',
+                                keyboardType: TextInputType.phone,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(r'[0-9+\s-]'),
+                                  ),
+                                ],
+                                errorText: controller.phoneError.value.isEmpty
+                                    ? null
+                                    : controller.phoneError.value,
+                              ),
                             ),
                             SizedBox(height: 16.h),
                             CommonWidgets.primaryButton(

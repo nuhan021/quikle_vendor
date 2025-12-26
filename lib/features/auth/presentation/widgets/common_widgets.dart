@@ -25,40 +25,61 @@ class CommonWidgets {
     required String hintText,
     TextInputType keyboardType = TextInputType.text,
     List<TextInputFormatter>? inputFormatters,
+    String? errorText,
   }) {
-    return Container(
-      width: double.infinity,
-      height: 52.h,
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      decoration: ShapeDecoration(
-        shape: RoundedRectangleBorder(
-          side: const BorderSide(width: 1, color: Color(0xFF7C7C7C)),
-          borderRadius: BorderRadius.circular(8.r),
-        ),
-      ),
-      alignment: Alignment.centerLeft,
-      child: TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        inputFormatters: inputFormatters,
-        style: getTextStyle(
-          font: CustomFonts.inter,
-          color: AppColors.eggshellWhite,
-        ),
-        cursorColor: const Color(0xFFF8F8F8),
-        decoration: InputDecoration(
-          isCollapsed: true,
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          hintText: hintText,
-          hintStyle: getTextStyle(
-            font: CustomFonts.inter,
-            color: AppColors.featherGrey,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: double.infinity,
+          height: 52.h,
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          decoration: ShapeDecoration(
+            shape: RoundedRectangleBorder(
+              side: BorderSide(
+                width: 1,
+                color: errorText != null ? Colors.red : const Color(0xFF7C7C7C),
+              ),
+              borderRadius: BorderRadius.circular(8.r),
+            ),
           ),
-          contentPadding: EdgeInsets.zero,
+          alignment: Alignment.centerLeft,
+          child: TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            inputFormatters: inputFormatters,
+            style: getTextStyle(
+              font: CustomFonts.inter,
+              color: AppColors.eggshellWhite,
+            ),
+            cursorColor: const Color(0xFFF8F8F8),
+            decoration: InputDecoration(
+              isCollapsed: true,
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              hintText: hintText,
+              hintStyle: getTextStyle(
+                font: CustomFonts.inter,
+                color: AppColors.featherGrey,
+              ),
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
         ),
-      ),
+        if (errorText != null)
+          Padding(
+            padding: EdgeInsets.only(top: 4.h),
+            child: Text(
+              errorText,
+              style: getTextStyle(
+                font: CustomFonts.inter,
+                color: Colors.red,
+                fontSize: 12.sp,
+              ),
+            ),
+          ),
+      ],
     );
   }
 

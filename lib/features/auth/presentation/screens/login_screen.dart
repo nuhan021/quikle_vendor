@@ -75,10 +75,15 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 10.h),
-              CommonWidgets.customTextField(
-                controller: controller.phoneController,
-                hintText: 'Enter Your Phone Number',
-                keyboardType: TextInputType.phone,
+              Obx(
+                () => CommonWidgets.customTextField(
+                  controller: controller.phoneController,
+                  hintText: 'Enter Your Phone Number',
+                  keyboardType: TextInputType.phone,
+                  errorText: controller.phoneError.value.isEmpty
+                      ? null
+                      : controller.phoneError.value,
+                ),
               ),
               SizedBox(height: 24.h),
               Obx(
