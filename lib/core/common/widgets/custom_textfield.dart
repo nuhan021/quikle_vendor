@@ -19,6 +19,7 @@ class CustomTextField extends StatelessWidget {
   final int maxLines;
   final double? height;
   final List<TextInputFormatter>? inputFormatters;
+  final String? errorText;
 
   const CustomTextField({
     super.key,
@@ -38,6 +39,7 @@ class CustomTextField extends StatelessWidget {
     this.maxLines = 1,
     this.height,
     this.inputFormatters,
+    this.errorText,
   });
 
   @override
@@ -92,18 +94,52 @@ class CustomTextField extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.grey, width: 1),
+              borderSide: BorderSide(
+                color: errorText != null && errorText!.isNotEmpty
+                    ? Colors.red
+                    : Colors.grey,
+                width: 1,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.grey, width: 1),
+              borderSide: BorderSide(
+                color: errorText != null && errorText!.isNotEmpty
+                    ? Colors.red
+                    : Colors.grey,
+                width: 1,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.black, width: 1.2),
+              borderSide: BorderSide(
+                color: errorText != null && errorText!.isNotEmpty
+                    ? Colors.red
+                    : Colors.black,
+                width: 1.2,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.red, width: 1),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.red, width: 1.2),
             ),
           ),
         ),
+        if (errorText != null && errorText!.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Text(
+            errorText!,
+            style: getTextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              color: Colors.red,
+            ),
+          ),
+        ],
       ],
     );
   }

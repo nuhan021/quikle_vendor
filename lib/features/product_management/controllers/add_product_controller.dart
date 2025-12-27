@@ -29,6 +29,16 @@ class AddProductController extends GetxController {
   final isOtc = false.obs;
   final isLoading = false.obs;
 
+  // Error messages
+  final productNameError = ''.obs;
+  final descriptionError = ''.obs;
+  final weightError = ''.obs;
+  final priceError = ''.obs;
+  final stockQuantityError = ''.obs;
+  final discountError = ''.obs;
+  final subCategoryError = ''.obs;
+  final productImageError = ''.obs;
+
   // Form controllers
   final productNameController = TextEditingController();
   final descriptionController = TextEditingController();
@@ -219,28 +229,57 @@ class AddProductController extends GetxController {
   }
 
   bool _validateForm() {
-    if (productNameController.text.isEmpty) {
-      log('Product name is empty - validation failed');
-      return false;
+    bool isValid = true;
+
+    // Clear previous errors
+    productNameError.value = '';
+    descriptionError.value = '';
+    weightError.value = '';
+    priceError.value = '';
+    stockQuantityError.value = '';
+    discountError.value = '';
+    subCategoryError.value = '';
+    productImageError.value = '';
+
+    if (productNameController.text.trim().isEmpty) {
+      productNameError.value = 'Product name is required';
+      isValid = false;
     }
 
-    if (priceController.text.isEmpty) {
-      log('Price is empty - validation failed');
-      return false;
+    if (descriptionController.text.trim().isEmpty) {
+      descriptionError.value = 'Description is required';
+      isValid = false;
     }
 
-    if (stockQuantityController.text.isEmpty) {
-      log('Stock quantity is empty - validation failed');
-      return false;
+    if (weightController.text.trim().isEmpty) {
+      weightError.value = 'Product weight/quantity is required';
+      isValid = false;
+    }
+
+    if (priceController.text.trim().isEmpty) {
+      priceError.value = 'Price is required';
+      isValid = false;
+    }
+
+    if (stockQuantityController.text.trim().isEmpty) {
+      stockQuantityError.value = 'Stock quantity is required';
+      isValid = false;
     }
 
     if (selectedSubCategoryId.value == 0) {
-      log('SubCategory not selected - validation failed');
-      return false;
+      subCategoryError.value = 'Sub category is required';
+      isValid = false;
     }
 
-    log('Validation passed');
-    return true;
+    if (productImage.value.isEmpty) {
+      productImageError.value = 'Product image is required';
+      isValid = false;
+    }
+
+    // Discount is optional, so no validation
+
+    log('Validation ${isValid ? 'passed' : 'failed'}');
+    return isValid;
   }
 
   Future<bool> _submitProductByVendorType() async {

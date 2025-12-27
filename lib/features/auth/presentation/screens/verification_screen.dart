@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/utils/constants/colors.dart';
@@ -188,44 +189,52 @@ class VerificationScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // OTP row (6 boxes) – first 2 yellow per Figma, others grey
-                          SizedBox(
-                            width: double.infinity,
-                            height: 52.h,
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: List.generate(6, (i) {
-                                  return Obx(() {
-                                    final isFilled =
-                                        controller.otpDigits[i].isNotEmpty;
-                                    final color = isFilled
-                                        ? const Color(0xFFFFC200)
-                                        : const Color(0xFF7C7C7C);
-                                    return Padding(
-                                      padding: EdgeInsets.only(
-                                        right: i == 5 ? 0 : 12.w,
-                                      ),
-                                      child: Container(
-                                        width: 48.67.w,
-                                        height: 52.h,
-                                        decoration: ShapeDecoration(
-                                          shape: RoundedRectangleBorder(
-                                            side: BorderSide(
-                                              width: 1,
-                                              color: color,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              8.r,
-                                            ),
-                                          ),
-                                        ),
-                                        alignment: Alignment.center,
-                                        child: _OtpCell(index: i, color: color),
-                                      ),
-                                    );
-                                  });
-                                }),
+                          Obx(
+                            () => PinCodeTextField(
+                              controller: controller.pinController,
+                              errorAnimationController:
+                                  controller.errorAnimationController,
+
+                              appContext: context,
+                              length: 6,
+                              onChanged: (value) {
+                                for (int i = 0; i < 6; i++) {
+                                  controller.otpDigits[i] = i < value.length
+                                      ? value[i]
+                                      : '';
+                                }
+                                if (value.isNotEmpty) {
+                                  controller.hasError.value = false;
+                                }
+                              },
+                              pinTheme: PinTheme(
+                                shape: PinCodeFieldShape.box,
+                                borderRadius: BorderRadius.circular(8.r),
+                                fieldHeight: 52.h,
+                                fieldWidth: 48.67.w,
+                                activeFillColor: Colors.transparent,
+                                inactiveFillColor: Colors.transparent,
+                                selectedFillColor: Colors.transparent,
+                                activeColor: controller.hasError.value
+                                    ? Colors.redAccent
+                                    : const Color(0xFFFFC200),
+                                inactiveColor: controller.hasError.value
+                                    ? Colors.redAccent
+                                    : const Color(0xFF7C7C7C),
+                                selectedColor: controller.hasError.value
+                                    ? Colors.redAccent
+                                    : const Color(0xFFFFC200),
+                                errorBorderColor: Colors.redAccent,
                               ),
+                              textStyle: TextStyle(
+                                color: AppColors.eggshellWhite,
+                                fontSize: 18.sp,
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w600,
+                                height: 1.2,
+                              ),
+                              keyboardType: TextInputType.number,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             ),
                           ),
 
@@ -306,42 +315,6 @@ class VerificationScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _OtpCell extends StatelessWidget {
-  const _OtpCell({required this.index, required this.color});
-  final int index;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = Get.find<VerificationController>();
-    return TextField(
-      controller: c.digits[index],
-      focusNode: c.focuses[index],
-      textAlign: TextAlign.center,
-      keyboardType: TextInputType.number,
-      maxLength: 1,
-      style: TextStyle(
-        color: AppColors.eggshellWhite,
-        fontSize: 18.sp,
-        fontFamily: 'Inter',
-        fontWeight: FontWeight.w600,
-        height: 1.2,
-      ),
-      cursorColor: const Color(0xFFF8F8F8),
-      decoration: const InputDecoration(
-        counterText: '',
-        border: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        isCollapsed: true,
-        contentPadding: EdgeInsets.zero,
-      ),
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      onChanged: (v) => c.onDigitChanged(index, v),
     );
   }
 }

@@ -18,7 +18,7 @@ class EarningsScreen extends StatelessWidget {
 
     final tabWidgets = [
       OverviewTab(),
-      PaymentsTab(),
+      // PaymentsTab(),
       InvoicesTab(),
       PayoutsTab(),
     ];

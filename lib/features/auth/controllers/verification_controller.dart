@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/features/auth/data/services/auth_service.dart';
 import '../../../core/models/response_data.dart';
@@ -9,6 +10,9 @@ import '../../../routes/app_routes.dart';
 
 class VerificationController extends GetxController {
   final otpDigits = List.generate(6, (_) => '').obs;
+
+  // TextEditingController for PIN code field
+  final pinController = TextEditingController();
 
   // TextEditingControllers for OTP input fields
   late final List<TextEditingController> digits = List.generate(
@@ -25,6 +29,8 @@ class VerificationController extends GetxController {
   late final String? token = StorageService.token;
 
   final isVerifying = false.obs;
+  final hasError = false.obs;
+  final errorAnimationController = StreamController<ErrorAnimationType>();
 
   late final AuthService _auth;
 
@@ -148,6 +154,8 @@ class VerificationController extends GetxController {
       isVerifying.value = false;
     } else {
       isVerifying.value = false;
+      hasError.value = true;
+      errorAnimationController.add(ErrorAnimationType.shake);
     }
   }
 
@@ -261,6 +269,8 @@ class VerificationController extends GetxController {
       Get.offAllNamed(AppRoute.vendorSelectionScreen);
     } else {
       isVerifying.value = false;
+      hasError.value = true;
+      errorAnimationController.add(ErrorAnimationType.shake);
     }
   }
 

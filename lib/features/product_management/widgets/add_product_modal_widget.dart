@@ -65,76 +65,107 @@ class AddProductModalWidget extends StatelessWidget {
                 SizedBox(height: 16),
 
                 // Product Image
-                Text(
-                  'Product Image',
-                  style: getTextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF111827),
-                  ),
-                ),
-                SizedBox(height: 8),
                 Obx(
-                  () => GestureDetector(
-                    onTap: controller.pickProductImage,
-                    child: Container(
-                      width: double.infinity,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFF9FAFB),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Color(0xFFE5E7EB), width: 1),
+                  () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Product Image',
+                        style: getTextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF111827),
+                        ),
                       ),
-                      child: controller.productImage.value.isEmpty
-                          ? Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.camera_alt_outlined,
-                                  color: Color(0xFF9CA3AF),
-                                  size: 32,
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'Tap to upload image',
-                                  style: getTextStyle(
-                                    fontSize: 14,
-                                    color: Color(0xFF9CA3AF),
-                                  ),
-                                ),
-                              ],
-                            )
-                          : Image.file(
-                              File(controller.productImage.value),
-                              fit: BoxFit.cover,
+                      SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: controller.pickProductImage,
+                        child: Container(
+                          width: double.infinity,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFF9FAFB),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color:
+                                  controller.productImageError.value.isNotEmpty
+                                  ? Colors.red
+                                  : Color(0xFFE5E7EB),
+                              width: 1,
                             ),
-                    ),
+                          ),
+                          child: controller.productImage.value.isEmpty
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.camera_alt_outlined,
+                                      color: Color(0xFF9CA3AF),
+                                      size: 32,
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Tap to upload image',
+                                      style: getTextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFF9CA3AF),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Image.file(
+                                  File(controller.productImage.value),
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                      ),
+                      if (controller.productImageError.value.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          controller.productImageError.value,
+                          style: getTextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
                 SizedBox(height: 16),
 
                 // Product Name
-                CustomTextField(
-                  label: 'Product Name',
-                  hintText: 'Product Name',
-                  controller: controller.productNameController,
+                Obx(
+                  () => CustomTextField(
+                    label: 'Product Name',
+                    hintText: 'Product Name',
+                    controller: controller.productNameController,
+                    errorText: controller.productNameError.value,
+                  ),
                 ),
                 SizedBox(height: 16),
 
                 // Description
-                CustomTextField(
-                  label: 'Description',
-                  hintText: 'Please describe your issue in detail...',
-                  maxLines: 4,
-                  controller: controller.descriptionController,
+                Obx(
+                  () => CustomTextField(
+                    label: 'Description',
+                    hintText: 'Please describe your issue in detail...',
+                    maxLines: 4,
+                    controller: controller.descriptionController,
+                    errorText: controller.descriptionError.value,
+                  ),
                 ),
                 SizedBox(height: 16),
 
                 // Product Weight/Quantity
-                CustomTextField(
-                  label: 'Product Weight/Quantity',
-                  hintText: '1kg',
-                  controller: controller.weightController,
+                Obx(
+                  () => CustomTextField(
+                    label: 'Product Weight/Quantity',
+                    hintText: '1kg',
+                    controller: controller.weightController,
+                    errorText: controller.weightError.value,
+                  ),
                 ),
                 SizedBox(height: 16),
 
@@ -142,28 +173,36 @@ class AddProductModalWidget extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: CustomTextField(
-                        label: 'Price (\$)',
-                        hintText: 'Product Price',
-                        controller: controller.priceController,
-                        keyboardType: TextInputType.numberWithOptions(
-                          decimal: true,
+                      child: Obx(
+                        () => CustomTextField(
+                          label: 'Price (\$)',
+                          hintText: 'Product Price',
+                          controller: controller.priceController,
+                          keyboardType: TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'[0-9.]'),
+                            ),
+                          ],
+                          errorText: controller.priceError.value,
                         ),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-                        ],
                       ),
                     ),
                     SizedBox(width: 16),
                     Expanded(
-                      child: CustomTextField(
-                        label: 'Stock Quantity',
-                        hintText: 'Enter quantity',
-                        controller: controller.stockQuantityController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                        ],
+                      child: Obx(
+                        () => CustomTextField(
+                          label: 'Stock Quantity',
+                          hintText: 'Enter quantity',
+                          controller: controller.stockQuantityController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                          ],
+                          errorText: controller.stockQuantityError.value,
+                        ),
                       ),
                     ),
                   ],
@@ -171,14 +210,17 @@ class AddProductModalWidget extends StatelessWidget {
                 SizedBox(height: 16),
 
                 // Discount
-                CustomTextField(
-                  label: 'Discount (%)',
-                  hintText: 'Enter discount percentage',
-                  controller: controller.discountController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                  ],
+                Obx(
+                  () => CustomTextField(
+                    label: 'Discount (%)',
+                    hintText: 'Enter discount percentage',
+                    controller: controller.discountController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    ],
+                    errorText: controller.discountError.value,
+                  ),
                 ),
                 SizedBox(height: 16),
 
@@ -232,49 +274,69 @@ class AddProductModalWidget extends StatelessWidget {
                 // SizedBox(height: 16),
 
                 // Sub Category
-                Text(
-                  'Sub Category',
-                  style: getTextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF111827),
-                  ),
-                ),
-                SizedBox(height: 8),
                 Obx(
-                  () => GestureDetector(
-                    onTap: () {
-                      _showSubCategoryDropdown(context, controller);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 14,
+                  () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Sub Category',
+                        style: getTextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF111827),
+                        ),
                       ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Color(0xFFE5E7EB)),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            controller.selectedSubCategoryName.value.isEmpty
-                                ? 'Select Sub Category'
-                                : controller.selectedSubCategoryName.value,
-
-                            style: getTextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF111827),
+                      SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () {
+                          _showSubCategoryDropdown(context, controller);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color:
+                                  controller.subCategoryError.value.isNotEmpty
+                                  ? Colors.red
+                                  : Color(0xFFE5E7EB),
                             ),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          Icon(
-                            Icons.keyboard_arrow_down,
-                            color: Color(0xFF9CA3AF),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                controller.selectedSubCategoryName.value.isEmpty
+                                    ? 'Select Sub Category'
+                                    : controller.selectedSubCategoryName.value,
+                                style: getTextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFF111827),
+                                ),
+                              ),
+                              Icon(
+                                Icons.keyboard_arrow_down,
+                                color: Color(0xFF9CA3AF),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                      if (controller.subCategoryError.value.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          controller.subCategoryError.value,
+                          style: getTextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
                 SizedBox(height: 16),
@@ -450,9 +512,9 @@ class AddProductModalWidget extends StatelessWidget {
                                         border: Border.all(
                                           color:
                                               controller
-                                                      .selectedSubCategory
+                                                      .selectedSubCategoryId
                                                       .value ==
-                                                  subCategory
+                                                  subCategory.id
                                               ? Colors.black.withValues(
                                                   alpha: 0.5,
                                                 )
@@ -465,9 +527,9 @@ class AddProductModalWidget extends StatelessWidget {
                                           fontSize: 14,
                                           fontWeight:
                                               controller
-                                                      .selectedSubCategory
+                                                      .selectedSubCategoryId
                                                       .value ==
-                                                  subCategory
+                                                  subCategory.id
                                               ? FontWeight.w600
                                               : FontWeight.w400,
                                           color: Color(0xFF111827),

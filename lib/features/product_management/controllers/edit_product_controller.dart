@@ -24,6 +24,16 @@ class EditProductController extends GetxController {
   final showRemoveDiscountDialog = false.obs;
   final showEditProductModal = false.obs;
 
+  // Error messages
+  final productNameError = ''.obs;
+  final descriptionError = ''.obs;
+  final weightError = ''.obs;
+  final priceError = ''.obs;
+  final stockQuantityError = ''.obs;
+  final discountError = ''.obs;
+  final subCategoryError = ''.obs;
+  final productImageError = ''.obs;
+
   // Form controllers
   final productNameController = TextEditingController();
   final descriptionController = TextEditingController();
@@ -312,22 +322,59 @@ class EditProductController extends GetxController {
   }
 
   bool _validateForm() {
-    if (productNameController.text.isEmpty) {
-      AppLoggerHelper.error('Product name is required');
-      return false;
+    bool isValid = true;
+
+    // Clear previous errors
+    productNameError.value = '';
+    descriptionError.value = '';
+    weightError.value = '';
+    priceError.value = '';
+    stockQuantityError.value = '';
+    discountError.value = '';
+    subCategoryError.value = '';
+    productImageError.value = '';
+
+    if (productNameController.text.trim().isEmpty) {
+      productNameError.value = 'Product name is required';
+      isValid = false;
     }
 
-    if (priceController.text.isEmpty) {
-      AppLoggerHelper.error('Price is required');
-      return false;
+    if (descriptionController.text.trim().isEmpty) {
+      descriptionError.value = 'Description is required';
+      isValid = false;
+    }
+
+    if (weightController.text.trim().isEmpty) {
+      weightError.value = 'Product weight/quantity is required';
+      isValid = false;
+    }
+
+    if (priceController.text.trim().isEmpty) {
+      priceError.value = 'Price is required';
+      isValid = false;
+    }
+
+    if (stockQuantityController.text.trim().isEmpty) {
+      stockQuantityError.value = 'Stock quantity is required';
+      isValid = false;
+    }
+
+    if (selectedSubCategoryId.value == 0) {
+      subCategoryError.value = 'Sub category is required';
+      isValid = false;
+    }
+
+    if (productImage.value.isEmpty) {
+      productImageError.value = 'Product image is required';
+      isValid = false;
     }
 
     if (currentProductId.value.isEmpty) {
       AppLoggerHelper.error('Product ID is missing');
-      return false;
+      isValid = false;
     }
 
-    return true;
+    return isValid;
   }
 
   Future<bool> _updateProduct(int discountValue, File? imageFile) async {

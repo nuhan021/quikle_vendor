@@ -20,134 +20,171 @@ class EditProductFormWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Product Image Section
-          Text(
-            'Product Image',
-            style: getTextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF111827),
-            ),
-          ),
-          SizedBox(height: 12),
           Obx(
-            () => GestureDetector(
-              onTap: () => controller.pickProductImage(),
-              child: Container(
-                width: double.infinity,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Color(0xFFD1FAE5),
-                  borderRadius: BorderRadius.circular(12),
+            () => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Product Image',
+                  style: getTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF111827),
+                  ),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: controller.productImage.value.startsWith('http')
-                      ? Image.network(
-                          controller.productImage.value,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Color(0xFFD1FAE5),
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.image,
-                                      size: 48,
-                                      color: Colors.grey,
+                SizedBox(height: 12),
+                GestureDetector(
+                  onTap: () => controller.pickProductImage(),
+                  child: Container(
+                    width: double.infinity,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFD1FAE5),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: controller.productImageError.value.isNotEmpty
+                            ? Colors.red
+                            : Colors.transparent,
+                        width: 1,
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: controller.productImage.value.startsWith('http')
+                          ? Image.network(
+                              controller.productImage.value,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Color(0xFFD1FAE5),
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.image,
+                                          size: 48,
+                                          color: Colors.grey,
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          'Tap to upload image',
+                                          style: getTextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Tap to upload image',
-                                      style: getTextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        )
-                      : controller.productImage.value.isNotEmpty
-                      ? Image.file(
-                          File(controller.productImage.value),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Color(0xFFD1FAE5),
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.image,
-                                      size: 48,
-                                      color: Colors.grey,
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Tap to upload image',
-                                      style: getTextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        )
-                      : Container(
-                          color: Color(0xFFD1FAE5),
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.image, size: 48, color: Colors.grey),
-                                SizedBox(height: 8),
-                                Text(
-                                  'Tap to upload image',
-                                  style: getTextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey,
                                   ),
+                                );
+                              },
+                            )
+                          : controller.productImage.value.isNotEmpty
+                          ? Image.file(
+                              File(controller.productImage.value),
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Color(0xFFD1FAE5),
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.image,
+                                          size: 48,
+                                          color: Colors.grey,
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          'Tap to upload image',
+                                          style: getTextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : Container(
+                              color: Color(0xFFD1FAE5),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.image,
+                                      size: 48,
+                                      color: Colors.grey,
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Tap to upload image',
+                                      style: getTextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
+                    ),
+                  ),
                 ),
-              ),
+                if (controller.productImageError.value.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    controller.productImageError.value,
+                    style: getTextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
           SizedBox(height: 24),
 
           // Product Name
-          CustomTextField(
-            label: 'Product Name',
-            hintText: 'Product Name',
-            controller: controller.productNameController,
+          Obx(
+            () => CustomTextField(
+              label: 'Product Name',
+              hintText: 'Product Name',
+              controller: controller.productNameController,
+              errorText: controller.productNameError.value,
+            ),
           ),
           SizedBox(height: 16),
 
           // Description
-          CustomTextField(
-            label: 'Description',
-            hintText: 'Product description...',
-            maxLines: 4,
-            controller: controller.descriptionController,
+          Obx(
+            () => CustomTextField(
+              label: 'Description',
+              hintText: 'Product description...',
+              maxLines: 4,
+              controller: controller.descriptionController,
+              errorText: controller.descriptionError.value,
+            ),
           ),
           SizedBox(height: 16),
 
           // Product Weight/Quantity
-          CustomTextField(
-            label: 'Product Weight/Quantity',
-            hintText: 'Weight/Quantity',
-            controller: controller.weightController,
+          Obx(
+            () => CustomTextField(
+              label: 'Product Weight/Quantity',
+              hintText: 'Weight/Quantity',
+              controller: controller.weightController,
+              errorText: controller.weightError.value,
+            ),
           ),
           SizedBox(height: 16),
 
@@ -155,26 +192,34 @@ class EditProductFormWidget extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CustomTextField(
-                  label: 'Price (\$)',
-                  hintText: 'Product Price',
-                  controller: controller.priceController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-                  ],
+                child: Obx(
+                  () => CustomTextField(
+                    label: 'Price (\$)',
+                    hintText: 'Product Price',
+                    controller: controller.priceController,
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                    ],
+                    errorText: controller.priceError.value,
+                  ),
                 ),
               ),
               SizedBox(width: 16),
               Expanded(
-                child: CustomTextField(
-                  label: 'Stock Quantity',
-                  hintText: 'Enter quantity',
-                  controller: controller.stockQuantityController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                  ],
+                child: Obx(
+                  () => CustomTextField(
+                    label: 'Stock Quantity',
+                    hintText: 'Enter quantity',
+                    controller: controller.stockQuantityController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    ],
+                    errorText: controller.stockQuantityError.value,
+                  ),
                 ),
               ),
             ],
@@ -182,89 +227,119 @@ class EditProductFormWidget extends StatelessWidget {
           SizedBox(height: 20),
 
           // Discount
-          CustomTextField(
-            label: 'Discount (%)',
-            hintText: 'Enter discount percentage',
-            controller: controller.discountController,
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-            ],
-          ),
-          // Sub Category
-          Text(
-            'Sub Category',
-            style: getTextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF111827),
+          Obx(
+            () => CustomTextField(
+              label: 'Discount (%)',
+              hintText: 'Enter discount percentage',
+              controller: controller.discountController,
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+              ],
+              errorText: controller.discountError.value,
             ),
           ),
-          SizedBox(height: 8),
+          // Sub Category
           Obx(
-            () => controller.isLoadingSubcategories.value
-                ? Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Color(0xFFE5E7EB)),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+            () => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Sub Category',
+                  style: getTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF111827),
+                  ),
+                ),
+                SizedBox(height: 8),
+                controller.isLoadingSubcategories.value
+                    ? Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 14,
                         ),
-                        SizedBox(width: 12),
-                        Text(
-                          'Loading subcategories...',
-                          style: getTextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF6B7280),
-                          ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Color(0xFFE5E7EB)),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                      ],
-                    ),
-                  )
-                : GestureDetector(
-                    onTap: () {
-                      _showSubCategoryDropdown(context, controller);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 14,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Color(0xFFE5E7EB)),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            controller.selectedSubCategory.value.isEmpty
-                                ? 'Select Sub Category'
-                                : controller.selectedSubCategory.value,
-                            style: getTextStyle(
-                              fontSize: 14,
-                              color:
-                                  controller.selectedSubCategory.value.isEmpty
-                                  ? Color(0xFF9CA3AF)
-                                  : Color(0xFF111827),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             ),
+                            SizedBox(width: 12),
+                            Text(
+                              'Loading subcategories...',
+                              style: getTextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF6B7280),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : GestureDetector(
+                        onTap: () {
+                          _showSubCategoryDropdown(context, controller);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 14,
                           ),
-                          Icon(
-                            Icons.keyboard_arrow_down,
-                            color: Color(0xFF9CA3AF),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color:
+                                  controller.subCategoryError.value.isNotEmpty
+                                  ? Colors.red
+                                  : Color(0xFFE5E7EB),
+                            ),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        ],
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                controller.selectedSubCategory.value.isEmpty
+                                    ? 'Select Sub Category'
+                                    : controller.selectedSubCategory.value,
+                                style: getTextStyle(
+                                  fontSize: 14,
+                                  color:
+                                      controller
+                                          .selectedSubCategory
+                                          .value
+                                          .isEmpty
+                                      ? Color(0xFF9CA3AF)
+                                      : Color(0xFF111827),
+                                ),
+                              ),
+                              Icon(
+                                Icons.keyboard_arrow_down,
+                                color: Color(0xFF9CA3AF),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
+                if (controller.subCategoryError.value.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    controller.subCategoryError.value,
+                    style: getTextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.red,
                     ),
                   ),
+                ],
+              ],
+            ),
           ),
           SizedBox(height: 24),
 
@@ -333,7 +408,7 @@ class EditProductFormWidget extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
                   color: controller.isLoading.value
-                      ? Color(0xFF111827).withOpacity(0.6)
+                      ? Color(0xFF111827).withValues(alpha: 0.6)
                       : Color(0xFF111827),
                   borderRadius: BorderRadius.circular(12),
                 ),

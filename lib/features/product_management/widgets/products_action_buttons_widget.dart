@@ -56,62 +56,61 @@ class ProductsActionButtonsWidget extends StatelessWidget {
             //         )
             //       : SizedBox.shrink(),
             // ),
-          Row(
-            children: [
-              Expanded(
-                child: Obx(
-                  () => CustomButton(
-                    text: ctl.isLoadingCoupons.value
-                        ? 'Add Cupons...'
-                        : 'Add Cupons',
+            Row(
+              children: [
+                // Expanded(
+                //   child: Obx(
+                //     () => CustomButton(
+                //       text: ctl.isLoadingCoupons.value
+                //           ? 'Add Cupons...'
+                //           : 'Add Cupons',
+                //       onPressed:
+                //           (myProfileController?.shouldDisableFeatures.value ??
+                //               false)
+                //           ? () {} // Disabled state
+                //           : () async {
+                //               try {
+                //                 ctl.isLoadingCoupons.value = true;
+                //                 // Ensure coupon controller exists and refresh data
+                //                 final couponController = Get.put(
+                //                   CouponController(),
+                //                 );
+                //                 await couponController.fetchCoupons();
+                //                 ctl.isLoadingCoupons.value = false;
+                //                 Get.to(() => CuponScreen());
+                //               } catch (e) {
+                //                 ctl.isLoadingCoupons.value = false;
+                //                 rethrow;
+                //               }
+                //             },
+                //       textColor: Colors.white,
+                //       backgroundColor:
+                //           (myProfileController?.shouldDisableFeatures.value ??
+                //               false)
+                //           ? Colors.grey
+                //           : Colors.black,
+                //       isLoading: ctl.isLoadingCoupons.value,
+                //     ),
+                //   ),
+                // ),
+                Expanded(
+                  child: CustomButton(
+                    text: 'Add New Product',
                     onPressed:
                         (myProfileController?.shouldDisableFeatures.value ??
                             false)
                         ? () {} // Disabled state
-                        : () async {
-                            try {
-                              ctl.isLoadingCoupons.value = true;
-                              // Ensure coupon controller exists and refresh data
-                              final couponController = Get.put(
-                                CouponController(),
-                              );
-                              await couponController.fetchCoupons();
-                              ctl.isLoadingCoupons.value = false;
-                              Get.to(() => CuponScreen());
-                            } catch (e) {
-                              ctl.isLoadingCoupons.value = false;
-                              rethrow;
-                            }
-                          },
-                    textColor: Colors.white,
+                        : addProductController.showAddProductDialog,
                     backgroundColor:
                         (myProfileController?.shouldDisableFeatures.value ??
                             false)
                         ? Colors.grey
                         : Colors.black,
-                    isLoading: ctl.isLoadingCoupons.value,
+                    textColor: Colors.white,
                   ),
                 ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: CustomButton(
-                  text: 'Add New Product',
-                  onPressed:
-                      (myProfileController?.shouldDisableFeatures.value ??
-                          false)
-                      ? () {} // Disabled state
-                      : addProductController.showAddProductDialog,
-                  backgroundColor:
-                      (myProfileController?.shouldDisableFeatures.value ??
-                          false)
-                      ? Colors.grey
-                      : Colors.black,
-                  textColor: Colors.white,
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
     );

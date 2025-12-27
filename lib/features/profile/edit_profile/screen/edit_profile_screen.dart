@@ -141,10 +141,18 @@ class EditProfileScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   /// Owner Name
-                  CustomTextField(
-                    label: "Owner Name",
-                    hintText: "Enter owner name",
-                    controller: controller.ownerNameController,
+                  Obx(
+                    () => CustomTextField(
+                      label: "Owner Name",
+                      hintText: "Enter owner name",
+                      controller: controller.ownerNameController,
+                      errorText: controller.ownerNameError.value,
+                      onChanged: (value) {
+                        if (controller.ownerNameError.value.isNotEmpty) {
+                          controller.ownerNameError.value = '';
+                        }
+                      },
+                    ),
                   ),
                   const SizedBox(height: 12),
 

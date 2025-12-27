@@ -22,6 +22,11 @@ class EditProfileController extends GetxController {
   // Vendor Details Observable
   late VendorDetailsModel vendorDetails;
 
+  // Error messages
+  final ownerNameError = RxString('');
+  final openingTimeError = RxString('');
+  final closingTimeError = RxString('');
+
   // Text Controllers
   late TextEditingController ownerNameController;
   late TextEditingController openingHoursController;
@@ -216,14 +221,28 @@ class EditProfileController extends GetxController {
   Future<void> updateProfile(bool fromKycFlow) async {
     AppLoggerHelper.debug('🔄 Starting profile update...');
 
+    // Clear previous errors
+    ownerNameError.value = '';
+    openingTimeError.value = '';
+    closingTimeError.value = '';
+
     // Validation
-    if (ownerNameController.text.isEmpty) {
-      AppLoggerHelper.info('⚠️ Owner name is required');
-      return;
+    bool hasErrors = false;
+    if (ownerNameController.text.trim().isEmpty) {
+      ownerNameError.value = 'Owner name is required';
+      hasErrors = true;
     }
-    if (openingTimeController.text.isEmpty ||
-        closingTimeController.text.isEmpty) {
-      AppLoggerHelper.info('⚠️ Opening and closing times are required');
+    if (openingTimeController.text.isEmpty) {
+      openingTimeError.value = 'Opening time is required';
+      hasErrors = true;
+    }
+    if (closingTimeController.text.isEmpty) {
+      closingTimeError.value = 'Closing time is required';
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      AppLoggerHelper.info('⚠️ Validation failed');
       return;
     }
 
