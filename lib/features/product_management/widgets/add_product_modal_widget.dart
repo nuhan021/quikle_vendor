@@ -6,6 +6,7 @@ import '../../../core/common/styles/global_text_style.dart';
 import '../../../core/common/widgets/custom_button.dart';
 import '../../../core/common/widgets/custom_textfield.dart';
 import '../controllers/add_product_controller.dart';
+import '../controllers/sub_subcategory_controller.dart';
 
 class AddProductModalWidget extends StatelessWidget {
   const AddProductModalWidget({super.key});
@@ -13,6 +14,12 @@ class AddProductModalWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<AddProductController>();
+    
+    // Initialize SubSubcategoryController if not already initialized
+    if (!Get.isRegistered<SubSubcategoryController>()) {
+      Get.put(SubSubcategoryController());
+    }
+    final subSubcategoryController = Get.find<SubSubcategoryController>();
 
     return Dialog(
       backgroundColor: Colors.white,
@@ -354,14 +361,10 @@ class AddProductModalWidget extends StatelessWidget {
                         SizedBox(height: 8),
                         GestureDetector(
                           onTap: () {
-                            // Button to add new sub subcategory - placeholder
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Add new sub subcategory feature coming soon',
-                                ),
-                                duration: Duration(seconds: 2),
-                              ),
+                            _showCreateSubSubcategoryDialog(
+                              context,
+                              controller,
+                              subSubcategoryController,
                             );
                           },
                           child: Container(
@@ -767,6 +770,192 @@ class AddProductModalWidget extends StatelessWidget {
       },
     ).then((_) {
       controller.subSubCategorySearchText.value = '';
+    });
+  }
+
+  void _showCreateSubSubcategoryDialog(
+    BuildContext context,
+    AddProductController addProductController,
+    SubSubcategoryController subSubcategoryController,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            constraints: BoxConstraints(maxHeight: 500),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Add New Sub Sub Category',
+                      style: getTextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF111827),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Icon(
+                        Icons.close,
+                        color: Color(0xFF6B7280),
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                // Name field
+                CustomTextField(
+                  label: 'Sub Sub Category Name',
+                  hintText: 'Enter name',
+                  controller: subSubcategoryController.nameController,
+                ),
+                SizedBox(height: 12),
+                // Description field
+                CustomTextField(
+                  label: 'Description',
+                  hintText: 'Enter description (optional)',
+                  maxLines: 3,
+                  controller: subSubcategoryController.descriptionController,
+                ),
+                SizedBox(height: 12),
+                // Image picker
+                Text(
+                  'Avatar (Optional)',
+                  style: getTextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF111827),
+                  ),
+                ),
+                SizedBox(height: 8),
+                Obx(
+                  () => GestureDetector(
+                    onTap: subSubcategoryController.pickSubSubcategoryImage,
+                    child: Container(
+                      width: double.infinity,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Color(0xFFF9FAFB),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Color(0xFFE5E7EB), width: 1),
+                      ),
+                      child: subSubcategoryController
+                              .subSubCategoryImage.value.isEmpty
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.image_outlined,
+                                  color: Color(0xFF9CA3AF),
+                                  size: 28,
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Tap to upload image',
+                                  style: getTextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xFF9CA3AF),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Image.file(
+                              File(subSubcategoryController
+                                  .subSubCategoryImage.value),
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+                // Submit button
+                Obx(
+                  () => GestureDetector(
+                    onTap: subSubcategoryController.isCreating.value
+                        ? null
+                        : () async {
+                            final success =
+                                await subSubcategoryController
+                                    .createSubSubcategory(
+                              subcategoryId:
+                                  addProductController.selectedSubCategoryId.value,
+                              name: subSubcategoryController.nameController.text,
+                              description: subSubcategoryController
+                                  .descriptionController.text,
+                            );
+
+                            if (success) {
+                              // Refresh the sub subcategories list
+                              await addProductController.loadSubSubcategories(
+                                addProductController
+                                    .selectedSubCategoryId.value,
+                              );
+
+                              // Close dialog
+                              Navigator.pop(context);
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      'Sub sub category created successfully!'),
+                                  duration: Duration(seconds: 2),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content:
+                                      Text('Failed to create sub sub category'),
+                                  duration: Duration(seconds: 2),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          },
+                    child: Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: subSubcategoryController.isCreating.value
+                            ? Color(0xFFD1D5DB)
+                            : Colors.black,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: Text(
+                          subSubcategoryController.isCreating.value
+                              ? 'Creating...'
+                              : 'Create Sub Sub Category',
+                          style: getTextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ).then((_) {
+      subSubcategoryController.clearForm();
     });
   }
 }
