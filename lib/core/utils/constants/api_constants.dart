@@ -1,6 +1,6 @@
 class ApiConstants {
   // Base URL
-  static const String baseUrl = "https://quikle-u4dv.onrender.com/";
+  static const String baseUrl = "https://caditya619-backend-ng0e.onrender.com/";
 
   static const String sendOtp = "${baseUrl}auth/send_otp/";
   static const String login = "${baseUrl}auth/login/";
@@ -16,6 +16,8 @@ class ApiConstants {
   static const String verifyToken = "${baseUrl}auth/verify-token/";
   static const String subcategories =
       "${baseUrl}items/subcategories/?category_id={categoryId}";
+  static const String subSubcategories =
+      "${baseUrl}items/sub-subcategories/?subcategory_id={subcategoryId}";
   static const String addProductMedicine = "${baseUrl}items/medicine/";
   static const String addProductFood = "${baseUrl}items/food/";
   static const String getMedicineProducts =
@@ -54,4 +56,18 @@ class ApiConstants {
   static const String sendNotification = "${baseUrl}rider/send_notification/";
   static const String vendorResponseAboutPrescription =
       "${baseUrl}prescription/prescriptions-order/vendor-response";
+
+  // Sub-Subcategories
+  static const String createSubSubcategory =
+      "${baseUrl}items/sub-subcategories/";
+  static const String getAllSubSubcategories =
+      "${baseUrl}items/sub-subcategories/";
+  static const String getAvailableSubSubcategories =
+      "${baseUrl}items/sub-subcategories/available-sub-subcat/";
+  static const String getSubSubcategoryById =
+      "${baseUrl}items/sub-subcategories/{sub_subcategory_id}";
+  static const String updateSubSubcategory =
+      "${baseUrl}items/sub-subcategories/update";
+  static const String deleteSubSubcategory =
+      "${baseUrl}items/sub-subcategories/delete";
 }

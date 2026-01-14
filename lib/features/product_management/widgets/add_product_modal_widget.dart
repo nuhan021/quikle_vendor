@@ -279,6 +279,131 @@ class AddProductModalWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 16),
 
+                // Sub Sub Category
+                Text(
+                  'Sub Sub Category',
+                  style: getTextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF111827),
+                  ),
+                ),
+                SizedBox(height: 8),
+                Obx(
+                  () => Column(
+                    children: [
+                      GestureDetector(
+                        onTap: controller.selectedSubCategoryId.value == 0
+                            ? null
+                            : () {
+                                _showSubSubCategoryDropdown(
+                                  context,
+                                  controller,
+                                );
+                              },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: controller.selectedSubCategoryId.value == 0
+                                  ? Color(0xFFE5E7EB)
+                                  : Color(0xFFE5E7EB),
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                            color: controller.selectedSubCategoryId.value == 0
+                                ? Color(0xFFF3F4F6)
+                                : Colors.transparent,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  controller.selectedSubCategoryId.value == 0
+                                      ? 'Select Sub Category First'
+                                      : controller.selectedSubSubCategoryName
+                                              .value.isEmpty
+                                          ? 'Select Sub Sub Category'
+                                          : controller
+                                              .selectedSubSubCategoryName
+                                              .value,
+                                  style: getTextStyle(
+                                    fontSize: 14,
+                                    color: controller
+                                                .selectedSubCategoryId.value ==
+                                            0
+                                        ? Color(0xFF9CA3AF)
+                                        : Color(0xFF111827),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Icon(
+                                Icons.keyboard_arrow_down,
+                                color: Color(0xFF9CA3AF),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (controller.selectedSubCategoryId.value != 0) ...[
+                        SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: () {
+                            // Button to add new sub subcategory - placeholder
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Add new sub subcategory feature coming soon',
+                                ),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Color(0xFFE5E7EB),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                              color: Color(0xFFF9FAFB),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.add_circle_outline,
+                                  color: Color(0xFF6B7280),
+                                  size: 18,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Add New Sub Sub Category',
+                                  style: getTextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xFF6B7280),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                SizedBox(height: 16),
+
                 if (controller.vendorType == 'medicine') ...[
                   // Medicine Type
                   Text(
@@ -433,7 +558,14 @@ class AddProductModalWidget extends StatelessWidget {
                                       controller.selectedSubCategoryName.value =
                                           subCategory.name;
                                       controller.selectedSubCategoryId.value =
-                                          subCategory.id; // IMPORTANT
+                                          subCategory.id;
+                                      controller.selectedSubSubCategoryId
+                                          .value = 0;
+                                      controller
+                                          .selectedSubSubCategoryName.value = '';
+                                      controller.loadSubSubcategories(
+                                        subCategory.id,
+                                      );
                                       controller.subCategorySearchText.value =
                                           '';
                                       Navigator.pop(context);
@@ -487,6 +619,154 @@ class AddProductModalWidget extends StatelessWidget {
       },
     ).then((_) {
       controller.subCategorySearchText.value = '';
+    });
+  }
+
+  void _showSubSubCategoryDropdown(
+    BuildContext context,
+    AddProductController controller,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            constraints: BoxConstraints(maxHeight: 400),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Select Sub Sub Category',
+                  style: getTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF111827),
+                  ),
+                ),
+                SizedBox(height: 16),
+                // Search Field
+                CustomTextField(
+                  label: '',
+                  hintText: 'Search sub sub category...',
+                  onChanged: (value) {
+                    controller.subSubCategorySearchText.value = value;
+                  },
+                ),
+                SizedBox(height: 12),
+                // Sub Sub Categories List
+                Expanded(
+                  child: Obx(() {
+                    final filtered = controller.subSubCategoriesList;
+                    return ListView(
+                      children: filtered.isEmpty
+                          ? [
+                              Container(
+                                color: Colors.white,
+                                padding: EdgeInsets.all(16),
+                                child: Center(
+                                  child: Text(
+                                    'No sub sub categories found',
+                                    style: getTextStyle(
+                                      fontSize: 14,
+                                      color: Color(0xFF9CA3AF),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ]
+                          : filtered
+                                .map(
+                                  (subSubCategory) => GestureDetector(
+                                    onTap: () {
+                                      controller
+                                              .selectedSubSubCategoryName
+                                              .value =
+                                          subSubCategory.name;
+                                      controller
+                                              .selectedSubSubCategoryId.value =
+                                          subSubCategory.id;
+                                      controller.subSubCategorySearchText
+                                          .value = '';
+                                      Navigator.pop(context);
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 12,
+                                        horizontal: 12,
+                                      ),
+                                      margin: EdgeInsets.only(bottom: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.transparent,
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                          color: controller
+                                                      .selectedSubSubCategoryId
+                                                      .value ==
+                                                  subSubCategory.id
+                                              ? Colors.black.withValues(
+                                                  alpha: 0.5,
+                                                )
+                                              : Color(0xFFE5E7EB),
+                                        ),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            subSubCategory.name,
+                                            style: getTextStyle(
+                                              fontSize: 14,
+                                              fontWeight: controller
+                                                          .selectedSubSubCategoryId
+                                                          .value ==
+                                                      subSubCategory.id
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w400,
+                                              color: Color(0xFF111827),
+                                            ),
+                                          ),
+                                          if (subSubCategory
+                                              .description?.isNotEmpty ??
+                                              false)
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                top: 4,
+                                              ),
+                                              child: Text(
+                                                subSubCategory.description ??
+                                                    '',
+                                                style: getTextStyle(
+                                                  fontSize: 12,
+                                                  color: Color(0xFF9CA3AF),
+                                                ),
+                                                maxLines: 1,
+                                                overflow:
+                                                    TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                    );
+                  }),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ).then((_) {
+      controller.subSubCategorySearchText.value = '';
     });
   }
 }
