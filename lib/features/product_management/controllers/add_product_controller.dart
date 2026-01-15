@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:quikle_vendor/core/utils/logging/logger.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/features/product_management/services/add_product_services.dart';
+import 'package:quikle_vendor/routes/app_routes.dart';
 import '../model/subcategory_model.dart';
 import '../model/sub_subcategory_model.dart';
 import '../services/subcategory_services.dart';
@@ -181,23 +182,55 @@ class AddProductController extends GetxController {
       isLoading.value = false;
 
       if (success) {
-        // Refresh products list in ProductsController
+        // Close the dialog first
+        hideAddProductDialog();
+
+        // Show success message
+        Get.snackbar(
+          'Success',
+          'Product added successfully!',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: Duration(seconds: 2),
+        );
+
+        // Refresh products list and navigate
         try {
           final productsController = Get.find<ProductsController>();
           productsController.products.clear();
           productsController.offset = 0;
           await productsController.fetchProducts();
+
+          // Navigate to products screen
+          Future.delayed(Duration(milliseconds: 300), () {
+            Get.toNamed(AppRoute.productManagementScreen);
+          });
         } catch (e) {
           log('Error refreshing products list: $e');
+          // Still navigate even if refresh fails
+          Future.delayed(Duration(milliseconds: 300), () {
+            Get.toNamed(AppRoute.productManagementScreen);
+          });
         }
-
-        hideAddProductDialog();
       } else {
-        // Optional: handle failure silently or via UI
+        Get.snackbar(
+          'Error',
+          'Failed to add product',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: Duration(seconds: 2),
+        );
       }
     } catch (e) {
       isLoading.value = false;
       AppLoggerHelper.debug('Error adding product: $e');
+      Get.snackbar(
+        'Error',
+        'An error occurred while adding product',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+      );
     }
   }
 
@@ -229,10 +262,16 @@ class AddProductController extends GetxController {
       final subSubcategories =
           await _subSubcategoryServices.getSubSubcategories(subcategoryId);
       subSubCategoriesList.value = subSubcategories;
+      AppLoggerHelper.debug('Loaded ${subSubcategories.length} sub-subcategories');
     } catch (e) {
       log('Error loading sub subcategories: $e');
       AppLoggerHelper.debug('Error loading sub subcategories: $e');
     }
+  }
+
+  Future<void> refreshSubSubcategories(int subcategoryId) async {
+    // Refresh the sub-subcategories list after creating a new one
+    await loadSubSubcategories(subcategoryId);
   }
 
   int? _getCategoryIdForVendorType() {

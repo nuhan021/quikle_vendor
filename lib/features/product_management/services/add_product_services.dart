@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:quikle_vendor/core/services/network_caller.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
+import 'package:quikle_vendor/core/utils/logging/logger.dart';
 import '../../../core/utils/constants/api_constants.dart';
 
 class AddMedicineProductServices {
@@ -43,6 +44,7 @@ class AddMedicineProductServices {
       },
     );
     log('Add Product Response: ${response.responseData}');
+    AppLoggerHelper.debug('Add Product full body: ${response}');
     log('Status Code: ${response.statusCode}');
     return response.isSuccess;
   }

@@ -63,7 +63,7 @@ class ApiConstants {
   static const String getAllSubSubcategories =
       "${baseUrl}items/sub-subcategories/";
   static const String getAvailableSubSubcategories =
-      "${baseUrl}items/sub-subcategories/available-sub-subcat/";
+      "${baseUrl}items/sub-subcategories/"; // Note: Query param will be added dynamically
   static const String getSubSubcategoryById =
       "${baseUrl}items/sub-subcategories/{sub_subcategory_id}";
   static const String updateSubSubcategory =

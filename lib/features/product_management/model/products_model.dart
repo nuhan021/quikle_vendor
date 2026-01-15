@@ -5,6 +5,8 @@ class Product {
   final int categoryId;
   final int subcategoryId;
   final int subSubcategoryId;
+  final String? subSubcategoryName;
+  final String? subSubcategoryAvatar;
   final String price;
   final int discount;
   final String discountedPrice;
@@ -37,6 +39,8 @@ class Product {
     required this.categoryId,
     required this.subcategoryId,
     required this.subSubcategoryId,
+    this.subSubcategoryName,
+    this.subSubcategoryAvatar,
     required this.price,
     required this.discount,
     required this.discountedPrice,
@@ -71,6 +75,8 @@ class Product {
       categoryId: json['category_id'] as int? ?? 0,
       subcategoryId: json['subcategory_id'] as int? ?? 0,
       subSubcategoryId: json['sub_subcategory_id'] as int? ?? 0,
+      subSubcategoryName: json['sub_subcategory_name'] as String?,
+      subSubcategoryAvatar: json['sub_subcategory_avatar'] as String?,
       price: json['price'] as String? ?? '0.0',
       discount: json['discount'] as int? ?? 0,
       discountedPrice: json['discounted_price'] as String? ?? '0.0',
@@ -109,6 +115,8 @@ class Product {
       'category_id': categoryId,
       'subcategory_id': subcategoryId,
       'sub_subcategory_id': subSubcategoryId,
+      'sub_subcategory_name': subSubcategoryName,
+      'sub_subcategory_avatar': subSubcategoryAvatar,
       'price': price,
       'discount': discount,
       'discounted_price': discountedPrice,

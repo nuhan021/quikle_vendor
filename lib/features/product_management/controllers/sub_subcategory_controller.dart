@@ -65,6 +65,7 @@ class SubSubcategoryController extends GetxController {
     }
 
     isCreating.value = true;
+    isLoading.value = true;
     try {
       final File? imageFile = subSubCategoryImage.value.isNotEmpty
           ? File(subSubCategoryImage.value)
@@ -77,6 +78,8 @@ class SubSubcategoryController extends GetxController {
         description: description,
         avatar: imageFile,
       );
+
+      AppLoggerHelper.debug("Created sub subcategory: ${subcategoryId}, ${name}, ${description}");
 
       // Add to list
       subSubCategoriesList.add(newSubSubcategory);
@@ -94,6 +97,7 @@ class SubSubcategoryController extends GetxController {
       return false;
     } finally {
       isCreating.value = false;
+      isLoading.value = false;
     }
   }
 

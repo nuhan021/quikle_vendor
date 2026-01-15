@@ -9,14 +9,19 @@ import '../model/sub_subcategory_model.dart';
 class SubSubcategoryServices {
   final NetworkCaller networkCaller = NetworkCaller();
 
+  // Fetch sub-subcategories by subcategory ID
+
   Future<List<SubSubcategoryModel>> getSubSubcategories(int subcategoryId) async {
     try {
       AppLoggerHelper.debug(
         'Fetching sub subcategories for subcategory ID: $subcategoryId',
       );
+      
+      // Construct the URL with query parameter
+      final url = '${ApiConstants.baseUrl}items/sub-subcategories/?subcategory_id=$subcategoryId';
+      
       final response = await networkCaller.getRequest(
-        // 'https://caditya619-backend-ng0e.onrender.com/items/sub-subcategories/?subcategory_id=$subcategoryId',
-        ApiConstants.getAvailableSubSubcategories,
+        url,
         token: 'Bearer ${StorageService.token}',
       );
       if (response.statusCode == 200) {
@@ -34,6 +39,8 @@ class SubSubcategoryServices {
       throw Exception('Failed to load sub subcategories: $e');
     }
   }
+
+  // Create a new sub-subcategory
 
   Future<SubSubcategoryModel> createSubSubcategory({
     required int subcategoryId,

@@ -465,26 +465,20 @@ class AddProductModalWidget extends StatelessWidget {
 
                 // Add Product Button
                 Obx(() {
-                  print(
-                    'Button rebuild - isLoading: ${controller.isLoading.value}',
-                  );
-                  return GestureDetector(
-                    onTap: () {
-                      print('Button tapped!');
+                  // print(
+                  //   'Button rebuild - isLoading: ${controller.isLoading.value}',
+                  // );
+                  return CustomButton(
+                    text: controller.isLoading.value
+                        ? 'Adding...'
+                        : 'Add Product',
+                    onPressed: () {
+                      print('CustomButton onPressed called!');
                       controller.addProduct();
                     },
-                    child: CustomButton(
-                      text: controller.isLoading.value
-                          ? 'Adding...'
-                          : 'Add Product',
-                      onPressed: () {
-                        print('CustomButton onPressed called!');
-                        controller.addProduct();
-                      },
-                      textColor: Colors.white,
-                      backgroundColor: Colors.black,
-                      isLoading: controller.isLoading.value,
-                    ),
+                    textColor: Colors.white,
+                    backgroundColor: Colors.black,
+                    isLoading: controller.isLoading.value,
                   );
                 }),
                 // SizedBox(height: 24),
@@ -897,15 +891,8 @@ class AddProductModalWidget extends StatelessWidget {
                             );
 
                             if (success) {
-                              // Refresh the sub subcategories list
-                              await addProductController.loadSubSubcategories(
-                                addProductController
-                                    .selectedSubCategoryId.value,
-                              );
-
-                              // Close dialog
-                              Navigator.pop(context);
-
+                                    Navigator.pop(context);
+                              // Show success message BEFORE closing dialog
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
@@ -914,6 +901,32 @@ class AddProductModalWidget extends StatelessWidget {
                                   backgroundColor: Colors.green,
                                 ),
                               );
+
+                              // Refresh the sub subcategories list in both controllers
+                              await addProductController.refreshSubSubcategories(
+                                addProductController
+                                    .selectedSubCategoryId.value,
+                              );
+
+                              // Get the newly created sub-subcategory
+                              if (addProductController.subSubCategoriesList.isNotEmpty) {
+                                final newSubSubCategory = addProductController
+                                    .subSubCategoriesList.last;
+                                
+                                // Automatically select the newly created sub-subcategory
+                                addProductController
+                                    .selectedSubSubCategoryName.value =
+                                    newSubSubCategory.name;
+                                addProductController
+                                    .selectedSubSubCategoryId.value =
+                                    newSubSubCategory.id;
+                              }
+
+                              // Clear form before closing
+                              subSubcategoryController.clearForm();
+
+                              // Close the create dialog immediately
+                        
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -954,8 +967,6 @@ class AddProductModalWidget extends StatelessWidget {
           ),
         );
       },
-    ).then((_) {
-      subSubcategoryController.clearForm();
-    });
+    );
   }
 }
