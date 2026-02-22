@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:http/http.dart';
 import 'package:quikle_vendor/core/common/styles/global_text_style.dart';
 import 'package:quikle_vendor/features/order_management/prescription_order_management/models/prescription_model.dart';
 
