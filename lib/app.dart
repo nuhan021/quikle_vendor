@@ -13,13 +13,11 @@ class MyApp extends StatelessWidget {
       designSize: const Size(392, 852),
       minTextAdapt: true,
       splitScreenMode: true,
-      // Use builder only if you need to use library outside ScreenUtilInit context
       builder: (_, child) {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           initialRoute: AppRoute.getSplashScreen(),
           getPages: AppRoute.routes,
-          // initialBinding: ControllerBinder(),
           themeMode: ThemeMode.light,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
