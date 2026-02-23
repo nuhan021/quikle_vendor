@@ -6,13 +6,19 @@ import 'package:image_picker/image_picker.dart';
 import 'package:quikle_vendor/core/utils/logging/logger.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/features/product_management/services/add_product_services.dart';
+import 'package:quikle_vendor/routes/app_routes.dart';
 import '../model/subcategory_model.dart';
+import '../model/sub_subcategory_model.dart';
 import '../services/subcategory_services.dart';
+import '../services/sub_subcategory_services.dart';
 import '../widgets/add_product_modal_widget.dart';
+import 'products_controller.dart';
 
 class AddProductController extends GetxController {
   // Dependencies
   final SubcategoryServices _subcategoryServices = SubcategoryServices();
+  final SubSubcategoryServices _subSubcategoryServices =
+      SubSubcategoryServices();
   final ImagePicker _imagePicker = ImagePicker();
 
   // Vendor data
@@ -23,6 +29,8 @@ class AddProductController extends GetxController {
   // UI state
   final selectedSubCategoryId = 0.obs;
   final selectedSubCategoryName = ''.obs;
+  final selectedSubSubCategoryId = 0.obs;
+  final selectedSubSubCategoryName = ''.obs;
 
   final isOtc = false.obs;
   final isLoading = false.obs;
@@ -41,6 +49,7 @@ class AddProductController extends GetxController {
   late final RxString selectedCategory;
   late final RxString selectedSubCategory;
   final subCategorySearchText = ''.obs;
+  final subSubCategorySearchText = ''.obs;
 
   final List<String> categories = ['Fruits', 'Vegetables', 'Dairy', 'Bakery'];
   final Map<String, List<String>> subCategories = {
@@ -50,8 +59,9 @@ class AddProductController extends GetxController {
     'Bakery': ['Bread', 'Cake', 'Cookie', 'Pastry'],
   };
 
-  // API subcategories
+  // API subcategories and sub subcategories
   final subCategoriesList = <SubcategoryModel>[].obs;
+  final subSubCategoriesList = <SubSubcategoryModel>[].obs;
 
   // Product data
   final productData = <String, dynamic>{}.obs;
@@ -136,8 +146,11 @@ class AddProductController extends GetxController {
 
     productImage.value = '';
     subCategorySearchText.value = '';
+    subSubCategorySearchText.value = '';
     selectedSubCategoryId.value = 0;
     selectedSubCategoryName.value = '';
+    selectedSubSubCategoryId.value = 0;
+    selectedSubSubCategoryName.value = '';
     isOtc.value = false;
   }
 
@@ -169,13 +182,55 @@ class AddProductController extends GetxController {
       isLoading.value = false;
 
       if (success) {
+        // Close the dialog first
         hideAddProductDialog();
+
+        // Show success message
+        Get.snackbar(
+          'Success',
+          'Product added successfully!',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: Duration(seconds: 2),
+        );
+
+        // Refresh products list and navigate
+        try {
+          final productsController = Get.find<ProductsController>();
+          productsController.products.clear();
+          productsController.offset = 0;
+          await productsController.fetchProducts();
+
+          // Navigate to products screen
+          Future.delayed(Duration(milliseconds: 300), () {
+            Get.toNamed(AppRoute.productManagementScreen);
+          });
+        } catch (e) {
+          log('Error refreshing products list: $e');
+          // Still navigate even if refresh fails
+          Future.delayed(Duration(milliseconds: 300), () {
+            Get.toNamed(AppRoute.productManagementScreen);
+          });
+        }
       } else {
-        // Optional: handle failure silently or via UI
+        Get.snackbar(
+          'Error',
+          'Failed to add product',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: Duration(seconds: 2),
+        );
       }
     } catch (e) {
       isLoading.value = false;
       AppLoggerHelper.debug('Error adding product: $e');
+      Get.snackbar(
+        'Error',
+        'An error occurred while adding product',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+      );
     }
   }
 
@@ -195,6 +250,28 @@ class AddProductController extends GetxController {
     } catch (e) {
       log('Error loading subcategories: $e');
     }
+  }
+
+  Future<void> loadSubSubcategories(int subcategoryId) async {
+    try {
+      if (subcategoryId == 0) {
+        subSubCategoriesList.clear();
+        return;
+      }
+
+      final subSubcategories =
+          await _subSubcategoryServices.getSubSubcategories(subcategoryId);
+      subSubCategoriesList.value = subSubcategories;
+      AppLoggerHelper.debug('Loaded ${subSubcategories.length} sub-subcategories');
+    } catch (e) {
+      log('Error loading sub subcategories: $e');
+      AppLoggerHelper.debug('Error loading sub subcategories: $e');
+    }
+  }
+
+  Future<void> refreshSubSubcategories(int subcategoryId) async {
+    // Refresh the sub-subcategories list after creating a new one
+    await loadSubSubcategories(subcategoryId);
   }
 
   int? _getCategoryIdForVendorType() {
@@ -226,6 +303,11 @@ class AddProductController extends GetxController {
 
     if (selectedSubCategoryId.value == 0) {
       log('SubCategory not selected - validation failed');
+      return false;
+    }
+
+    if (selectedSubSubCategoryId.value == 0) {
+      log('Sub SubCategory not selected - validation failed');
       return false;
     }
 
