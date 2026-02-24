@@ -37,7 +37,6 @@ class VendorDetailsModel {
     this.kycStatus,
   });
 
-  /// Convert JSON to Model
   factory VendorDetailsModel.fromJson(Map<String, dynamic> json) {
     return VendorDetailsModel(
       id: json['id'] as int,
@@ -64,7 +63,6 @@ class VendorDetailsModel {
     );
   }
 
-  /// Convert Model to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -87,7 +85,6 @@ class VendorDetailsModel {
     };
   }
 
-  /// Create a copy with modified fields
   VendorDetailsModel copyWith({
     int? id,
     String? shopName,
