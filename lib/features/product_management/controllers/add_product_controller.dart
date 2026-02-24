@@ -363,6 +363,19 @@ class AddProductController extends GetxController {
       return false;
     }
 
+    if (weightController.text.isNotEmpty &&
+        double.tryParse(weightController.text.trim()) == null) {
+      log('Weight is not numeric - validation failed');
+      Get.snackbar(
+        'Validation',
+        'Weight must be a number (e.g. 1 or 1.5)',
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+      );
+      return false;
+    }
+
     if (selectedSubCategoryId.value == 0) {
       log('SubCategory not selected - validation failed');
       Get.snackbar(

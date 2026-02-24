@@ -140,9 +140,13 @@ class AddProductModalWidget extends StatelessWidget {
 
                 // Product Weight/Quantity
                 CustomTextField(
-                  label: 'Product Weight/Quantity',
+                  label: 'Product Weight',
                   hintText: '1kg',
                   controller: controller.weightController,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                  ],
                 ),
                 SizedBox(height: 16),
 

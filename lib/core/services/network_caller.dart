@@ -66,6 +66,9 @@ class NetworkCaller {
 
       if (body != null) {
         body.forEach((key, value) {
+          if (value == null) {
+            return;
+          }
           if (value is File) {
             request.files.add(
               http.MultipartFile.fromBytes(

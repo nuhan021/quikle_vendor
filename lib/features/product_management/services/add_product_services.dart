@@ -24,26 +24,29 @@ class AddMedicineProductServices {
     double? weight,
     File? image,
   }) async {
+    final body = <String, dynamic>{
+      'title': title,
+      'price': price,
+      'discount': discount,
+      'stock': stock,
+      'popular': popular,
+      'free_delivery': freeDelivery,
+      'hot_deals': hotDeals,
+      'flash_sale': flashSale,
+      'isOTC': isOTC,
+      if (description != null && description.trim().isNotEmpty)
+        'description': description.trim(),
+      if (subcategoryId != null) 'subcategory_id': subcategoryId,
+      if (subSubcategoryId != null) 'sub_subcategory_id': subSubcategoryId,
+      if (weight != null) 'weight': weight,
+      if (image != null) 'image': image,
+    };
+
     final response = await networkCaller.postRequest(
       ApiConstants.addProductMedicine,
       token: 'Bearer ${StorageService.token}',
       form: true,
-      body: {
-        'title': title,
-        'description': description,
-        'subcategory_id': subcategoryId,
-        'sub_subcategory_id': subSubcategoryId,
-        'price': price,
-        'discount': discount,
-        'stock': stock,
-        'popular': popular,
-        'free_delivery': freeDelivery,
-        'hot_deals': hotDeals,
-        'flash_sale': flashSale,
-        'isOTC': isOTC,
-        'weight': weight,
-        'image': image,
-      },
+      body: body,
     );
     log('Add Product Response: ${response.responseData}');
     AppLoggerHelper.debug('Add Product full body: $response');
@@ -70,25 +73,28 @@ class AddFoodProductServices {
     double? weight,
     File? image,
   }) async {
+    final body = <String, dynamic>{
+      'title': title,
+      'price': price,
+      'discount': discount,
+      'stock': stock,
+      'popular': popular,
+      'free_delivery': freeDelivery,
+      'hot_deals': hotDeals,
+      'flash_sale': flashSale,
+      if (description != null && description.trim().isNotEmpty)
+        'description': description.trim(),
+      if (subcategoryId != null) 'subcategory_id': subcategoryId,
+      if (subSubcategoryId != null) 'sub_subcategory_id': subSubcategoryId,
+      if (weight != null) 'weight': weight,
+      if (image != null) 'image': image,
+    };
+
     final response = await networkCaller.postRequest(
       ApiConstants.addProductFood,
       token: 'Bearer ${StorageService.token}',
       form: true,
-      body: {
-        'title': title,
-        'description': description,
-        'subcategory_id': subcategoryId,
-        'sub_subcategory_id': subSubcategoryId,
-        'price': price,
-        'discount': discount,
-        'stock': stock,
-        'popular': popular,
-        'free_delivery': freeDelivery,
-        'hot_deals': hotDeals,
-        'flash_sale': flashSale,
-        'weight': weight,
-        'image': image,
-      },
+      body: body,
     );
     log('Add Product Response: ${response.responseData}');
     log('Status Code: ${response.statusCode}');
