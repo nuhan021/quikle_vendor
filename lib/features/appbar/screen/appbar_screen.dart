@@ -24,7 +24,7 @@ class AppbarScreen extends StatelessWidget implements PreferredSizeWidget {
           bottomRight: Radius.circular(20),
         ),
         side: BorderSide(
-          color: AppColors.primary, // yellow line
+          color: AppColors.primary, 
           width: 1,
         ),
       ),
