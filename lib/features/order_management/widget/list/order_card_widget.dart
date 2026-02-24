@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:quikle_vendor/features/order_management/controller/order_management_controller.dart';
 import '../../../../core/common/styles/global_text_style.dart';
-import 'order_status_badge_widget.dart';
 import 'order_action_buttons_widget.dart';
 
 class OrderCardWidget extends StatelessWidget {
