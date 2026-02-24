@@ -52,7 +52,6 @@ class ProductsScreen extends StatelessWidget {
               ],
             ),
 
-            // Modals and Dialogs
             Obx(
               () => controller.showFilterProductModal.value
                   ? FilterProductWidget()
