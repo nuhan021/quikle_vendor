@@ -55,13 +55,14 @@ class SubSubcategoryController extends GetxController {
     }
   }
 
-  Future<bool> createSubSubcategory({
+  Future<SubSubcategoryModel?> createSubSubcategory({
     required int subcategoryId,
     required String name,
     String? description,
   }) async {
-    if (!_validateForm(name)) {
-      return false;
+    final trimmedName = name.trim();
+    if (!_validateForm(trimmedName)) {
+      return null;
     }
 
     isCreating.value = true;
@@ -74,15 +75,19 @@ class SubSubcategoryController extends GetxController {
       final newSubSubcategory =
           await _subSubcategoryServices.createSubSubcategory(
         subcategoryId: subcategoryId,
-        name: name,
-        description: description,
+        name: trimmedName,
+        description: description?.trim(),
         avatar: imageFile,
       );
 
       AppLoggerHelper.debug("Created sub subcategory: ${subcategoryId}, ${name}, ${description}");
 
-      // Add to list
-      subSubCategoriesList.add(newSubSubcategory);
+      // Add to list if not already present
+      final exists =
+          subSubCategoriesList.any((item) => item.id == newSubSubcategory.id);
+      if (!exists) {
+        subSubCategoriesList.insert(0, newSubSubcategory);
+      }
 
       // Clear form
       clearForm();
@@ -90,11 +95,11 @@ class SubSubcategoryController extends GetxController {
       AppLoggerHelper.debug(
         'Sub subcategory created successfully: ${newSubSubcategory.name}',
       );
-      return true;
+      return newSubSubcategory;
     } catch (e) {
       log('Error creating sub subcategory: $e');
       AppLoggerHelper.debug('Error creating sub subcategory: $e');
-      return false;
+      return null;
     } finally {
       isCreating.value = false;
       isLoading.value = false;

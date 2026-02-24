@@ -12,6 +12,7 @@ class AddMedicineProductServices {
     required String title,
     String? description,
     int? subcategoryId,
+    int? subSubcategoryId,
     required double price,
     int discount = 0,
     int stock = 0,
@@ -31,6 +32,7 @@ class AddMedicineProductServices {
         'title': title,
         'description': description,
         'subcategory_id': subcategoryId,
+        'sub_subcategory_id': subSubcategoryId,
         'price': price,
         'discount': discount,
         'stock': stock,
@@ -44,7 +46,7 @@ class AddMedicineProductServices {
       },
     );
     log('Add Product Response: ${response.responseData}');
-    AppLoggerHelper.debug('Add Product full body: ${response}');
+    AppLoggerHelper.debug('Add Product full body: $response');
     log('Status Code: ${response.statusCode}');
     return response.isSuccess;
   }
@@ -57,6 +59,7 @@ class AddFoodProductServices {
     required String title,
     String? description,
     int? subcategoryId,
+    int? subSubcategoryId,
     required double price,
     int discount = 0,
     int stock = 0,
@@ -75,6 +78,7 @@ class AddFoodProductServices {
         'title': title,
         'description': description,
         'subcategory_id': subcategoryId,
+        'sub_subcategory_id': subSubcategoryId,
         'price': price,
         'discount': discount,
         'stock': stock,
