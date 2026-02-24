@@ -19,7 +19,6 @@ class OrderActionButtonsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<OrderManagementController>();
 
-    // Try to retrieve the full order map to inspect apiStatus/tags
     final localOrder = controller.getOrderById(orderId);
     final isApiShipped =
         localOrder != null &&
@@ -28,7 +27,6 @@ class OrderActionButtonsWidget extends StatelessWidget {
             (localOrder['tags'] is List &&
                 List.from(localOrder['tags']).contains('Out For Delivery')));
 
-    // If the order is already shipped (by API or tagged locally), show inactive Out For Delivery
     if (isApiShipped) {
       return CustomButton(
         text: 'Out For Delivery',
@@ -40,9 +38,7 @@ class OrderActionButtonsWidget extends StatelessWidget {
       );
     }
 
-    /// 🟡 NEW Orders
     if (status == 'new') {
-      // View Order button - navigate to order details screen with action buttons
       return CustomButton(
         text: 'View Order',
         onPressed: () => controller.navigateToOrderDetails(orderId),
@@ -53,26 +49,7 @@ class OrderActionButtonsWidget extends StatelessWidget {
         fontWeight: FontWeight.w600,
       );
     }
-
-    // if (status == 'confirmed') {
-    //   return Obx(() {
-    //     final isDisabled = controller.disabledButtons.contains(orderId);
-    //     return CustomButton(
-    //       text: 'Mark as Prepared',
-    //       onPressed: isDisabled
-    //           ? () {}
-    //           : () => controller.markAsPrepared(orderId),
-    //       height: 50,
-    //       backgroundColor: isDisabled
-    //           ? const Color(0xFFD1D5DB)
-    //           : const Color(0xFF111827),
-    //       textColor: Colors.white,
-    //       fontWeight: FontWeight.w600,
-    //     );
-    //   });
-    // }
-
-    /// 🟠 IN-PROGRESS Orders
+    
     if (status == 'in-progress') {
       return Obx(() {
         final isDisabled = controller.disabledButtons.contains(orderId);
@@ -91,7 +68,6 @@ class OrderActionButtonsWidget extends StatelessWidget {
       });
     }
 
-    /// ⚪ COMPLETED Orders
     if (status == 'completed') {
       return CustomButton(
         text: 'View Details',
