@@ -32,7 +32,6 @@ class EditProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            /// Profile Card
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 20),
@@ -112,7 +111,6 @@ class EditProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            /// Form Card
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -139,7 +137,6 @@ class EditProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  /// Owner Name
                   CustomTextField(
                     label: "Owner Name",
                     hintText: "Enter owner name",
@@ -147,35 +144,16 @@ class EditProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  // /// Owner Name
-                  // CustomTextField(
-                  //   label: "NID Number",
-                  //   hintText: "Enter NID number",
-                  //   // controller: nidNumberController,
-                  // ),
-                  // const SizedBox(height: 12),
-                  // CustomTextField(
-                  //   label: "Phone Number",
-                  //   hintText: "Enter Phone number",
-                  //   // controller: nidNumberController,
-                  // ),
-                  // const SizedBox(height: 12),
-
-                  /// Opening & Closing Time (combined display)
                   AbsorbPointer(
                     child: CustomTextField(
                       label: "Opening & Closing Time",
                       hintText: "Select opening & closing time",
                       controller: controller.openingHoursController,
-                      // suffixIcon: const Icon(
-                      //   Icons.access_time,
-                      //   color: Colors.grey,
-                      // ),
+                     
                     ),
                   ),
                   const SizedBox(height: 16),
 
-                  /// Time Picker Actions
                   Row(
                     children: [
                       Expanded(
@@ -205,7 +183,6 @@ class EditProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  /// Save Button
                   Obx(
                     () => CustomButton(
                       text: controller.isUpdatingProfile.value
@@ -233,7 +210,6 @@ class EditProfileScreen extends StatelessWidget {
     );
   }
 
-  /// Show image picker options (Camera or Gallery)
   static void _showImagePickerOptions(
     BuildContext context,
     EditProfileController controller,
@@ -272,9 +248,7 @@ class EditProfileScreen extends StatelessWidget {
     );
   }
 
-  /// Build profile image widget with fallback
   Widget _buildProfileImage(EditProfileController controller) {
-    // Priority 1: Local file image (recently picked)
     if (controller.profileImagePath.value != null) {
       return Image.file(
         File(controller.profileImagePath.value!),
@@ -282,7 +256,6 @@ class EditProfileScreen extends StatelessWidget {
       );
     }
 
-    // Priority 2: Photo URL from SharedPreferences (API response)
     final vendorData = StorageService.getVendorDetails();
     if (vendorData != null && vendorData['photo'] != null) {
       final photoUrl = vendorData['photo'] as String;

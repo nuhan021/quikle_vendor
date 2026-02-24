@@ -21,7 +21,6 @@ class EditBusinessDetailsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            /// Form Card
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -49,7 +48,6 @@ class EditBusinessDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  /// Panel License Number
                   CustomTextField(
                     label: "Panel License Number",
                     hintText: "Enter panel license number",
@@ -57,7 +55,6 @@ class EditBusinessDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  /// TIN Number
                   CustomTextField(
                     label: "TIN Number",
                     hintText: "Enter TIN number",
@@ -65,7 +62,6 @@ class EditBusinessDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  /// Save Button
                   CustomButton(
                     text: "Save Changes",
                     fontSize: 16,
