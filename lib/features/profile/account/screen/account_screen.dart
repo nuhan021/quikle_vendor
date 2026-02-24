@@ -45,7 +45,6 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
         child: Column(
           children: [
-            /// Profile Card
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 20),
@@ -92,16 +91,12 @@ class _AccountScreenState extends State<AccountScreen> {
                       style: getTextStyle(fontSize: 14, color: Colors.black54),
                     ),
                   ),
-                  // Text(
-                  //   "vikramrajput@gmail.com",
-                  //   style: getTextStyle(fontSize: 14, color: Colors.black54),
-                  // ),
+                  
                 ],
               ),
             ),
             const SizedBox(height: 20),
 
-            /// Account Items
             AccountItems(
               iconSize: 24,
               items: [
@@ -131,7 +126,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   "text": "Language Settings",
                   "onTap": () async {
                     String currentLanguage =
-                        "English"; // you can keep this in a controller
+                        "English"; 
 
                     final selected = await showDialog<String>(
                       context: context,
@@ -173,9 +168,7 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  /// Build profile image widget with fallback
   Widget _buildProfileImage(HomeController controller) {
-    // Priority 1: Photo URL from reactive HomeController
     if (controller.vendorPhotoUrl.value != null &&
         controller.vendorPhotoUrl.value!.isNotEmpty) {
       return NetworkImageWithFallback(
@@ -187,7 +180,6 @@ class _AccountScreenState extends State<AccountScreen> {
       );
     }
 
-    // Priority 2: Default asset image
     return Image.asset(
       ImagePath.shopImage,
       fit: BoxFit.cover,
