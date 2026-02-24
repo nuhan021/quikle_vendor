@@ -922,7 +922,7 @@ class AddProductModalWidget extends StatelessWidget {
                     onTap: subSubcategoryController.isCreating.value
                         ? null
                         : () async {
-                            final success =
+                            final createdSubSubCategory =
                                 await subSubcategoryController
                                     .createSubSubcategory(
                               subcategoryId:
@@ -932,9 +932,32 @@ class AddProductModalWidget extends StatelessWidget {
                                   .descriptionController.text,
                             );
 
-                            if (success) {
-                                    Navigator.pop(context);
-                              // Show success message BEFORE closing dialog
+                            if (createdSubSubCategory != null) {
+                              await addProductController.refreshSubSubcategories(
+                                addProductController
+                                    .selectedSubCategoryId.value,
+                              );
+
+                              final exists = addProductController
+                                  .subSubCategoriesList
+                                  .any((item) =>
+                                      item.id == createdSubSubCategory.id);
+                              if (!exists) {
+                                addProductController.subSubCategoriesList
+                                    .insert(0, createdSubSubCategory);
+                              }
+
+                              addProductController
+                                  .selectedSubSubCategoryName
+                                  .value = createdSubSubCategory.name;
+                              addProductController.selectedSubSubCategoryId
+                                  .value = createdSubSubCategory.id;
+
+                              if (!context.mounted) {
+                                return;
+                              }
+                              Navigator.pop(context);
+
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
@@ -943,32 +966,6 @@ class AddProductModalWidget extends StatelessWidget {
                                   backgroundColor: Colors.green,
                                 ),
                               );
-
-                              // Refresh the sub subcategories list in both controllers
-                              await addProductController.refreshSubSubcategories(
-                                addProductController
-                                    .selectedSubCategoryId.value,
-                              );
-
-                              // Get the newly created sub-subcategory
-                              if (addProductController.subSubCategoriesList.isNotEmpty) {
-                                final newSubSubCategory = addProductController
-                                    .subSubCategoriesList.last;
-                                
-                                // Automatically select the newly created sub-subcategory
-                                addProductController
-                                    .selectedSubSubCategoryName.value =
-                                    newSubSubCategory.name;
-                                addProductController
-                                    .selectedSubSubCategoryId.value =
-                                    newSubSubCategory.id;
-                              }
-
-                              // Clear form before closing
-                              subSubcategoryController.clearForm();
-
-                              // Close the create dialog immediately
-                        
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(

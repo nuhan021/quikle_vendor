@@ -329,26 +329,61 @@ class AddProductController extends GetxController {
   bool _validateForm() {
     if (productNameController.text.isEmpty) {
       log('Product name is empty - validation failed');
+      Get.snackbar(
+        'Validation',
+        'Please enter product name',
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+      );
       return false;
     }
 
     if (priceController.text.isEmpty) {
       log('Price is empty - validation failed');
+      Get.snackbar(
+        'Validation',
+        'Please enter product price',
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+      );
       return false;
     }
 
     if (stockQuantityController.text.isEmpty) {
       log('Stock quantity is empty - validation failed');
+      Get.snackbar(
+        'Validation',
+        'Please enter stock quantity',
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+      );
       return false;
     }
 
     if (selectedSubCategoryId.value == 0) {
       log('SubCategory not selected - validation failed');
+      Get.snackbar(
+        'Validation',
+        'Please select sub category',
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+      );
       return false;
     }
 
     if (selectedSubSubCategoryId.value == 0) {
       log('Sub SubCategory not selected - validation failed');
+      Get.snackbar(
+        'Validation',
+        'Please select sub sub category',
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+      );
       return false;
     }
 
@@ -372,6 +407,7 @@ class AddProductController extends GetxController {
           title: productNameController.text,
           description: descriptionController.text,
           subcategoryId: selectedSubCategoryId.value,
+          subSubcategoryId: selectedSubSubCategoryId.value,
           price: price,
           discount: discount,
           stock: stock,
@@ -384,6 +420,7 @@ class AddProductController extends GetxController {
           title: productNameController.text,
           description: descriptionController.text,
           subcategoryId: selectedSubCategoryId.value,
+          subSubcategoryId: selectedSubSubCategoryId.value,
           price: price,
           discount: discount,
           stock: stock,
