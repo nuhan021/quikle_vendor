@@ -5,7 +5,6 @@ import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
 import '../../../user/controllers/user_controller.dart';
 
 class AccountController extends GetxController {
-  // Observable for vendor details
   final vendorDetails = Rx<VendorDetailsModel?>(null);
 
   @override
