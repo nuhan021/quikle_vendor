@@ -72,7 +72,6 @@ class SplashScreen extends StatelessWidget {
               );
             }),
 
-            /// Black ellipse animation
             Obx(() {
               final showEllipse = controller.showEllipse.value;
 
@@ -147,7 +146,6 @@ class SplashScreen extends StatelessWidget {
               );
             }),
 
-            /// Login slide-up
             Obx(() {
               return AnimatedPositioned(
                 duration: const Duration(milliseconds: 600),
