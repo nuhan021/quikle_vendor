@@ -2,18 +2,14 @@ import 'package:get/get.dart';
 import 'package:quikle_vendor/features/vendor/models/vendor_model.dart';
 
 class UserController extends GetxController {
-  // Observable for vendor details
   final vendorDetails = Rx<VendorDetailsModel?>(null);
 
-  /// Set vendor details from API response
   void setVendorDetails(Map<String, dynamic> vendorJson) {
     vendorDetails.value = VendorDetailsModel.fromJson(vendorJson);
   }
 
-  /// Get vendor details
   VendorDetailsModel? getVendorDetails() => vendorDetails.value;
 
-  /// Clear vendor details
   void clearVendorDetails() {
     vendorDetails.value = null;
   }
