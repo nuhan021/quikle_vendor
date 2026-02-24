@@ -13,16 +13,12 @@ import 'package:quikle_vendor/routes/app_routes.dart';
 import 'package:quikle_vendor/features/home/controller/home_controller.dart';
 
 class EditProfileController extends GetxController {
-  // Profile image
   final profileImagePath = Rx<String?>(null);
 
-  // Update profile loading state
   final isUpdatingProfile = false.obs;
 
-  // Vendor Details Observable
   late VendorDetailsModel vendorDetails;
 
-  // Text Controllers
   late TextEditingController ownerNameController;
   late TextEditingController openingHoursController;
   late TextEditingController openingTimeController;
@@ -36,7 +32,6 @@ class EditProfileController extends GetxController {
     _loadVendorDetails();
   }
 
-  /// Load vendor details from StorageService
   void _loadVendorDetails() {
     try {
       final vendorData = StorageService.getVendorDetails();
@@ -47,7 +42,6 @@ class EditProfileController extends GetxController {
       if (details != null) {
         vendorDetails = details;
 
-        // Initialize controllers with vendor data
         ownerNameController = TextEditingController(
           text: vendorDetails.ownerName ?? "Vikash Rajput",
         );
@@ -67,7 +61,6 @@ class EditProfileController extends GetxController {
           text: vendorDetails.closeTime ?? "8:00 PM",
         );
       } else {
-        // Use default values if no vendor details
         ownerNameController = TextEditingController(text: "Vikash Rajput");
         openingHoursController = TextEditingController(
           text: "9:00 AM - 8:00 PM",
@@ -76,7 +69,6 @@ class EditProfileController extends GetxController {
         closingTimeController = TextEditingController(text: "8:00 PM");
       }
     } catch (e) {
-      // Fallback to default values
       ownerNameController = TextEditingController(text: "Vikash Rajput");
       openingHoursController = TextEditingController(text: "9:00 AM - 8:00 PM");
       openingTimeController = TextEditingController(text: "9:00 AM");
@@ -84,7 +76,6 @@ class EditProfileController extends GetxController {
     }
   }
 
-  /// Format opening and closing times into a readable string
   String _formatOpeningHours(String? openTime, String? closeTime) {
     if (openTime == null || closeTime == null) {
       return "9:00 AM - 8:00 PM"; // Default fallback
@@ -102,7 +93,6 @@ class EditProfileController extends GetxController {
       );
 
       if (image != null) {
-        // Copy image to app documents directory for persistence
         final savedPath = await _saveImageToAppDocuments(image);
         profileImagePath.value = savedPath;
         AppLoggerHelper.info('✅ Profile image selected and saved: $savedPath');
@@ -112,25 +102,21 @@ class EditProfileController extends GetxController {
     }
   }
 
-  /// Save image to app documents directory for persistence
   Future<String?> _saveImageToAppDocuments(XFile image) async {
     try {
       final appDocDir = await getApplicationDocumentsDirectory();
       AppLoggerHelper.debug('App docs dir: ${appDocDir.path}');
       final profileImageDir = Directory('${appDocDir.path}/profile_images');
 
-      // Create directory if it doesn't exist
       if (!await profileImageDir.exists()) {
         await profileImageDir.create(recursive: true);
         AppLoggerHelper.debug('Created profile_images directory');
       }
 
-      // Create a unique filename
       final fileName =
           'profile_image_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final savedImagePath = '${profileImageDir.path}/$fileName';
 
-      // Copy the file to app documents
       final imageFile = File(image.path);
       AppLoggerHelper.debug('Copying from: ${image.path}');
       AppLoggerHelper.debug('Copying to: $savedImagePath');
@@ -181,10 +167,8 @@ class EditProfileController extends GetxController {
     }
   }
 
-  /// Convert 12-hour format time to 24-hour format (HH:mm)
   String _convertTo24HourFormat(String time12h) {
     try {
-      // Parse the 12-hour format time (e.g., "12:23 PM" or "9:15 AM")
       final parts = time12h.trim().split(' ');
       if (parts.length != 2) return time12h;
 
@@ -197,14 +181,12 @@ class EditProfileController extends GetxController {
       var hour = int.parse(timeParts[0]);
       final minute = timeParts[1];
 
-      // Convert to 24-hour format
       if (period == 'PM' && hour != 12) {
         hour += 12;
       } else if (period == 'AM' && hour == 12) {
         hour = 0;
       }
 
-      // Return in HH:mm format
       return '${hour.toString().padLeft(2, '0')}:$minute';
     } catch (e) {
       AppLoggerHelper.error('Error converting time format: $e');
@@ -212,11 +194,9 @@ class EditProfileController extends GetxController {
     }
   }
 
-  /// Update vendor profile via PUT API
   Future<void> updateProfile(bool fromKycFlow) async {
     AppLoggerHelper.debug('🔄 Starting profile update...');
 
-    // Validation
     if (ownerNameController.text.isEmpty) {
       AppLoggerHelper.info('⚠️ Owner name is required');
       return;
@@ -230,7 +210,6 @@ class EditProfileController extends GetxController {
     try {
       isUpdatingProfile.value = true;
 
-      // Convert times to 24-hour format
       final openTime24 = _convertTo24HourFormat(openingTimeController.text);
       final closeTime24 = _convertTo24HourFormat(closingTimeController.text);
 
@@ -254,14 +233,12 @@ class EditProfileController extends GetxController {
       if (response.isSuccess) {
         AppLoggerHelper.info('✅ Profile updated successfully');
 
-        // Update local storage with new data (using 24-hour format)
         final vendorData = StorageService.getVendorDetails();
         if (vendorData != null) {
           vendorData['owner_name'] = ownerNameController.text;
           vendorData['open_time'] = openTime24;
           vendorData['close_time'] = closeTime24;
 
-          // Extract photo URL from API response if available
           if (response.responseData is Map) {
             final apiResponse = response.responseData as Map;
             if (apiResponse['vendor_profile'] != null) {
@@ -275,7 +252,6 @@ class EditProfileController extends GetxController {
             }
           }
 
-          // Save profile image path if one was selected
           if (profileImagePath.value != null) {
             AppLoggerHelper.debug(
               'Saving image path to storage: ${profileImagePath.value}',
@@ -287,7 +263,6 @@ class EditProfileController extends GetxController {
           await StorageService.saveVendorDetails(vendorData);
           AppLoggerHelper.debug('Vendor data saved to storage');
 
-          // Trigger home controller to reload vendor data
           try {
             final homeController = Get.find<HomeController>();
             homeController.loadVendorData();
@@ -296,14 +271,11 @@ class EditProfileController extends GetxController {
           }
         }
 
-        // Reload vendor details
         _loadVendorDetails();
 
-        // Also refresh MyProfileController if it exists
         try {
           final myProfileController = Get.find<MyProfileController>();
           myProfileController.refreshVendorDetails();
-          // Also sync the profile image path if one was selected
           if (profileImagePath.value != null) {
             myProfileController.profileImagePath.value = profileImagePath.value;
           }
