@@ -1153,29 +1153,25 @@ class AddProductModalWidget extends StatelessWidget {
                             }
 
                             isCreating.value = true;
-
-                            // TODO: Implement createSubCategory in AddProductController or SubCategoryService
-                            // For now, we simulate a delay and success
-                            await Future.delayed(Duration(seconds: 1));
-                            final success = true; 
-                            // final success = await addProductController.createSubCategory(...)
+                            final success =
+                                await addProductController.createSubCategory(
+                              name: nameController.text,
+                              description: descriptionController.text,
+                              imagePath: subCategoryImage.value,
+                            );
 
                             if (success) {
                               Navigator.pop(context);
-                              // Show success message BEFORE closing dialog
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                      'Sub category created successfully!'),
+                                    'Sub category created successfully!',
+                                  ),
                                   duration: Duration(seconds: 2),
                                   backgroundColor: Colors.green,
                                 ),
                               );
-
-                              // TODO: Refresh subcategories list
-                              // await addProductController.loadSubcategories();
                             } else {
-                              isCreating.value = false;
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content:
@@ -1185,6 +1181,7 @@ class AddProductModalWidget extends StatelessWidget {
                                 ),
                               );
                             }
+                            isCreating.value = false;
                           },
                     child: Container(
                       width: double.infinity,

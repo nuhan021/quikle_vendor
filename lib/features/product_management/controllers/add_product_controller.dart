@@ -274,6 +274,47 @@ class AddProductController extends GetxController {
     await loadSubSubcategories(subcategoryId);
   }
 
+  Future<bool> createSubCategory({
+    required String name,
+    String? description,
+    String? imagePath,
+  }) async {
+    final trimmedName = name.trim();
+    if (trimmedName.isEmpty) {
+      return false;
+    }
+
+    final categoryId = _getCategoryIdForVendorType();
+    if (categoryId == null) {
+      AppLoggerHelper.debug("Unknown or null vendor type: $vendorType");
+      return false;
+    }
+
+    try {
+      final newSubCategory = await _subcategoryServices.createSubcategory(
+        categoryId: categoryId,
+        name: trimmedName,
+        description: description?.trim(),
+        avatar: (imagePath != null && imagePath.isNotEmpty)
+            ? File(imagePath)
+            : null,
+      );
+
+      subCategoriesList.insert(0, newSubCategory);
+      selectedSubCategoryId.value = newSubCategory.id;
+      selectedSubCategoryName.value = newSubCategory.name;
+      selectedSubSubCategoryId.value = 0;
+      selectedSubSubCategoryName.value = '';
+      subCategorySearchText.value = '';
+      subSubCategoriesList.clear();
+      await loadSubSubcategories(newSubCategory.id);
+      return true;
+    } catch (e) {
+      AppLoggerHelper.debug('Error creating sub category: $e');
+      return false;
+    }
+  }
+
   int? _getCategoryIdForVendorType() {
     switch (vendorType) {
       case 'medicine':
