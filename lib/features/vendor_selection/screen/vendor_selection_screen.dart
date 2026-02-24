@@ -22,14 +22,12 @@ class VendorSelectionScreen extends StatelessWidget {
               () => Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  /// Food Vendor
                   VendorCard(
                     title: "Food Vendor",
                     isSelected: controller.selectedVendor.value == "food",
                     onTap: () => controller.selectVendor("food"),
                   ),
 
-                  /// Medicine Vendor
                   VendorCard(
                     title: "Medicine Vendor",
                     isSelected: controller.selectedVendor.value == "medicine",
@@ -38,7 +36,6 @@ class VendorSelectionScreen extends StatelessWidget {
 
                   const SizedBox(height: 40),
 
-                  /// Submit Button
                   CustomButton(
                     text: "Submit",
                     onPressed: controller.submitSelection,
