@@ -49,7 +49,6 @@ class OrderCardWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -72,19 +71,7 @@ class OrderCardWidget extends StatelessWidget {
             ),
             SizedBox(height: 16),
 
-            // Status Badges
-            // Wrap(
-            //   spacing: 8,
-            //   runSpacing: 8,
-            //   children: tags
-            //       .map(
-            //         (tag) => OrderStatusBadgeWidget(tag: tag, status: status),
-            //       )
-            //       .toList(),
-            // ),
-            // SizedBox(height: 16),
-
-            // Customer Info
+      
             Row(
               children: [
                 Container(
@@ -109,7 +96,6 @@ class OrderCardWidget extends StatelessWidget {
             ),
             SizedBox(height: 12),
 
-            // Delivery Time
             Row(
               children: [
                 Container(
@@ -130,7 +116,6 @@ class OrderCardWidget extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            // Action Buttons
             OrderActionButtonsWidget(
               orderId: orderId,
               status: status,
