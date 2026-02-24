@@ -34,7 +34,6 @@ class LanguageDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            /// Dropdown Label
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -48,7 +47,6 @@ class LanguageDialog extends StatelessWidget {
             ),
             const SizedBox(height: 6),
 
-            /// Dropdown
             DropdownButtonFormField<String>(
               dropdownColor: Colors.white,
               initialValue: selectedLanguage,
@@ -85,7 +83,6 @@ class LanguageDialog extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            /// Save Button (CustomButton)
             CustomButton(
               text: "Save Language",
               onPressed: () {
