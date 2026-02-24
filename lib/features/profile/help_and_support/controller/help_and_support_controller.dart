@@ -2,18 +2,14 @@ import 'package:get/get.dart';
 import '../model/support_history_model.dart';
 
 class HelpAndSupportController extends GetxController {
-  /// -------------------- Form fields --------------------
   var selectedSubject = "".obs;
   var description = "".obs;
   var attachmentPath = "".obs;
 
-  /// -------------------- Support history --------------------
   var supportHistory = <SupportHistoryModel>[].obs;
 
-  /// Available issue subjects (⚡️ Will come from API later)
   final subjects = ["Order Issue", "Payment Problem", "App Bug", "Other"];
 
-  /// -------------------- Lifecycle --------------------
   @override
   void onInit() {
     super.onInit();
@@ -31,7 +27,6 @@ class HelpAndSupportController extends GetxController {
     ]);
   }
 
-  /// -------------------- Actions --------------------
   void setSubject(String value) => selectedSubject.value = value;
   void setDescription(String value) => description.value = value;
   void setAttachment(String path) {
@@ -54,7 +49,6 @@ class HelpAndSupportController extends GetxController {
       ),
     );
 
-    // Reset form
     selectedSubject.value = "";
     description.value = "";
     attachmentPath.value = "";

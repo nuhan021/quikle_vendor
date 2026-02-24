@@ -4,7 +4,6 @@ class SupportHistoryModel {
 
   SupportHistoryModel({required this.title, required this.subtitle});
 
-  /// Convert JSON → Model
   factory SupportHistoryModel.fromJson(Map<String, dynamic> json) {
     return SupportHistoryModel(
       title: json['title'] ?? '',
@@ -12,7 +11,6 @@ class SupportHistoryModel {
     );
   }
 
-  /// Convert Model → JSON
   Map<String, dynamic> toJson() {
     return {'title': title, 'subtitle': subtitle};
   }
