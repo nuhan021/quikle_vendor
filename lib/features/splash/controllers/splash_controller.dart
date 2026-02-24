@@ -6,7 +6,6 @@ import 'package:video_player/video_player.dart';
 import '../../../routes/app_routes.dart';
 
 class SplashController extends GetxController {
-  // final networkController = Get.find<NetworkController>();
   late final VideoPlayerController video;
   final RxBool isReady = false.obs;
   final RxBool shouldShrink = false.obs;
@@ -59,7 +58,6 @@ class SplashController extends GetxController {
       video.pause();
       video.removeListener(_listenDuration);
       await Future.delayed(const Duration(milliseconds: 1000));
-      // Just show the welcome screen - navigation logic moved to WelcomeController
       Get.toNamed(AppRoute.welcome);
     }
   }
