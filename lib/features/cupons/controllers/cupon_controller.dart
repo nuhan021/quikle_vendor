@@ -10,24 +10,21 @@ class CouponController extends GetxController {
   final coupons = <CouponModel>[].obs;
   final couponService = CouponService();
 
-  // form fields for modal sheet
   final titleCtrl = ''.obs;
   final descriptionCtrl = ''.obs;
   final discountCtrl = ''.obs;
-  final productIdCtrl = ''.obs; // nullable - empty means apply to all
+  final productIdCtrl = ''.obs; 
   final editingId = RxnInt();
   final isSaving = false.obs;
   final errorMessage = ''.obs;
   final hasError = false.obs;
 
-  // Product selection
   final selectedProductIds = <String>[].obs;
   final selectedProductNames = <String>[].obs;
   final productSearchText = ''.obs;
 
   final isLoading = false.obs;
 
-  // Local storage key for coupon items
   static const String _couponItemsKey = 'coupon_items_map';
 
   @override
@@ -36,7 +33,6 @@ class CouponController extends GetxController {
     fetchCoupons();
   }
 
-  // Load coupon items from local storage
   Future<List<int>> _loadCouponItemsLocally(int couponId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -68,10 +64,8 @@ class CouponController extends GetxController {
         final data = response.responseData;
         print('DEBUG: Fetch response data: $data');
 
-        // Clear existing coupons
         coupons.clear();
 
-        // Check if data is a list or contains a list
         List<dynamic> couponList = [];
         if (data is List) {
           couponList = data;
@@ -81,7 +75,6 @@ class CouponController extends GetxController {
           couponList = data['coupons'] ?? [];
         }
 
-        // Parse coupons from response
         for (var item in couponList) {
           if (item is Map<String, dynamic>) {
             print('DEBUG: Coupon item: $item');
@@ -106,7 +99,6 @@ class CouponController extends GetxController {
                 (item['product_ids'] as List).isNotEmpty) {
               items = List<int>.from(item['product_ids']);
             } else {
-              // If API returns empty items, try loading from local storage
               items = await _loadCouponItemsLocally(couponId);
               print(
                 'DEBUG: Loaded items from local storage for coupon $couponId: $items',
@@ -128,7 +120,6 @@ class CouponController extends GetxController {
           }
         }
 
-        // Sort coupons by created date (newest first)
         coupons.sort((a, b) {
           if (a.createdAt == null && b.createdAt == null) return 0;
           if (a.createdAt == null) return 1;
@@ -170,7 +161,6 @@ class CouponController extends GetxController {
     descriptionCtrl.value = c.description;
     discountCtrl.value = c.discount.toString();
 
-    // Populate selected products from the coupon
     selectedProductIds.clear();
     selectedProductNames.clear();
 
@@ -178,13 +168,11 @@ class CouponController extends GetxController {
       'DEBUG: openEditForm - Coupon ID: ${c.id}, Items from backend: ${c.items}',
     );
 
-    // Use items from backend only
     _populateSelectedProducts(List<int>.from(c.items));
   }
 
   void _populateSelectedProducts(List<int> items) {
     if (items.isNotEmpty) {
-      // Get the products controller to fetch product names
       try {
         final productsController = Get.find<ProductsController>();
 
@@ -193,7 +181,6 @@ class CouponController extends GetxController {
           selectedProductIds.add(productIdStr);
           print('DEBUG: Added product ID: $productIdStr');
 
-          // Find the product name from the products list
           final product = productsController.products.firstWhereOrNull(
             (p) => p.id == itemId,
           );
@@ -205,7 +192,6 @@ class CouponController extends GetxController {
           }
         }
 
-        // Update productIdCtrl with comma-separated IDs
         productIdCtrl.value = selectedProductIds.join(',');
         print('DEBUG: Final selectedProductIds: $selectedProductIds');
         print('DEBUG: Final selectedProductNames: $selectedProductNames');
@@ -256,7 +242,6 @@ class CouponController extends GetxController {
     print('DEBUG: description = "$description"');
     print('DEBUG: discount = $discount');
 
-    // Get product IDs from selectedProductIds (the actual UI selection)
     List<int> productIds = selectedProductIds
         .map((id) => int.tryParse(id) ?? 0)
         .where((id) => id > 0)
@@ -268,7 +253,6 @@ class CouponController extends GetxController {
 
     try {
       if (editingId.value == null) {
-        // Create new coupon via API
         print(
           'DEBUG: Calling createCoupon with title="$title", description="$description", discount=$discount',
         );
@@ -280,7 +264,6 @@ class CouponController extends GetxController {
         );
 
         if (response.isSuccess) {
-          // Extract coupon data from response
           final responseData = response.responseData;
           final couponCode =
               responseData['cupon'] ?? responseData['code'] ?? '';
@@ -290,13 +273,11 @@ class CouponController extends GetxController {
 
           print('DEBUG: Coupon created with code: $couponCode, id: $couponId');
 
-          // Get items from backend response
           List<int> itemsFromResponse = [];
           if (responseData['items'] != null && responseData['items'] is List) {
             itemsFromResponse = List<int>.from(responseData['items']);
           }
 
-          // Create a new coupon model with backend response data
           final newCoupon = CouponModel(
             id: couponId,
             title: responseData['title'] ?? title,
@@ -308,10 +289,8 @@ class CouponController extends GetxController {
             createdAt: DateTime.now(),
           );
 
-          // Add to the beginning of the list (newest first)
           coupons.insert(0, newCoupon);
 
-          // Close dialog and show success
           Get.back();
           Get.snackbar(
             'Success',
@@ -325,7 +304,6 @@ class CouponController extends GetxController {
           hasError.value = true;
         }
       } else {
-        // Update existing coupon via API
         final response = await couponService.updateCoupon(
           couponId: editingId.value!,
           title: title,
@@ -337,21 +315,18 @@ class CouponController extends GetxController {
         if (response.isSuccess) {
           final idx = coupons.indexWhere((c) => c.id == editingId.value);
           if (idx != -1) {
-            // Extract coupon code from response
             final responseData = response.responseData;
             final couponCode =
                 responseData['cupon'] ??
                 responseData['code'] ??
                 coupons[idx].code;
 
-            // Get items from response (if backend returns them)
             List<int> itemsFromResponse = [];
             if (responseData['items'] != null &&
                 responseData['items'] is List) {
               itemsFromResponse = List<int>.from(responseData['items']);
             }
 
-            // Update the coupon with backend response
             final updatedCoupon = CouponModel(
               id: coupons[idx].id,
               title: responseData['title'] ?? title,
@@ -363,15 +338,12 @@ class CouponController extends GetxController {
               createdAt: coupons[idx].createdAt,
             );
 
-            // Replace in the list and trigger refresh
             coupons[idx] = updatedCoupon;
-            coupons.refresh(); // Force GetX to notify observers
+            coupons.refresh(); 
           }
 
-          // Re-fetch coupons from backend to get the latest data (workaround for backend caching)
           await fetchCoupons();
 
-          // Close dialog and show success
           Get.back();
           Get.snackbar(
             'Success',
@@ -386,7 +358,6 @@ class CouponController extends GetxController {
         }
       }
 
-      // Reset form fields
       titleCtrl.value = '';
       descriptionCtrl.value = '';
       discountCtrl.value = '';
