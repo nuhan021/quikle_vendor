@@ -10,13 +10,11 @@ import '../../../routes/app_routes.dart';
 class VerificationController extends GetxController {
   final otpDigits = List.generate(6, (_) => '').obs;
 
-  // TextEditingControllers for OTP input fields
   late final List<TextEditingController> digits = List.generate(
     6,
     (_) => TextEditingController(),
   );
 
-  // FocusNodes for OTP input fields
   late final List<FocusNode> focuses = List.generate(6, (_) => FocusNode());
 
   late final String phone = Get.arguments["phone"];
@@ -49,7 +47,6 @@ class VerificationController extends GetxController {
     response = await _auth.vendorLogin(phone, otp);
 
     if (response.isSuccess) {
-      // Extract token and id from response
       if (response.responseData is Map) {
         final responseData = response.responseData as Map<String, dynamic>;
         final token = responseData['access_token'];
@@ -58,47 +55,25 @@ class VerificationController extends GetxController {
             responseData['user_id']?.toString() ??
             '';
 
-        // Save token and id to storage
         if (token != null) {
           await StorageService.saveToken(token, id);
         }
       }
 
-      // Call vendor details API
       final vendorDetailsResponse = await _auth.getVendorDetails();
       log('Vendor Details Response: ${vendorDetailsResponse.responseData}');
 
-      // Check if response data is a Map
       if (vendorDetailsResponse.responseData is Map) {
         final vendorData =
             vendorDetailsResponse.responseData as Map<String, dynamic>;
 
-        // Save vendor details to SharedPreferences
         if (vendorData['vendor_profile'] != null) {
           await StorageService.saveVendorDetails(
             vendorData['vendor_profile'] as Map<String, dynamic>,
           );
         }
 
-        // // Handle successful response with vendor_profile
-        // if (vendorData['vendor_profile'] != null) {
-        //   final vendorProfile =
-        //       vendorData['vendor_profile'] as Map<String, dynamic>;
 
-        //   // Store vendor details in UserController
-        //   Get.find<UserController>().setVendorDetails(vendorProfile);
-
-        //   isVerifying.value = false;
-
-        //   // Simple navigation: based on is_completed only
-        //   final isCompleted = vendorProfile['is_completed'] as bool? ?? false;
-
-        //   if (isCompleted) {
-        //     Get.offAllNamed(AppRoute.homeScreen);
-        //   }
-        // }
-
-        // Case 1: Profile is completed
         if (vendorData['message'] == 'Vendor profile fetched successfully' &&
             vendorData['vendor_profile']['is_completed'] == true) {
           log('✅ Navigated to Navbar Screen - Profile Completed');
@@ -107,7 +82,6 @@ class VerificationController extends GetxController {
           return;
         }
 
-        // Handle: Vendor profile not found
         if (vendorData['detail'] == 'Vendor profile not found.') {
           isVerifying.value = false;
           Get.offAllNamed(AppRoute.vendorSelectionScreen);
@@ -118,7 +92,6 @@ class VerificationController extends GetxController {
             vendorData['vendor_profile']['kyc_status'] == 'verified') {
           isVerifying.value = false;
           Get.offAllNamed(
-            // AppRoute.navbarScreen,
             AppRoute.kycApprovalScreen,
             arguments: {'kycStatus': 'verified'},
           );
@@ -145,7 +118,6 @@ class VerificationController extends GetxController {
         }
       }
 
-      // Any other error case
       isVerifying.value = false;
     } else {
       isVerifying.value = false;
