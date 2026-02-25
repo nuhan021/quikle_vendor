@@ -54,21 +54,44 @@ class RecentOrdersWidget extends StatelessWidget {
         Obx(() {
           final omc = Get.find<OrderManagementController>();
 
-          // Use the controller's reactive recentOrdersCache (first shipped, first delivered)
+          const shippedStatus = 'shipped';
+          const completedStatus = 'delivered';
+
+          final shippedLoading = omc.isStatusLoading(shippedStatus);
+          final completedLoading = omc.isStatusLoading(completedStatus);
+          final shippedFetched = omc.hasFetchedStatus(shippedStatus);
+          final completedFetched = omc.hasFetchedStatus(completedStatus);
+
+          // Use the controller's reactive recentOrdersCache
           final cached = omc.recentOrdersCache;
 
-          // If cache doesn't have both items yet, request them. Controller will no-op if already cached/ loading.
-          if (cached.length < 1) omc.fetchOrdersForApiStatus('shipped');
-          if (cached.length < 2) omc.fetchOrdersForApiStatus('delivered');
+          // Load statuses if they were not fetched yet.
+          if (!shippedFetched && !shippedLoading) {
+            omc.fetchOrdersForApiStatus(shippedStatus);
+          }
+          if (!completedFetched && !completedLoading) {
+            omc.fetchOrdersForApiStatus(completedStatus);
+          }
 
-          // Build a display list of exactly two slots: [shipped, delivered]
+          final shouldShowLoadingPlaceholder =
+              shippedLoading ||
+              completedLoading ||
+              !shippedFetched ||
+              !completedFetched;
+
+          // Build a display list of max two cards.
           final List<Map<String, dynamic>> displayOrders = [];
-          if (cached.isNotEmpty)
+          if (cached.isNotEmpty) {
             displayOrders.addAll(
-              cached.map((e) => Map<String, dynamic>.from(e)),
+              cached.take(2).map((e) => Map<String, dynamic>.from(e)),
             );
-          // pad with empty maps to keep two slots
-          while (displayOrders.length < 2) {
+          }
+
+          if (displayOrders.isEmpty && shouldShowLoadingPlaceholder) {
+            displayOrders.addAll([{}, {}]);
+          } else if (displayOrders.isEmpty && !shouldShowLoadingPlaceholder) {
+            displayOrders.add({});
+          } else if (displayOrders.length < 2 && shouldShowLoadingPlaceholder) {
             displayOrders.add({});
           }
 
@@ -83,7 +106,20 @@ class RecentOrdersWidget extends StatelessWidget {
                 final order = displayOrders[index];
 
                 if (order.isEmpty) {
-                  final widget = const RecentOrderShimmer();
+                  final widget = shouldShowLoadingPlaceholder
+                      ? const RecentOrderShimmer()
+                      : Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 24),
+                            child: Text(
+                              'No recent orders found',
+                              style: getTextStyle(
+                                fontSize: 14,
+                                color: const Color(0xFF9CA3AF),
+                              ),
+                            ),
+                          ),
+                        );
                   if (index < displayOrders.length - 1) {
                     return Column(children: [widget, SizedBox(height: 16)]);
                   }
@@ -118,7 +154,7 @@ class RecentOrdersWidget extends StatelessWidget {
                 } else if (rawTotal is String) {
                   amount = rawTotal.startsWith('\$')
                       ? rawTotal
-                      : '\$' + rawTotal;
+                      : '\$$rawTotal';
                 } else {
                   amount = '\$0';
                 }
