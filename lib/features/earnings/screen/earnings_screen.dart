@@ -30,7 +30,6 @@ class EarningsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            /// Tab Buttons
             Obx(
               () => Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -66,7 +65,6 @@ class EarningsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            /// Tab Content
             Expanded(
               child: Obx(() => tabWidgets[controller.selectedTab.value]),
             ),
