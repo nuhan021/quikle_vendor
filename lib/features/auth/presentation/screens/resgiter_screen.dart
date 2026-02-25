@@ -28,13 +28,11 @@ class RegisterScreen extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Column(
               children: [
-                /// Back Button
                 Align(
                   alignment: Alignment.centerLeft,
                   child: GestureDetector(
                     onTap: () => Get.offNamed(AppRoute.login),
                     child: Container(
-                      // padding: EdgeInsets.all(8.w),
                       child: Icon(
                         Icons.arrow_back,
                         color: AppColors.eggshellWhite,
