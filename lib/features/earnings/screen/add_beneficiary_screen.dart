@@ -39,7 +39,6 @@ class AddBeneficiaryScreen extends StatelessWidget {
               phone: phoneController.text.trim(),
             );
 
-            // show loading
             Get.dialog(
               const Center(child: CircularProgressIndicator()),
               barrierDismissible: false,
@@ -49,11 +48,10 @@ class AddBeneficiaryScreen extends StatelessWidget {
               beneficiary,
             );
 
-            // close loading
             if (Get.isDialogOpen ?? false) Get.back();
 
             if (response.isSuccess) {
-              Get.back(); // return to payouts tab
+              Get.back(); 
               Get.snackbar('Success', 'Beneficiary added successfully');
             } else {
               Get.snackbar(
