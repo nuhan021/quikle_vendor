@@ -6,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:quikle_vendor/core/utils/logging/logger.dart';
 import 'package:quikle_vendor/core/services/storage_service.dart';
 import 'package:quikle_vendor/features/product_management/services/add_product_services.dart';
-import 'package:quikle_vendor/routes/app_routes.dart';
 import '../model/subcategory_model.dart';
 import '../model/sub_subcategory_model.dart';
 import '../services/subcategory_services.dart';
@@ -194,23 +193,14 @@ class AddProductController extends GetxController {
           duration: Duration(seconds: 2),
         );
 
-        // Refresh products list and navigate
+        // Refresh products list in place
         try {
           final productsController = Get.find<ProductsController>();
           productsController.products.clear();
           productsController.offset = 0;
           await productsController.fetchProducts();
-
-          // Navigate to products screen
-          Future.delayed(Duration(milliseconds: 300), () {
-            Get.toNamed(AppRoute.productManagementScreen);
-          });
         } catch (e) {
           log('Error refreshing products list: $e');
-          // Still navigate even if refresh fails
-          Future.delayed(Duration(milliseconds: 300), () {
-            Get.toNamed(AppRoute.productManagementScreen);
-          });
         }
       } else {
         Get.snackbar(
