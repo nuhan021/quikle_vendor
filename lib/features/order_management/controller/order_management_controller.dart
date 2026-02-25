@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:quikle_vendor/routes/app_routes.dart';
 import '../../../core/services/storage_service.dart';
@@ -18,6 +20,7 @@ class OrderManagementController extends GetxController {
   final Map<String, int> _statusOffsets = {};
   final Map<String, bool> _statusHasMore = {};
   final Map<String, bool> _statusLoading = {};
+  final Map<String, bool> _statusFetchedOnce = {};
   // Exposed reactive small cache for RecentOrdersWidget: [first shipped, first delivered]
   final recentOrdersCache = <Map<String, dynamic>>[].obs;
 
@@ -44,6 +47,7 @@ class OrderManagementController extends GetxController {
       _statusHasMore[apiStatus] = true;
       _statusCache[apiStatus] = [];
       _statusLoading[apiStatus] = false;
+      _statusFetchedOnce[apiStatus] = false;
     }
 
     // Fire off prefetches (await sequentially to avoid rate limits)
@@ -125,19 +129,38 @@ class OrderManagementController extends GetxController {
         _statusHasMore[apiStatus] = false;
       }
     } catch (e) {
-      print('Error fetching orders by status: $e');
+      log('Error fetching orders by status: $e');
     } finally {
       _statusLoading[apiStatus] = false;
+      _statusFetchedOnce[apiStatus] = true;
     }
   }
 
   void _updateRecentOrdersCache() {
     final shipped = _statusCache['shipped'] ?? [];
     final delivered = _statusCache['delivered'] ?? [];
+    final completed = _statusCache['completed'] ?? [];
+    final doneOrders = delivered.isNotEmpty ? delivered : completed;
+    final processing = _statusCache['processing'] ?? [];
+    final confirmed = _statusCache['confirmed'] ?? [];
 
     final List<Map<String, dynamic>> out = [];
     if (shipped.isNotEmpty) out.add(shipped.first);
-    if (delivered.isNotEmpty) out.add(delivered.first);
+    if (doneOrders.isNotEmpty) out.add(doneOrders.first);
+
+    // Fallback: if shipped/completed not available, show the latest available
+    // from processing/confirmed so Recent Orders doesn't stay empty forever.
+    if (out.isEmpty) {
+      final fallback = <Map<String, dynamic>>[
+        ...processing,
+        ...confirmed,
+        ...shipped,
+        ...doneOrders,
+      ];
+      if (fallback.isNotEmpty) {
+        out.addAll(fallback.take(2));
+      }
+    }
 
     // ensure length 2 when possible; do not fill with duplicates
     recentOrdersCache.assignAll(out);
@@ -149,7 +172,7 @@ class OrderManagementController extends GetxController {
     switch (tabName) {
       case 'new':
         return 'processing';
-      case 'in progress':
+      case 'confirmed':
         return 'confirmed';
       case 'shipped':
         return 'shipped';
@@ -178,19 +201,23 @@ class OrderManagementController extends GetxController {
     final tabIndex = tabs.indexWhere(
       (t) => _mapTabIndexToApiStatus(tabs.indexOf(t)) == apiStatus,
     );
-    if (tabIndex < 0) return;
+    if (tabIndex < 0) {
+      return;
+    }
 
     // If not forcing and we already have cached data or currently loading, do nothing
     if (!force &&
         ((_statusCache[apiStatus]?.isNotEmpty ?? false) ||
-            (_statusLoading[apiStatus] == true)))
+            (_statusLoading[apiStatus] == true))) {
       return;
+    }
 
     if (force) {
       // clear cache and reset offset so API is hit for fresh data
       _statusCache[apiStatus] = [];
       _statusOffsets[apiStatus] = 0;
       _statusHasMore[apiStatus] = true;
+      _statusFetchedOnce[apiStatus] = false;
     }
 
     final bool isActiveTab =
@@ -211,6 +238,11 @@ class OrderManagementController extends GetxController {
     return _statusLoading[apiStatus] == true;
   }
 
+  /// Public: check if a specific API status has been fetched at least once.
+  bool hasFetchedStatus(String apiStatus) {
+    return _statusFetchedOnce[apiStatus] == true;
+  }
+
   /// -------------------- Filtered Orders by Selected Tab --------------------
   List<Map<String, dynamic>> get filteredOrders {
     // establish reactive dependencies on selectedTab and allOrders
@@ -221,7 +253,7 @@ class OrderManagementController extends GetxController {
       case 'new':
         statusFilter = 'new';
         break;
-      case 'in progress':
+      case 'confirmed':
         statusFilter = 'in-progress';
         break;
       case 'shipped':
