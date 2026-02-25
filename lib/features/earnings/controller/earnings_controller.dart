@@ -8,9 +8,7 @@ class EarningsController extends GetxController {
 
   void changeTab(int index) {
     selectedTab.value = index;
-    // If Overview tab selected, trigger a refresh of overview data.
     if (index == 0) {
-      // Schedule after frame so OverviewTab (and its controller) is built/put.
       SchedulerBinding.instance.addPostFrameCallback((_) {
         try {
           final overview = Get.find<OverviewController>();
