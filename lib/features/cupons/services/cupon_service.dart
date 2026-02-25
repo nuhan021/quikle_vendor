@@ -62,24 +62,19 @@ class CouponService {
     try {
       final String updateUrl = '${ApiConstants.updateCupon}$couponId';
 
-      // Build the body with correct types for form encoding
       final Map<String, dynamic> body = {
-        'title': title, // String
-        'description': description, // String
-        'discount': discount, // int
+        'title': title, 
+        'description': description, 
+        'discount': discount, 
       };
 
-      // Add product IDs as List<int> - NetworkCaller will encode as repeated keys
-      // Backend expects: item_ids=25802&item_ids=25789
       if (productIds != null && productIds.isNotEmpty) {
-        body['item_ids'] = productIds; // List<int>
+        body['item_ids'] = productIds;
       }
 
       log('Updating Coupon with body: $body');
       log('Update URL: $updateUrl');
 
-      // Use custom CouponNetworkCaller with proper form array encoding
-      // Backend expects: item_ids=25802&item_ids=25789 (repeated keys)
       final response = await couponNetworkCaller.putRequest(
         updateUrl,
         token: 'Bearer ${StorageService.token}',
