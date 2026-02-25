@@ -17,12 +17,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(LoginController());
     return
-    // AnnotatedRegion<SystemUiOverlayStyle>(
-    //   value: const SystemUiOverlayStyle(
-    //     statusBarColor: Colors.transparent,
-    //     statusBarIconBrightness: Brightness.light,
-    //   ),
-    //   child:
+ 
     Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
