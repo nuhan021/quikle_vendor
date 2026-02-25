@@ -8,7 +8,6 @@ import 'package:quikle_vendor/core/utils/logging/logger.dart';
 class AuthService extends GetxService {
   final NetworkCaller _network = NetworkCaller();
 
-  /// Send OTP for Signup
   Future<ResponseData> sendOtpForSignup(String phone) {
     return _network.postRequest(
       ApiConstants.sendOtp,
@@ -17,7 +16,6 @@ class AuthService extends GetxService {
     );
   }
 
-  /// Send OTP for Login
   Future<ResponseData> sendOtpForLogin(String phone) {
     return _network.postRequest(
       ApiConstants.sendOtp,
@@ -26,7 +24,6 @@ class AuthService extends GetxService {
     );
   }
 
-  /// Complete Vendor Login after OTP
   Future<ResponseData> vendorLogin(String phone, String otp) {
     return _network.postRequest(
       ApiConstants.login,
@@ -35,7 +32,6 @@ class AuthService extends GetxService {
     );
   }
 
-  /// Complete Vendor Signup after OTP
   Future<ResponseData> vendorSignup(String shopName, String phone, String otp) {
     return _network.postRequest(
       ApiConstants.vendorSignup,
@@ -44,7 +40,6 @@ class AuthService extends GetxService {
     );
   }
 
-  /// Verify OTP for Login
   Future<ResponseData> verifyLogin(String phone, String otp) {
     return _network.postRequest(
       ApiConstants.login,
@@ -53,7 +48,6 @@ class AuthService extends GetxService {
     );
   }
 
-  /// Verify token
   Future<ResponseData> verifyToken() {
     return _network.getRequest(
       ApiConstants.verifyToken,
@@ -61,7 +55,6 @@ class AuthService extends GetxService {
     );
   }
 
-  /// Fetch vendor details
   Future<ResponseData> getVendorDetails() async {
     final token = StorageService.token;
     AppLoggerHelper.info('🔑 Fetching vendor details with token: $token');
