@@ -6,15 +6,12 @@ import 'package:quikle_vendor/core/models/response_data.dart';
 class CouponNetworkCaller {
   static const int timeoutDuration = 60;
 
-  /// Encodes form body with support for repeated keys (e.g., item_ids=1&item_ids=2)
-  /// This is needed for FastAPI's List[int] = Form(...) fields
   String _encodeFormBodyWithArrays(Map<String, dynamic>? body) {
     if (body == null || body.isEmpty) return '';
 
     final pairs = <String>[];
     body.forEach((key, value) {
       if (value is List) {
-        // For lists: add repeated key=value entries
         for (final item in value) {
           pairs.add(
             '${Uri.encodeComponent(key)}=${Uri.encodeComponent(item.toString())}',
@@ -30,7 +27,6 @@ class CouponNetworkCaller {
     return pairs.join('&');
   }
 
-  /// Custom PUT request for coupon update with proper form array encoding
   Future<ResponseData> putRequest(
     String url, {
     Map<String, dynamic>? body,
@@ -52,7 +48,6 @@ class CouponNetworkCaller {
           )
           .timeout(Duration(seconds: timeoutDuration));
 
-      // Handle response
       if (response.statusCode == 200 || response.statusCode == 201) {
         return ResponseData(
           isSuccess: true,
