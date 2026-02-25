@@ -38,7 +38,6 @@ class CouponModalWidget extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20.h),
-                // Title field
                 Text(
                   'Title',
                   style: TextStyle(
@@ -83,7 +82,6 @@ class CouponModalWidget extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 16.h),
-                // Description field
                 Text(
                   'Description',
                   style: TextStyle(
@@ -130,7 +128,6 @@ class CouponModalWidget extends StatelessWidget {
                   maxLines: 2,
                 ),
                 SizedBox(height: 16.h),
-                // Discount field
                 Text(
                   'Discount (%)',
                   style: TextStyle(
@@ -176,7 +173,6 @@ class CouponModalWidget extends StatelessWidget {
                   keyboardType: TextInputType.number,
                 ),
                 SizedBox(height: 16.h),
-                // Product Selection field (optional)
                 Text(
                   'Choose Products (Optional)',
                   style: TextStyle(
@@ -275,7 +271,6 @@ class CouponModalWidget extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 16.h),
-                // Error message display
                 Obx(
                   () => controller.hasError.value
                       ? Container(
@@ -299,7 +294,6 @@ class CouponModalWidget extends StatelessWidget {
                       : SizedBox(height: 0),
                 ),
                 SizedBox(height: 24.h),
-                // Save button
                 Row(
                   children: [
                     Expanded(
@@ -378,7 +372,6 @@ class CouponModalWidget extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 16.h),
-                // Search Field
                 CustomTextField(
                   label: '',
                   hintText: 'Search products...',
@@ -387,7 +380,6 @@ class CouponModalWidget extends StatelessWidget {
                   },
                 ),
                 SizedBox(height: 12.h),
-                // Products List
                 Expanded(
                   child: Obx(() {
                     final filtered = productsController.products
@@ -439,7 +431,6 @@ class CouponModalWidget extends StatelessWidget {
                                         );
                                       }
 
-                                      // Update productIdCtrl with comma-separated IDs
                                       controller.productIdCtrl.value =
                                           controller.selectedProductIds.join(
                                             ',',
@@ -513,7 +504,6 @@ class CouponModalWidget extends StatelessWidget {
                   }),
                 ),
                 SizedBox(height: 12.h),
-                // Done Button
                 Row(
                   children: [
                     Expanded(
