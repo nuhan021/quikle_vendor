@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 
 class InvoiceController extends GetxController {
-  /// All invoices (to be fetched from API later)
   var invoices = <Map<String, dynamic>>[].obs;
 
   @override
@@ -33,10 +32,7 @@ class InvoiceController extends GetxController {
     ]);
   }
 
-  /// Example future function to fetch from API
   Future<void> fetchInvoices() async {
     // TODO: Implement API call
-    // final response = await ApiService.getInvoices();
-    // invoices.assignAll(response.data);
   }
 }
