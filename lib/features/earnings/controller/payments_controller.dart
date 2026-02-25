@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 
 class PaymentsController extends GetxController {
-  /// List of transactions
   var transactions = <Map<String, dynamic>>[].obs;
 
   @override
@@ -31,10 +30,7 @@ class PaymentsController extends GetxController {
     ]);
   }
 
-  /// Future API call
   Future<void> fetchTransactions() async {
     // TODO: Implement API integration
-    // final response = await ApiService.getTransactions();
-    // transactions.assignAll(response.data);
   }
 }
