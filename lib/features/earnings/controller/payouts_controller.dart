@@ -7,7 +7,6 @@ import 'package:quikle_vendor/core/models/response_data.dart';
 import 'package:quikle_vendor/core/utils/logging/logger.dart';
 
 class PayoutsController extends GetxController {
-  /// -------------------- Observables --------------------
   var availableBalance = 0.0.obs;
   var nextAutoWithdrawal = "".obs;
 
@@ -23,7 +22,6 @@ class PayoutsController extends GetxController {
 
   bool get hasBeneficiary => beneficiary.value != null;
 
-  /// Dropdown options
   final withdrawalDays = [
     "Monday",
     "Tuesday",
@@ -35,20 +33,17 @@ class PayoutsController extends GetxController {
   ];
   final paymentMethods = ["Bank Transfer", "PayPal", "Stripe", "Other"];
 
-  /// -------------------- Lifecycle --------------------
   @override
   void onInit() {
     super.onInit();
     fetchPayoutData();
   }
 
-  /// -------------------- Actions --------------------
 
   void addBeneficiary(BeneficiaryModel beneficiary) {
     this.beneficiary.value = beneficiary;
   }
 
-  /// Add beneficiary via API and update local state
   Future<ResponseData> addBeneficiaryRemote(
     BeneficiaryModel model, {
     String? refreshToken,
@@ -66,7 +61,6 @@ class PayoutsController extends GetxController {
       );
 
       if (response.isSuccess) {
-        // Update local beneficiary on success
         beneficiary.value = model;
         isBeneficiarySelected.value = true;
         log('Beneficiary added successfully: ${response.responseData}');
@@ -93,7 +87,6 @@ class PayoutsController extends GetxController {
   }
 
   void withdraw() {
-    // Handled via show_withdraw_sheet
   }
 
   void updateMinWithdrawal(String value) {
@@ -129,7 +122,6 @@ class PayoutsController extends GetxController {
     availableBalance.value -= amount;
   }
 
-  /// -------------------- Fetch Data --------------------
   Future<void> fetchPayoutData() async {
     // TODO: Replace this with API call
     await Future.delayed(const Duration(milliseconds: 500));
