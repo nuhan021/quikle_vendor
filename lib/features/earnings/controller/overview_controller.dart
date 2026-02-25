@@ -4,34 +4,29 @@ import '../services/earning_sevices.dart';
 import '../model/earnings_model.dart';
 
 class OverviewController extends GetxController {
-  /// ---------------------- Earnings ----------------------
   var totalEarnings = 0.0.obs;
   var netEarnings = 0.0.obs;
 
-  /// ---------------------- Filters ----------------------
   var selectedRange = "This Week".obs;
   final ranges = ["This Week", "This Month", "This Year"];
 
-  /// ---------------------- Stats ----------------------
   var paymentReceived = 0.0.obs;
   var pending = 0.0.obs;
   var commission = 0.0.obs;
   var avgOrder = 0.0.obs;
 
-  /// ---------------------- Orders ----------------------
   var ordersCount = 0.obs;
 
   @override
   void onInit() {
     super.onInit();
-    fetchOverviewData(); // Initial fetch (calls API)
+    fetchOverviewData(); 
   }
 
   final EarningsService _service = EarningsService();
   final isLoading = false.obs;
   final errorMessage = ''.obs;
 
-  /// Fetch overview data from API and populate observables
   Future<void> fetchOverviewData({String? range}) async {
     isLoading.value = true;
     errorMessage.value = '';
@@ -49,7 +44,6 @@ class OverviewController extends GetxController {
 
       if (model != null) {
         totalEarnings.value = model.totalEarnings ?? 0.0;
-        // If platform doesn't return net directly, keep some simple calculation
         netEarnings.value =
             (model.totalEarnings ?? 0.0) - (model.platformCost ?? 0.0);
         paymentReceived.value =
@@ -73,14 +67,11 @@ class OverviewController extends GetxController {
     }
   }
 
-  /// Change selected range
   void changeRange(String value) {
     selectedRange.value = value;
-    // Call API with selected range mapped to period
     fetchOverviewData(range: value);
   }
 
-  // Map UI label to API period parameter
   String _mapRangeToPeriod(String rangeLabel) {
     final v = rangeLabel.toLowerCase();
     if (v.contains('week')) return 'this_week';
