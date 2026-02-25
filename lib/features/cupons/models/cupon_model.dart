@@ -4,7 +4,7 @@ class CouponModel {
   String description;
   String code;
   int discount;
-  int? productId; // null = apply to all products
+  int? productId; 
   List<dynamic> items;
   DateTime? createdAt;
 
