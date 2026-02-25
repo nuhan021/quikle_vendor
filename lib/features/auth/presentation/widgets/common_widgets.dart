@@ -71,7 +71,6 @@ class CommonWidgets {
       child: Container(
         width: double.infinity,
         height: 48.h,
-        // padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
         decoration: ShapeDecoration(
           color: const Color(0xFFFFC200),
           shape: RoundedRectangleBorder(
@@ -108,7 +107,6 @@ class CommonWidgets {
       child: Container(
         width: double.infinity,
         height: 50.h,
-        // padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
         clipBehavior: Clip.antiAlias,
         decoration: ShapeDecoration(
           color: Colors.white.withOpacity(0.05),
