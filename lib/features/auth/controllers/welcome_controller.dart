@@ -21,14 +21,12 @@ class WelcomeController extends GetxController {
   Future<void> _handleNavigation() async {
     try {
       if (StorageService.hasToken()) {
-        // Call vendor details API
         final auth = Get.find<AuthService>();
         final vendorDetailsResponse = await auth.getVendorDetails();
 
         final vendorData =
             vendorDetailsResponse.responseData as Map<String, dynamic>;
 
-        // Case 1: Profile is completed
         if (vendorData['message'] == 'Vendor profile fetched successfully' &&
             vendorData['vendor_profile']['is_completed'] == true) {
           log('✅ Navigated to Navbar Screen - Profile Completed');
@@ -36,20 +34,17 @@ class WelcomeController extends GetxController {
           Get.offAllNamed(AppRoute.navbarScreen);
           return;
         }
-        // Case 2: Vendor profile not found
         if (vendorData['detail'] == 'Vendor profile not found.') {
           log('📋 Navigating to Vendor Selection');
           Get.offAllNamed(AppRoute.vendorSelectionScreen);
           return;
         }
 
-        // Case 3: KYC Status is verified
         if (vendorDetailsResponse.statusCode == 200 &&
             vendorData['message'] == 'Vendor profile fetched successfully' &&
             vendorData['vendor_profile']['kyc_status'] == 'verified') {
           log('✅ Navigated to Navbar Screen - KYC Verified');
           await StorageService.saveVendorDetails(vendorData['vendor_profile']);
-          // Get.offAllNamed(AppRoute.navbarScreen);
           Get.offAllNamed(
             AppRoute.kycApprovalScreen,
             arguments: {'kycStatus': 'verified'},
@@ -57,7 +52,6 @@ class WelcomeController extends GetxController {
           return;
         }
 
-        // Case 4: KYC Status is submitted
         if (vendorDetailsResponse.statusCode == 200 &&
             vendorData['message'] == 'Vendor profile fetched successfully' &&
             vendorData['vendor_profile']['kyc_status'] == 'submitted') {
@@ -70,7 +64,6 @@ class WelcomeController extends GetxController {
           return;
         }
 
-        // Case 5: KYC Status is rejected
         if (vendorDetailsResponse.statusCode == 200 &&
             vendorData['message'] == 'Vendor profile fetched successfully' &&
             vendorData['vendor_profile']['kyc_status'] == 'rejected') {
@@ -83,7 +76,6 @@ class WelcomeController extends GetxController {
           return;
         }
 
-        // Default case: If none of the above, navigate to vendor selection
         log('Default navigation - Profile incomplete or unknown status');
         Get.offAllNamed(AppRoute.vendorSelectionScreen);
         return;
