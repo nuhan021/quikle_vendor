@@ -79,12 +79,10 @@ class CuponScreen extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // left content
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title
                   Text(
                     coupon.title,
                     style: TextStyle(
@@ -94,7 +92,6 @@ class CuponScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 4.h),
-                  // Description
                   Text(
                     coupon.description,
                     style: TextStyle(
@@ -126,25 +123,15 @@ class CuponScreen extends StatelessWidget {
                   ),
                   if (coupon.createdAt != null) ...[
                     SizedBox(height: 6.h),
-                    // Created time
-                    // Text(
-                    //   _formatCreatedTime(coupon.createdAt!),
-                    //   style: TextStyle(
-                    //     fontSize: 11.sp,
-                    //     fontWeight: FontWeight.w400,
-                    //     color: const Color(0xFF9CA3AF),
-                    //   ),
-                    // ),
+                  
                   ],
                 ],
               ),
             ),
             SizedBox(width: 16.w),
-            // right - discount and actions
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                // Discount percentage
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
                   decoration: BoxDecoration(
@@ -175,7 +162,6 @@ class CuponScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 8.h),
-                // Edit and Delete icons
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -216,7 +202,6 @@ class CuponScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Warning icon
               Container(
                 width: 60.w,
                 height: 60.h,
@@ -231,7 +216,6 @@ class CuponScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20.h),
-              // Title
               Text(
                 'Delete Coupon',
                 style: TextStyle(
@@ -241,7 +225,6 @@ class CuponScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 12.h),
-              // Message
               Text(
                 'Are you sure you want to delete this coupon?',
                 textAlign: TextAlign.center,
@@ -252,26 +235,8 @@ class CuponScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 8.h),
-              // Coupon title
-              // Container(
-              //   padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-              //   decoration: BoxDecoration(
-              //     color: AppColors.backgroundLight,
-              //     borderRadius: BorderRadius.circular(8.r),
-              //     border: Border.all(color: AppColors.surfaceLight),
-              //   ),
-              //   child: Text(
-              //     '"${coupon.title}"',
-              //     textAlign: TextAlign.center,
-              //     style: TextStyle(
-              //       fontSize: 13.sp,
-              //       fontWeight: FontWeight.w600,
-              //       color: AppColors.ebonyBlack,
-              //     ),
-              //   ),
-              // ),
+          
               SizedBox(height: 16.h),
-              // Warning text
               Text(
                 'This action cannot be undone.',
                 textAlign: TextAlign.center,
@@ -282,7 +247,6 @@ class CuponScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 28.h),
-              // Buttons
               Row(
                 children: [
                   Expanded(
