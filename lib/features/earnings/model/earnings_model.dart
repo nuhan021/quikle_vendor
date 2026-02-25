@@ -1,4 +1,3 @@
-// Model for GET /earning/vendor/vendor_account
 
 class EarningsModel {
   final int? vendorId;
