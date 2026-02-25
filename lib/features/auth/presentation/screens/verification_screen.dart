@@ -47,7 +47,6 @@ class VerificationScreen extends StatelessWidget {
                     ),
                   ),
 
-                  // ===== Top bar: back button + title =====
                   Positioned(
                     left: 16.w,
                     top: 24.5.h,
@@ -55,7 +54,6 @@ class VerificationScreen extends StatelessWidget {
                       width: 360.w,
                       child: Stack(
                         children: [
-                          // Back button (left)
                           GestureDetector(
                             onTap: () => Get.back(),
                             child: Container(
@@ -69,7 +67,6 @@ class VerificationScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          // Title (centered)
                           Center(
                             child: Text(
                               'Verification',
@@ -86,7 +83,6 @@ class VerificationScreen extends StatelessWidget {
                     ),
                   ),
 
-                  // ===== Header block (logo + texts) =====
                   Positioned(
                     left: 20.w,
                     top: 202.h,
@@ -127,7 +123,6 @@ class VerificationScreen extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 16.h),
-                          // Enter Code
                           SizedBox(
                             width: 352.w,
                             child: Text(
@@ -176,18 +171,15 @@ class VerificationScreen extends StatelessWidget {
                     ),
                   ),
 
-                  // ===== OTP + Verify + Resend block =====
                   Positioned(
                     left: 20.w,
                     top: 495.h,
                     child: SizedBox(
                       width: 352.w,
-                      // height: 155.h,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // OTP row (6 boxes) – first 2 yellow per Figma, others grey
                           SizedBox(
                             width: double.infinity,
                             height: 52.h,
@@ -255,7 +247,6 @@ class VerificationScreen extends StatelessWidget {
 
                           SizedBox(height: 16.h),
 
-                          // Resend text (Container -> RichText)
                           SizedBox(
                             width: 352.w,
                             child: Obx(() {
