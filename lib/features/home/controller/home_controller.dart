@@ -16,7 +16,6 @@ class HomeController extends GetxController {
   var riderAssignController = RiderAssignmentController();
   late final HomeServices _homeServices;
 
-  // Reactive vendor data - will trigger UI updates when changed
   var vendorPhotoUrl = Rx<String?>(null);
   var vendorOwnerName = Rx<String?>(null);
   var vendorCloseTime = Rx<String?>(null);
@@ -26,7 +25,6 @@ class HomeController extends GetxController {
     super.onInit();
     _homeServices = Get.put(HomeServices());
     Get.put(RiderAssignmentController());
-    // Initialize OrderManagementController early so OrdersOverviewWidget can access it
     Get.put(OrderManagementController());
     loadShopStatus();
   }
@@ -43,7 +41,6 @@ class HomeController extends GetxController {
     }
   }
 
-  /// Reload vendor data from SharedPreferences to trigger UI updates
   void loadVendorData() {
     final vendorData = StorageService.getVendorDetails();
     if (vendorData != null) {
@@ -56,7 +53,6 @@ class HomeController extends GetxController {
       log('Updated photo URL: ${vendorPhotoUrl.value}');
       log('Updated owner name: ${vendorOwnerName.value}');
       log('Updated close time: ${vendorCloseTime.value}');
-      // Force rebuild by updating a dummy observable
       update();
     }
   }
@@ -68,7 +64,6 @@ class HomeController extends GetxController {
       bool newStatus = response.responseData["status"];
       log('Shop status updated: $newStatus');
       isShopOpen.value = newStatus;
-      // Update vendor details with new status
       final vendorData = StorageService.getVendorDetails();
       if (vendorData != null) {
         vendorData['is_active'] = newStatus;
@@ -79,7 +74,6 @@ class HomeController extends GetxController {
     }
   }
 
-  // New Orders Data (sourced from OrderManagementController)
   List<Map<String, dynamic>> get newOrders {
     try {
       final omc = Get.find<OrderManagementController>();
@@ -89,16 +83,13 @@ class HomeController extends GetxController {
     }
   }
 
-  // Ongoing Deliveries Data
   var ongoingDeliveries = [
     {'id': '#12345', 'status': 'On the Way'},
     {'id': '#12339', 'status': 'On the Way'},
   ].obs;
 
-  // Pending Actions Data
   var pendingActions = <Map<String, dynamic>>[].obs;
 
-  // Recent Orders Data
   var recentOrders = [
     {
       'customer': 'Rahul M.',
@@ -121,15 +112,12 @@ class HomeController extends GetxController {
   void navigateDashboard(String name) {
     switch (name) {
       case 'Orders':
-        // Get.toNamed(AppRoute.orderManagementScreen);
         controller.changeTab(1);
         break;
       case 'Products':
-        //Get.toNamed(AppRoute.productManagementScreen);
         controller.changeTab(3);
         break;
       case 'Earnings':
-        // Get.toNamed(AppRoute.earningsScreen);
         controller.changeTab(2);
         break;
       default:
@@ -153,8 +141,6 @@ class HomeController extends GetxController {
   }
 
   void updateInventory() {
-    // Navigate via the navbar controller to the Product Management tab
-    // (keeps navigation consistent with other dashboard shortcuts)
     controller.changeTab(3);
   }
 
@@ -166,9 +152,5 @@ class HomeController extends GetxController {
     Get.toNamed(AppRoute.orderManagementScreen);
   }
 
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   riderAssignController = Get.put(RiderAssignmentController());
-  // }
+ 
 }
