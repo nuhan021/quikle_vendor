@@ -1,12 +1,11 @@
 import 'package:get/get.dart';
 
 class RiderAssignmentController extends GetxController {
-  var currentDialogState = ''.obs; // initial, loading, selection, success
+  var currentDialogState = ''.obs; 
   var selectedRiderId = ''.obs;
   var orderId = '#12344'.obs;
   var assignedRiderName = ''.obs;
 
-  // Available riders data
   var availableRiders = [
     {
       'id': '1',
@@ -29,7 +28,6 @@ class RiderAssignmentController extends GetxController {
   void findRiders() {
     currentDialogState.value = 'loading';
 
-    // Simulate API call
     Future.delayed(Duration(seconds: 2), () {
       currentDialogState.value = 'selection';
     });
