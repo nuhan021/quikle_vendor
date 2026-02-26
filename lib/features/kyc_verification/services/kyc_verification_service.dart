@@ -9,7 +9,6 @@ import 'package:quikle_vendor/core/utils/logging/logger.dart';
 class KycVerificationService {
   final NetworkCaller _network = NetworkCaller();
 
-  /// Update KYC with multipart (PUT request)
   Future<ResponseData> updateKyc({
     required String nid,
     required String vendorType,
@@ -25,7 +24,6 @@ class KycVerificationService {
       AppLoggerHelper.info('Latitude: $latitude, Longitude: $longitude');
       AppLoggerHelper.info('Has KYC File: ${kycFile != null}');
 
-      // Prepare headers including refresh-token if provided
       final headers = <String, String>{};
       if (refreshToken != null && refreshToken.isNotEmpty) {
         headers['refresh-token'] = refreshToken;
@@ -33,7 +31,7 @@ class KycVerificationService {
 
       final response = await _network.multipartRequest(
         ApiConstants.updateKyc,
-        method: 'PUT', // Use PUT method as per API specification
+        method: 'PUT', 
         token: 'Bearer ${StorageService.token}',
         headers: headers,
         fields: {
