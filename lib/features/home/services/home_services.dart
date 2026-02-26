@@ -8,7 +8,6 @@ import 'package:quikle_vendor/core/utils/logging/logger.dart';
 class HomeServices extends GetxService {
   final NetworkCaller _network = NetworkCaller();
 
-  /// Toggle Active (Open/Close) Vendor Shop
   Future<ResponseData> toggleActiveStatus() async {
     final token = StorageService.token;
     AppLoggerHelper.info('🔄 Toggling vendor active status...');
