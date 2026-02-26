@@ -42,7 +42,6 @@ class FindRiderLoadingDialog extends StatelessWidget {
               ),
               SizedBox(height: 40),
 
-              // Loading Spinner
               Container(
                 width: 60,
                 height: 60,
