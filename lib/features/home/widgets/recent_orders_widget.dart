@@ -62,10 +62,8 @@ class RecentOrdersWidget extends StatelessWidget {
           final shippedFetched = omc.hasFetchedStatus(shippedStatus);
           final completedFetched = omc.hasFetchedStatus(completedStatus);
 
-          // Use the controller's reactive recentOrdersCache
           final cached = omc.recentOrdersCache;
 
-          // Load statuses if they were not fetched yet.
           if (!shippedFetched && !shippedLoading) {
             omc.fetchOrdersForApiStatus(shippedStatus);
           }
@@ -79,7 +77,6 @@ class RecentOrdersWidget extends StatelessWidget {
               !shippedFetched ||
               !completedFetched;
 
-          // Build a display list of max two cards.
           final List<Map<String, dynamic>> displayOrders = [];
           if (cached.isNotEmpty) {
             displayOrders.addAll(
