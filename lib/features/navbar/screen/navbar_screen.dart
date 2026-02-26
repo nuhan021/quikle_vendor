@@ -106,7 +106,6 @@ class _NavbarScreenState extends State<NavbarScreen>
               ),
             ),
 
-            /// Background color extension for SafeArea bottom padding
             Positioned(
               left: 0,
               right: 0,
@@ -130,7 +129,6 @@ class _NavbarScreenState extends State<NavbarScreen>
                     child: Obx(
                       () => SafeArea(
                         child: Container(
-                          // remove SafeArea from here
                           height: 83.h,
                           decoration: BoxDecoration(
                             color: Colors.black,
@@ -145,16 +143,15 @@ class _NavbarScreenState extends State<NavbarScreen>
                               ),
                             ),
                           ),
-                          // ✅ use padding to compensate manually if needed
                           padding: EdgeInsets.only(
                             top: 5,
                             bottom: MediaQuery.of(context).padding.bottom > 0
                                 ? 10
-                                : 15, // keep consistency
+                                : 15, 
                           ),
                           child: SafeArea(
                             top: false,
-                            bottom: false, // ❌ disable bottom padding here
+                            bottom: false, 
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
