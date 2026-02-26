@@ -13,7 +13,6 @@ class OrdersOverviewWidget extends StatelessWidget {
 
   List<Map<String, dynamic>> _getNewOrders() {
     try {
-      // Use Get.isRegistered to safely check before accessing
       if (!Get.isRegistered<OrderManagementController>()) {
         return [];
       }
@@ -47,13 +46,12 @@ class OrdersOverviewWidget extends StatelessWidget {
         ),
         SizedBox(height: 16),
 
-        // New Orders Section
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: Colors.white, // Light gray instead of amber to match image
+            color: Colors.white,
             border: Border.all(color: const Color(0xFFE5E7EB)),
           ),
           child: Column(
@@ -127,7 +125,6 @@ class OrdersOverviewWidget extends StatelessWidget {
               Obx(() {
                 final newOrders = _getNewOrders();
                 if (newOrders.isEmpty) {
-                  // show shimmer placeholders while the 'processing' status is loading
                   final omc = Get.find<OrderManagementController>();
                   if (omc.isStatusLoading('processing')) {
                     return Column(
@@ -146,13 +143,11 @@ class OrdersOverviewWidget extends StatelessWidget {
                 return Column(
                   children: List.generate(newOrders.length, (index) {
                     final order = newOrders[index];
-                    // Normalize items into a short string for the overview card
                     final rawItems = order['items'];
                     String itemsText;
                     if (rawItems is String) {
                       itemsText = rawItems;
                     } else if (rawItems is List) {
-                      // prefer a concise summary like "2 items"
                       itemsText = '${rawItems.length} items';
                     } else {
                       itemsText = rawItems?.toString() ?? '';
@@ -171,68 +166,7 @@ class OrdersOverviewWidget extends StatelessWidget {
             ],
           ),
         ),
-        // const SizedBox(height: 20),
 
-        // Container(
-        //   width: double.infinity,
-        //   padding: const EdgeInsets.all(16),
-        //   decoration: BoxDecoration(
-        //     borderRadius: BorderRadius.circular(10),
-        //     color: Colors.white, // Light gray instead of amber to match image
-        //     border: Border.all(color: const Color(0xFFE5E7EB)),
-        //   ),
-        //   child: Column(
-        //     crossAxisAlignment: CrossAxisAlignment.start,
-        //     children: [
-        //       Row(
-        //         children: [
-        //           Text(
-        //             'Ongoing Deliveries',
-        //             style: getTextStyle(
-        //               fontSize: 16,
-        //               fontWeight: FontWeight.w600,
-        //               color: Color(0xFF111827),
-        //             ),
-        //           ),
-        //           Spacer(),
-        //           Obx(
-        //             () => Container(
-        //               padding: const EdgeInsets.all(6),
-        //               decoration: BoxDecoration(
-        //                 color: AppColors.warning,
-        //                 borderRadius: BorderRadius.circular(22),
-        //               ),
-        //               child: Text(
-        //                 '${controller.ongoingDeliveries.length}',
-        //                 style: getTextStyle(
-        //                   fontSize: 12,
-        //                   fontWeight: FontWeight.w600,
-        //                   color: Colors.white,
-        //                 ),
-        //               ),
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //       SizedBox(height: 12),
-        //       Obx(
-        //         () => Column(
-        //           children: controller.ongoingDeliveries
-        //               .map(
-        //                 (delivery) => OngoingDeliveryCardWidget(
-        //                   orderId: delivery['id']!,
-        //                   status: delivery['status']!,
-        //                 ),
-        //               )
-        //               .toList(),
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
-        // const SizedBox(height: 8),
-
-        // Order cards (now properly in a vertical Column)
         SizedBox(height: 20),
 
         CustomButton(
