@@ -24,7 +24,6 @@ class KycVerificationScreen extends StatelessWidget {
           () => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// Vendor Type Display
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -58,14 +57,12 @@ class KycVerificationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              /// Location Section (MOVED TO TOP)
               Text(
                 "Business Location",
                 style: getTextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
 
-              /// Address Search Field
               CustomTextField(
                 label: "",
                 hintText: "Search location by address",
@@ -108,7 +105,6 @@ class KycVerificationScreen extends StatelessWidget {
                 ),
               const SizedBox(height: 8),
 
-              /// Google Map
               Container(
                 height: 250,
                 width: double.infinity,
@@ -152,7 +148,6 @@ class KycVerificationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              /// File Upload Section (MOVED TO BOTTOM)
               Text(
                 "KYC Documents",
                 style: getTextStyle(fontSize: 15, fontWeight: FontWeight.w600),
@@ -180,7 +175,6 @@ class KycVerificationScreen extends StatelessWidget {
 
               const SizedBox(height: 10),
 
-              /// Show uploaded files with progress bars
               for (int i = 0; i < controller.kycFiles.length; i++)
                 Container(
                   margin: const EdgeInsets.only(bottom: 10),
@@ -229,7 +223,6 @@ class KycVerificationScreen extends StatelessWidget {
                 ),
               const SizedBox(height: 8),
 
-              /// NID Field
               CustomTextField(
                 label: "National ID (NID)",
                 hintText: "Enter your NID number",
@@ -237,7 +230,6 @@ class KycVerificationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              /// Submit Button
               CustomButton(
                 text: controller.isSubmitting.value
                     ? "Submitting..."
@@ -246,8 +238,6 @@ class KycVerificationScreen extends StatelessWidget {
                     ? () {}
                     : () async {
                         await controller.submitKyc();
-                        // Ensure navigation even if controller fails
-                        // (controller already calls navigation, but this is a fallback)
                         Get.offAllNamed(AppRoute.kycApprovalScreen);
                       },
                 height: 50,
