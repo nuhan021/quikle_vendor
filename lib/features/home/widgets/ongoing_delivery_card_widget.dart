@@ -58,15 +58,14 @@ class OngoingDeliveryCardWidget extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 18), // Space between status and progress bar
-          // Progress bar below status
+          const SizedBox(height: 18), 
           LinearProgressIndicator(
-            value: 0.5, // Adjust based on status (e.g., 0.5 for "On the Way")
+            value: 0.5, 
             backgroundColor: Colors.grey[300],
             valueColor: const AlwaysStoppedAnimation<Color>(
               Color(0xFFF59E0B),
-            ), // Yellow progress
-            minHeight: 4, // Thin line-like bar
+            ),
+            minHeight: 4, 
           ),
         ],
       ),
