@@ -52,9 +52,7 @@ class ProfileNavbarItem extends StatelessWidget {
     );
   }
 
-  /// Build profile image widget with fallback
   Widget _buildProfileImage(HomeController controller) {
-    // Priority 1: Photo URL from reactive HomeController
     if (controller.vendorPhotoUrl.value != null &&
         controller.vendorPhotoUrl.value!.isNotEmpty) {
       return NetworkImageWithFallback(
@@ -64,7 +62,6 @@ class ProfileNavbarItem extends StatelessWidget {
       );
     }
 
-    // Priority 2: Default asset image
     return Image.asset(imagePath, fit: BoxFit.cover);
   }
 }
