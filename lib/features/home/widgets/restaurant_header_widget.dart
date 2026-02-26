@@ -9,7 +9,7 @@ import '../../../core/utils/constants/icon_path.dart';
 import '../controller/home_controller.dart';
 
 class RestaurantHeaderWidget extends StatelessWidget {
-  RestaurantHeaderWidget({super.key});
+  const RestaurantHeaderWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +129,6 @@ class RestaurantHeaderWidget extends StatelessWidget {
     final value = rawTime.trim();
     final lower = value.toLowerCase();
 
-    // If the backend already sends AM/PM, normalize casing and spacing.
     if (lower.contains('am') || lower.contains('pm')) {
       final match = RegExp(r'(\d{1,2}):(\d{2})').firstMatch(value);
       if (match != null) {
@@ -141,9 +140,8 @@ class RestaurantHeaderWidget extends StatelessWidget {
       return value.toUpperCase();
     }
 
-    // Parse 24-hour input like 19:00 or 08:30:15
     final match = RegExp(r'^(\d{1,2}):(\d{2})(?::\d{2})?$').firstMatch(value);
-    if (match == null) return value; // Unknown format; return as-is.
+    if (match == null) return value; 
 
     final hour24 = int.tryParse(match.group(1) ?? '') ?? 0;
     final minute = int.tryParse(match.group(2) ?? '') ?? 0;
@@ -158,9 +156,7 @@ class RestaurantHeaderWidget extends StatelessWidget {
     return '$hourStr:$minuteStr ${isPm ? 'PM' : 'AM'}';
   }
 
-  /// Build restaurant image from photo URL or default asset
   Widget _buildRestaurantImage(HomeController controller) {
-    // Priority 1: Photo URL from reactive HomeController
     if (controller.vendorPhotoUrl.value != null &&
         controller.vendorPhotoUrl.value!.isNotEmpty) {
       return Image.network(
@@ -172,7 +168,6 @@ class RestaurantHeaderWidget extends StatelessWidget {
       );
     }
 
-    // Fallback to default asset image
     return Image.asset(ImagePath.shopImage, fit: BoxFit.cover);
   }
 }
