@@ -13,7 +13,7 @@ class KycApprovalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(KycApprovalController());
-    controller.fetchKycStatus(); // fetch current KYC status
+    controller.fetchKycStatus(); 
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8F8),
@@ -46,7 +46,6 @@ class KycApprovalScreen extends StatelessWidget {
                 buttonText: "Update Profile",
                 onButtonTap: () {
                   Get.offAll(MyProfileScreen(fromKycFlow: true));
-                  // controller.goNavbar();
                 },
               ),
             );
@@ -61,7 +60,6 @@ class KycApprovalScreen extends StatelessWidget {
                     "Your verification was rejected.\nPlease re-upload your documents.",
                 buttonText: "Verify KYC Again",
                 onButtonTap: () {
-                  // ✅ Navigate back to KYC upload screen
                   Get.offAllNamed(AppRoute.kycVerificationScreen);
                 },
               ),
