@@ -10,9 +10,8 @@ import 'package:quikle_vendor/features/kyc_verification/services/kyc_verificatio
 import 'package:quikle_vendor/routes/app_routes.dart';
 
 class KycVerificationController extends GetxController {
-  /// -------------------- Observables --------------------
-  var kycFiles = <File>[].obs; // multiple files
-  var uploadProgress = <double>[].obs; // progress for each file (0.0–1.0)
+  var kycFiles = <File>[].obs; 
+  var uploadProgress = <double>[].obs; 
   var latitude = 0.0.obs;
   var longitude = 0.0.obs;
   var address = "".obs;
@@ -21,7 +20,6 @@ class KycVerificationController extends GetxController {
   var isSearching = false.obs;
   late final String vendorType;
 
-  /// -------------------- TextEditingControllers --------------------
   final nidController = TextEditingController();
 
   /// Map Controller
