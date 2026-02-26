@@ -37,7 +37,6 @@ class SelectRiderDialog extends StatelessWidget {
               ),
               SizedBox(height: 24),
 
-              // Riders List
               Obx(
                 () => Column(
                   children: controller.availableRiders.map((rider) {
