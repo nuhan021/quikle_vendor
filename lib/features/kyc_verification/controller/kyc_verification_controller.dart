@@ -22,26 +22,22 @@ class KycVerificationController extends GetxController {
 
   final nidController = TextEditingController();
 
-  /// Map Controller
   late GoogleMapController mapController;
 
-  /// KYC Service
   final _kycService = KycVerificationService();
 
   @override
   void onInit() {
     super.onInit();
-    // Get vendor type from arguments
     vendorType = Get.arguments?["vendorType"] ?? "";
     log('✅ Vendor Type Received: $vendorType');
   }
 
-  /// -------------------- Pick Multiple Files --------------------
   Future<void> pickKycFiles() async {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowMultiple: false, // Only one file allowed
+        allowMultiple: false, 
         allowedExtensions: ['jpg', 'png', 'pdf'],
       );
 
@@ -53,7 +49,6 @@ class KycVerificationController extends GetxController {
           kycFiles.add(File(file.path!));
           uploadProgress.add(0.0);
         }
-        // Simulate fake upload progress (mocking real upload)
         for (int j = 1; j <= 10; j++) {
           await Future.delayed(const Duration(milliseconds: 100));
           uploadProgress[0] = j / 10;
@@ -63,7 +58,6 @@ class KycVerificationController extends GetxController {
     } catch (e) {}
   }
 
-  /// -------------------- Remove File --------------------
   void removeKycFile(int index) {
     if (index >= 0 && index < kycFiles.length) {
       kycFiles.removeAt(index);
@@ -71,7 +65,6 @@ class KycVerificationController extends GetxController {
     }
   }
 
-  /// -------------------- Pick Location --------------------
   Future<void> pickCurrentLocation() async {
     try {
       LocationPermission permission = await Geolocator.requestPermission();
@@ -87,7 +80,6 @@ class KycVerificationController extends GetxController {
       latitude.value = position.latitude;
       longitude.value = position.longitude;
 
-      // Reverse geocoding
       final placemarks = await placemarkFromCoordinates(
         latitude.value,
         longitude.value,
@@ -101,12 +93,10 @@ class KycVerificationController extends GetxController {
     } catch (e) {}
   }
 
-  /// -------------------- Map Tap --------------------
   Future<void> setMapLocation(double lat, double lng) async {
     latitude.value = lat;
     longitude.value = lng;
 
-    // Log location selection
     log('📍 Location Selected from Map:');
     log('   Latitude: $lat');
     log('   Longitude: $lng');
@@ -122,7 +112,6 @@ class KycVerificationController extends GetxController {
     } catch (_) {}
   }
 
-  /// -------------------- Search Location from Address --------------------
   Future<void> searchLocationFromAddress(String addressQuery) async {
     if (addressQuery.trim().isEmpty) {
       return;
@@ -137,13 +126,11 @@ class KycVerificationController extends GetxController {
         latitude.value = location.latitude;
         longitude.value = location.longitude;
 
-        // Log location from address search
         log('🔍 Location Found from Address Search:');
         log('   Query: "$addressQuery"');
         log('   Latitude: ${location.latitude}');
         log('   Longitude: ${location.longitude}');
 
-        // Get readable address from coordinates
         final placemarks = await placemarkFromCoordinates(
           location.latitude,
           location.longitude,
@@ -155,9 +142,8 @@ class KycVerificationController extends GetxController {
           print('   Address: ${address.value}');
         }
 
-        searchAddress.value = ""; // Clear search field
+        searchAddress.value = "";
 
-        // Animate camera to searched location
         Future.delayed(const Duration(milliseconds: 300), () {
           mapController.animateCamera(
             CameraUpdate.newLatLngZoom(
@@ -173,12 +159,10 @@ class KycVerificationController extends GetxController {
     }
   }
 
-  /// -------------------- Set Map Controller --------------------
   void setMapController(GoogleMapController controller) {
     mapController = controller;
   }
 
-  /// -------------------- Submit --------------------
   Future<void> submitKyc() async {
     if (kycFiles.isEmpty) {
       return;
@@ -199,7 +183,6 @@ class KycVerificationController extends GetxController {
     try {
       isSubmitting.value = true;
 
-      // Log KYC submission data
       log('\n📤 KYC Submission Log:');
       log('   Vendor Type: $vendorType');
       log('   NID: ${nidController.text}');
@@ -213,7 +196,6 @@ class KycVerificationController extends GetxController {
       log('     Address: ${address.value}');
       log('   Sending to Backend...');
 
-      // Call update-kyc API
       final response = await _kycService.updateKyc(
         nid: nidController.text,
         vendorType: vendorType,
@@ -225,7 +207,6 @@ class KycVerificationController extends GetxController {
       if (response.isSuccess) {
         log('✅ KYC submitted successfully');
         await Future.delayed(const Duration(seconds: 1));
-        // Pass the new kyc_status to KYC Approval screen
         Get.offAllNamed(
           AppRoute.kycApprovalScreen,
           arguments: {'kycStatus': 'pending'},
