@@ -5,8 +5,8 @@ import '../../../core/common/styles/global_text_style.dart';
 
 class PendingActionCardWidget extends StatelessWidget {
   final String title;
-  final Widget? subtitleWidget; // New: accepts a widget
-  final String? subtitle; // Keep for backward compatibility
+  final Widget? subtitleWidget; 
+  final String? subtitle; 
   final String buttonText;
   final Color buttonColor;
   final VoidCallback onTap;
