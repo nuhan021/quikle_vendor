@@ -13,7 +13,7 @@ class DashboardOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity, // Ensure the container takes full width
+      width: double.infinity, 
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
