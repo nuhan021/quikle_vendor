@@ -31,7 +31,6 @@ class OrderManagementController extends GetxController {
     _prefetchAllTabs();
   }
 
-  /// Prefetch orders for all tabs so UI can show shipped/completed without extra taps
   Future<void> _prefetchAllTabs() async {
     for (var i = 0; i < tabs.length; i++) {
       final apiStatus = _mapTabIndexToApiStatus(i);
