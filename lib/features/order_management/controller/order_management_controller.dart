@@ -6,16 +6,13 @@ import '../../../core/services/storage_service.dart';
 import '../services/order_services.dart';
 
 class OrderManagementController extends GetxController {
-  /// -------------------- Tabs --------------------
   final tabs = ["New", "Confirmed", "Shipped", "Completed"];
   final selectedTab = 0.obs;
 
-  /// -------------------- Orders (Mock Data) --------------------
   final allOrders = <Map<String, dynamic>>[].obs;
   final isLoading = false.obs;
   final errorMessage = ''.obs;
 
-  // Per-status cache: apiStatus -> list of orders
   final Map<String, List<Map<String, dynamic>>> _statusCache = {};
   final Map<String, int> _statusOffsets = {};
   final Map<String, bool> _statusHasMore = {};
