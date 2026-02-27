@@ -189,14 +189,12 @@ class OrderManagementController extends GetxController {
     try {
       if (isActiveTab && force) isLoading.value = true;
       await _fetchOrdersByStatus(tabIndex, offset: 0, limit: 20);
-      // ensure recent cache updated after fetch
       _updateRecentOrdersCache();
     } finally {
       if (isActiveTab && force) isLoading.value = false;
     }
   }
 
-  /// Public: check if a specific API status is currently loading.
   bool isStatusLoading(String apiStatus) {
     return _statusLoading[apiStatus] == true;
   }
