@@ -237,7 +237,6 @@ class OrderManagementController extends GetxController {
     Get.toNamed(AppRoute.completedOrderDetailsScreen, arguments: orderId);
   }
 
-  /// -------------------- Order Actions --------------------
   void confirmOrder(String orderId) {}
 
   void rejectOrder(String orderId) {}
@@ -248,7 +247,6 @@ class OrderManagementController extends GetxController {
     disabledButtons.add(orderId);
   }
 
-  /// -------------------- Get Order by ID --------------------
   Map<String, dynamic>? getOrderById(String orderId) {
     try {
       return allOrders.firstWhereOrNull((order) => order['id'] == orderId);
