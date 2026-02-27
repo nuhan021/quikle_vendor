@@ -125,8 +125,6 @@ class OrderManagementController extends GetxController {
     if (shipped.isNotEmpty) out.add(shipped.first);
     if (doneOrders.isNotEmpty) out.add(doneOrders.first);
 
-    // Fallback: if shipped/completed not available, show the latest available
-    // from processing/confirmed so Recent Orders doesn't stay empty forever.
     if (out.isEmpty) {
       final fallback = <Map<String, dynamic>>[
         ...processing,
