@@ -56,7 +56,6 @@ class OrderManagementController extends GetxController {
 
   void changeTab(int index) {
     selectedTab.value = index;
-    // If we have cached orders for this tab, use them; otherwise fetch
     final apiStatus = _mapTabIndexToApiStatus(index);
     final cached = _statusCache[apiStatus];
     if (cached != null && cached.isNotEmpty) {
@@ -96,10 +95,8 @@ class OrderManagementController extends GetxController {
             .map((order) => OrderService.orderModelToMap(order))
             .toList();
         final existing = _statusCache[apiStatus] ?? [];
-        // append new
         existing.addAll(uiOrders);
         _statusCache[apiStatus] = existing;
-        // update offset
         _statusOffsets[apiStatus] = existing.length;
         // set hasMore
         _statusHasMore[apiStatus] = (response.orders.length >= limit);
