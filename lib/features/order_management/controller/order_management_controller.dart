@@ -255,10 +255,8 @@ class OrderManagementController extends GetxController {
     }
   }
 
-  /// -------------------- View Prescription --------------------
   void viewPrescription(String orderId) {}
 
-  /// -------------------- View Details --------------------
   void viewDetails(String orderId) {
     Get.toNamed(AppRoute.completedOrderDetailsScreen, arguments: orderId);
   }
