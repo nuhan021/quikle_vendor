@@ -26,7 +26,6 @@ class PrescriptionController extends GetxController {
         log('✅ Loaded ${data.length} prescriptions from API');
       } else {
         log('⚠️ No prescriptions found, loading mock data');
-        // Fallback to mock data if API returns empty
         _loadMockData();
       }
     } catch (e) {
@@ -38,7 +37,6 @@ class PrescriptionController extends GetxController {
   }
 
   void _loadMockData() {
-    // Mock data for development/fallback
     prescriptions.assignAll([
       PrescriptionModel(
         id: 1,
@@ -88,7 +86,6 @@ class PrescriptionController extends GetxController {
     ]);
   }
 
-  /// Get prescription order details by ID
   Future<PrescriptionModel?> getPrescriptionOrderById(
     int prescriptionId,
   ) async {
@@ -102,14 +99,12 @@ class PrescriptionController extends GetxController {
 
       if (prescription != null) {
         log('✅ Prescription details fetched successfully');
-        // Update the prescription in the list or add it if not exists
         final index = prescriptions.indexWhere((p) => p.id == prescriptionId);
         if (index >= 0) {
           prescriptions[index] = prescription;
         } else {
           prescriptions.add(prescription);
         }
-        // Trigger UI rebuild
         update();
         return prescription;
       } else {
@@ -124,8 +119,6 @@ class PrescriptionController extends GetxController {
     }
   }
 
-  /// Change prescription status
-  /// Different rules for different status changes
   Future<void> changePrescriptionStatus(
     int prescriptionId,
     String newStatus,
@@ -143,7 +136,6 @@ class PrescriptionController extends GetxController {
 
       if (success) {
         log('✅ Status changed successfully');
-        // Update the prescription in the list
         final index = prescriptions.indexWhere((p) => p.id == prescriptionId);
         if (index != -1) {
           prescriptions[index].status = newStatus;
@@ -174,8 +166,6 @@ class PrescriptionController extends GetxController {
     }
   }
 
-  /// Submit vendor response with medicines and notes
-  /// Only available if prescription status is valid
   Future<bool> submitVendorResponse({
     required int prescriptionId,
     required List<Map<String, dynamic>> medicines,
