@@ -34,7 +34,6 @@ class OrderManagementController extends GetxController {
   Future<void> _prefetchAllTabs() async {
     for (var i = 0; i < tabs.length; i++) {
       final apiStatus = _mapTabIndexToApiStatus(i);
-      // initialize tracking
       _statusOffsets[apiStatus] = 0;
       _statusHasMore[apiStatus] = true;
       _statusCache[apiStatus] = [];
@@ -42,7 +41,6 @@ class OrderManagementController extends GetxController {
       _statusFetchedOnce[apiStatus] = false;
     }
 
-    // Fire off prefetches (await sequentially to avoid rate limits)
     for (var i = 0; i < tabs.length; i++) {
       await _fetchOrdersByStatus(i, offset: 0, limit: 20);
     }
