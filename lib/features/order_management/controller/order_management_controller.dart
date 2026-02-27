@@ -51,11 +51,9 @@ class OrderManagementController extends GetxController {
   }
 
   Future<void> fetchOrders() async {
-    // Deprecated: use per-status prefetch and _fetchOrdersByStatus instead
     return;
   }
 
-  /// -------------------- Tab Switch with API Call --------------------
   void changeTab(int index) {
     selectedTab.value = index;
     // If we have cached orders for this tab, use them; otherwise fetch
