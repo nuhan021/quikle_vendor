@@ -163,7 +163,6 @@ class OrderManagementController extends GetxController {
     String apiStatus, {
     bool force = false,
   }) async {
-    // find tab index corresponding to this apiStatus
     final tabIndex = tabs.indexWhere(
       (t) => _mapTabIndexToApiStatus(tabs.indexOf(t)) == apiStatus,
     );
@@ -171,7 +170,6 @@ class OrderManagementController extends GetxController {
       return;
     }
 
-    // If not forcing and we already have cached data or currently loading, do nothing
     if (!force &&
         ((_statusCache[apiStatus]?.isNotEmpty ?? false) ||
             (_statusLoading[apiStatus] == true))) {
@@ -179,7 +177,6 @@ class OrderManagementController extends GetxController {
     }
 
     if (force) {
-      // clear cache and reset offset so API is hit for fresh data
       _statusCache[apiStatus] = [];
       _statusOffsets[apiStatus] = 0;
       _statusHasMore[apiStatus] = true;
