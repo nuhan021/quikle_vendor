@@ -65,13 +65,11 @@ class OrderManagementController extends GetxController {
     }
   }
 
-  /// -------------------- Fetch Orders by Tab Status --------------------
   Future<void> _fetchOrdersByStatus(
     int tabIndex, {
     int offset = 0,
     int limit = 20,
   }) async {
-    // New implementation: support pagination and caching per status
     final apiStatus = _mapTabIndexToApiStatus(tabIndex);
     if (_statusLoading[apiStatus] == true) return;
     _statusLoading[apiStatus] = true;
@@ -103,10 +101,8 @@ class OrderManagementController extends GetxController {
         if (_mapTabIndexToApiStatus(selectedTab.value) == apiStatus) {
           allOrders.assignAll(existing);
         }
-        // update the recentOrdersCache (first shipped + first delivered)
         _updateRecentOrdersCache();
       } else {
-        // no response — mark no more
         _statusHasMore[apiStatus] = false;
       }
     } catch (e) {
