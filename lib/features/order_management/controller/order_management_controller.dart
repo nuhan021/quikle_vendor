@@ -137,11 +137,9 @@ class OrderManagementController extends GetxController {
       }
     }
 
-    // ensure length 2 when possible; do not fill with duplicates
     recentOrdersCache.assignAll(out);
   }
 
-  /// Helper to map tab index to API status string
   String _mapTabIndexToApiStatus(int tabIndex) {
     final tabName = tabs[tabIndex].toLowerCase();
     switch (tabName) {
