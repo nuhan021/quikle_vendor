@@ -199,14 +199,11 @@ class OrderManagementController extends GetxController {
     return _statusLoading[apiStatus] == true;
   }
 
-  /// Public: check if a specific API status has been fetched at least once.
   bool hasFetchedStatus(String apiStatus) {
     return _statusFetchedOnce[apiStatus] == true;
   }
 
-  /// -------------------- Filtered Orders by Selected Tab --------------------
   List<Map<String, dynamic>> get filteredOrders {
-    // establish reactive dependencies on selectedTab and allOrders
     final tabName = tabs[selectedTab.value].toLowerCase();
 
     String statusFilter;
