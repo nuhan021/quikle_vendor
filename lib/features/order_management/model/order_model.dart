@@ -1,5 +1,3 @@
-// Models for GET /order/my_orders API
-// Generated to match the API response structure in the request example.
 
 import 'dart:convert';
 
