@@ -3,7 +3,7 @@ class PrescriptionModel {
   int? userId;
   String? userName;
   String? imagePath;
-  Null? fileName;
+  String? fileName;
   String? status;
   String? notes;
   String? uploadedAt;
