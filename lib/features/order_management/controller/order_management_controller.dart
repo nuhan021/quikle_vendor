@@ -215,7 +215,6 @@ class OrderManagementController extends GetxController {
         statusFilter = 'in-progress';
         break;
       case 'shipped':
-        // We'll filter by apiStatus for shipped orders in UI mapping
         statusFilter = 'shipped';
         break;
       case 'completed':
@@ -226,7 +225,6 @@ class OrderManagementController extends GetxController {
     }
 
     if (statusFilter == 'shipped') {
-      // Filter by original API status for shipped tab
       return allOrders
           .where((order) => order['apiStatus'] == 'shipped')
           .toList();
@@ -235,7 +233,6 @@ class OrderManagementController extends GetxController {
     return allOrders.where((order) => order['status'] == statusFilter).toList();
   }
 
-  /// -------------------- Navigate to Details --------------------
   void navigateToOrderDetails(String orderId) {
     Get.toNamed(AppRoute.completedOrderDetailsScreen, arguments: orderId);
   }
