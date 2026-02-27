@@ -103,10 +103,8 @@ class OrderManagementController extends GetxController {
         if (_mapTabIndexToApiStatus(selectedTab.value) == apiStatus) {
           allOrders.assignAll(existing);
         }
-        // update the recentOrdersCache (first shipped + first delivered)
         _updateRecentOrdersCache();
       } else {
-        // no response — mark no more
         _statusHasMore[apiStatus] = false;
       }
     } catch (e) {
