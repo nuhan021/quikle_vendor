@@ -18,10 +18,8 @@ class OrderManagementController extends GetxController {
   final Map<String, bool> _statusHasMore = {};
   final Map<String, bool> _statusLoading = {};
   final Map<String, bool> _statusFetchedOnce = {};
-  // Exposed reactive small cache for RecentOrdersWidget: [first shipped, first delivered]
   final recentOrdersCache = <Map<String, dynamic>>[].obs;
 
-  /// -------------------- Button State Management --------------------
   final disabledButtons = <String>{}.obs;
   final confirmedOrders = <String>{}.obs;
 
