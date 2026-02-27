@@ -4,17 +4,13 @@ import 'order_management_controller.dart';
 import '../services/order_services.dart';
 
 class OrderDetailsController extends GetxController {
-  /// 🔹 Reactive order data (null-safe)
   final orderData = Rxn<Map<String, dynamic>>();
 
-  /// 🔹 Loading & Error states (for API readiness)
   final isLoading = false.obs;
   final errorMessage = ''.obs;
 
-  /// 🔹 Prepare time for new orders
   final prepareTime = 0.obs;
 
-  /// 🔹 Services
   final OrderService _orderService = OrderService();
 
   @override
@@ -23,7 +19,6 @@ class OrderDetailsController extends GetxController {
     fetchOrderDetails();
   }
 
-  /// 🔹 Fetch order details from mock list or API
   void fetchOrderDetails() {
     final orderId = Get.arguments as String?;
     if (orderId == null) {
@@ -34,7 +29,6 @@ class OrderDetailsController extends GetxController {
     isLoading.value = true;
 
     try {
-      // First try to find in the management controller's cached orders
       final managementController = Get.find<OrderManagementController>();
       final foundOrder = managementController.allOrders.firstWhereOrNull(
         (e) => e['id'] == orderId || e['apiOrderId'] == orderId,
