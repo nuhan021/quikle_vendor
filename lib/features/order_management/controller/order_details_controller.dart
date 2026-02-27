@@ -90,7 +90,6 @@ class OrderDetailsController extends GetxController {
 
       if (success) {
         errorMessage.value = 'Order confirmed! Offer sent to customer.';
-        // Optionally navigate back or refresh order list
         Future.delayed(const Duration(seconds: 2), () {
           Get.back();
         });
