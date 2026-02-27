@@ -98,10 +98,8 @@ class OrderManagementController extends GetxController {
         existing.addAll(uiOrders);
         _statusCache[apiStatus] = existing;
         _statusOffsets[apiStatus] = existing.length;
-        // set hasMore
         _statusHasMore[apiStatus] = (response.orders.length >= limit);
 
-        // if current selected tab, show cached
         if (_mapTabIndexToApiStatus(selectedTab.value) == apiStatus) {
           allOrders.assignAll(existing);
         }
