@@ -156,16 +156,9 @@ class OrderManagementController extends GetxController {
     }
   }
 
-  /// Public helper: map tab index to API status string (exposes private mapper)
   String apiStatusForTabIndex(int tabIndex) =>
       _mapTabIndexToApiStatus(tabIndex);
 
-  /// Public helper: ensure orders for a given API status are loaded into the cache.
-  /// Safe to call repeatedly; it will noop if cache already populated or loading is in progress.
-  /// Fetch orders for a given API status. If [force] is true, clear the
-  /// existing cache for that status and re-fetch from offset 0.
-  /// When the currently selected tab is being refreshed with [force]=true,
-  /// `isLoading` will be set true so UI can show shimmer placeholders.
   Future<void> fetchOrdersForApiStatus(
     String apiStatus, {
     bool force = false,
