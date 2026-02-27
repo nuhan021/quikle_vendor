@@ -45,13 +45,11 @@ class OrderManagementController extends GetxController {
       await _fetchOrdersByStatus(i, offset: 0, limit: 20);
     }
 
-    // After prefetch, populate allOrders with selected tab cache
     final initialApi = _mapTabIndexToApiStatus(selectedTab.value);
     final cached = _statusCache[initialApi] ?? [];
     allOrders.assignAll(cached);
   }
 
-  /// -------------------- Fetch Orders from API --------------------
   Future<void> fetchOrders() async {
     // Deprecated: use per-status prefetch and _fetchOrdersByStatus instead
     return;
