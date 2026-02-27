@@ -47,7 +47,6 @@ class OrderDetailsController extends GetxController {
     }
   }
 
-  /// 🔹 Mark order as completed (Mock)
   void markAsCompleted() {
     final id = orderData.value?['id'];
     if (id == null) return;
@@ -55,7 +54,6 @@ class OrderDetailsController extends GetxController {
     // TODO: Implement API call to update order status
   }
 
-  /// 🔹 Update local order status (for testing / visual feedback)
   void updateOrderStatus(String newStatus) {
     if (orderData.value == null) return;
     orderData.update((order) {
@@ -63,7 +61,6 @@ class OrderDetailsController extends GetxController {
     });
   }
 
-  /// -------------------- Order Actions --------------------
   void confirmOrder(String orderId) async {
     final order = orderData.value;
     if (order == null) {
@@ -83,7 +80,6 @@ class OrderDetailsController extends GetxController {
       final storedToken = StorageService.token;
       final authHeader = storedToken != null ? 'Bearer $storedToken' : null;
 
-      // Use apiOrderId if available, otherwise use id
       final actualOrderId = order['apiOrderId'] ?? order['id'];
 
       final success = await _orderService.createOffer(
