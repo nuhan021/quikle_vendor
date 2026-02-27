@@ -23,13 +23,11 @@ class OrderManagementController extends GetxController {
   final disabledButtons = <String>{}.obs;
   final confirmedOrders = <String>{}.obs;
 
-  /// -------------------- Services --------------------
   final OrderService _orderService = OrderService();
 
   @override
   void onInit() {
     super.onInit();
-    // Prefetch each tab's orders on app start
     _prefetchAllTabs();
   }
 
