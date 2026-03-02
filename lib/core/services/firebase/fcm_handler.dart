@@ -19,7 +19,6 @@ class FCMHandler {
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-    // when tap to notification it will go a spasific route/screen
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       final screen = message.data['screen'];
       if (screen != null) {
