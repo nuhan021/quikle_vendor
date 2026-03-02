@@ -8,8 +8,8 @@ class AppNotificationInitializer {
   static Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    await FirebaseService.init(); //  Firebase Init + Token
-    await NotificationService.init(); //  Local Notification Init
+    await FirebaseService.init(); 
+    await NotificationService.init(); 
     FCMHandler.configure(); //  Foreground & Tap handler
   }
 }
