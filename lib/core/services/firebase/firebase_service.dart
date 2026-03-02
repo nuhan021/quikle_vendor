@@ -14,7 +14,6 @@ class FirebaseService {
 
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
       AppLoggerHelper.info("FCM Token refreshed: $newToken");
-      // save or send the refreshed token to your server here
     });
 
     // get device token (try once, then retry quickly if null)
