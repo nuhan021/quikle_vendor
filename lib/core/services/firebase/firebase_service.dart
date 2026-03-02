@@ -27,7 +27,6 @@ class FirebaseService {
       AppLoggerHelper.info("Error retrieving FCM token: $e\n$st");
     }
 
-    // developer can save the FCM Token to local database from here
     AppLoggerHelper.info("FCM Token(device): $token");
   }
 }
