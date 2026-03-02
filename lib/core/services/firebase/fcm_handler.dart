@@ -17,7 +17,6 @@ class FCMHandler {
       );
     });
 
-    // Background notification handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     // when tap to notification it will go a spasific route/screen
