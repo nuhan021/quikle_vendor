@@ -5,7 +5,6 @@ import 'firebase_service.dart';
 import 'notification_service.dart';
 
 class AppNotificationInitializer {
-  /// Initialize Firebase, Local Notification, and FCM
   static Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
 
