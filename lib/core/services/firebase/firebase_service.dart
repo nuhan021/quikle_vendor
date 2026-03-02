@@ -16,7 +16,6 @@ class FirebaseService {
       AppLoggerHelper.info("FCM Token refreshed: $newToken");
     });
 
-    // get device token (try once, then retry quickly if null)
     String? token;
     try {
       token = await messaging.getToken();
