@@ -22,7 +22,6 @@ class FCMHandler {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       final screen = message.data['screen'];
       if (screen != null) {
-        // NotificationService.handleNotificationTap(screen);
       }
     });
   }
