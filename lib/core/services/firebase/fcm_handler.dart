@@ -4,7 +4,6 @@ import 'notification_service.dart';
 
 class FCMHandler {
   static void configure() {
-    // Foreground notification listener
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       // get image url (if notification has image)
       final imageUrl =
