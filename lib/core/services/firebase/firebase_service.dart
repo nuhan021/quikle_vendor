@@ -12,7 +12,6 @@ class FirebaseService {
 
     await messaging.setAutoInitEnabled(true);
 
-    // listen for token refreshes
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
       AppLoggerHelper.info("FCM Token refreshed: $newToken");
       // save or send the refreshed token to your server here
