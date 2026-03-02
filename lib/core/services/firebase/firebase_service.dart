@@ -10,7 +10,6 @@ class FirebaseService {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     await messaging.requestPermission(alert: true, badge: true, sound: true);
 
-    // ensure auto-initialization
     await messaging.setAutoInitEnabled(true);
 
     // listen for token refreshes
