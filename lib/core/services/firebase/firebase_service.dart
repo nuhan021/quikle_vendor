@@ -8,7 +8,6 @@ class FirebaseService {
       await Firebase.initializeApp(); 
     }
     FirebaseMessaging messaging = FirebaseMessaging.instance;
-    // iOS permissions
     await messaging.requestPermission(alert: true, badge: true, sound: true);
 
     // ensure auto-initialization
