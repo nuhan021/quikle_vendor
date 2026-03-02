@@ -10,6 +10,7 @@ class AppNotificationInitializer {
 
     await FirebaseService.init(); 
     await NotificationService.init(); 
-    FCMHandler.configure(); //  Foreground & Tap handler
+    FCMHandler.configure(); 
+    
   }
 }
