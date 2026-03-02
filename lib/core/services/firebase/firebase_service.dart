@@ -5,7 +5,7 @@ import 'package:quikle_vendor/core/utils/logging/logger.dart';
 class FirebaseService {
   static Future<void> init() async {
     if (Firebase.apps.isEmpty) {
-      await Firebase.initializeApp(); // initializing firebase
+      await Firebase.initializeApp(); 
     }
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     // iOS permissions
