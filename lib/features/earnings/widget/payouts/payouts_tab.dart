@@ -46,11 +46,7 @@ class PayoutsTab extends StatelessWidget {
                     autoWithdrawalEnabled:
                         controller.autoWithdrawalEnabled.value,
                     onToggleAutoWithdrawal: controller.toggleAutoWithdrawal,
-                    selectedDay: controller.selectedDay.value,
-                    days: controller.withdrawalDays,
-                    onDayChanged: controller.changeDay,
                     paymentMethod: controller.paymentMethod.value,
-                    paymentMethods: controller.paymentMethods,
                     onPaymentMethodChanged: controller.changePaymentMethod,
                     bankAccount: controller.bankAccount.value,
                     onBankAccountChanged: controller.updateBankAccount,

@@ -12,7 +12,6 @@ class PayoutsController extends GetxController {
 
   var minWithdrawalAmount = "".obs;
   var autoWithdrawalEnabled = false.obs;
-  var selectedDay = "".obs;
   var paymentMethod = "".obs;
   var bankAccount = "".obs;
 
@@ -21,24 +20,11 @@ class PayoutsController extends GetxController {
   var isBeneficiarySelected = false.obs;
 
   bool get hasBeneficiary => beneficiary.value != null;
-
-  final withdrawalDays = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
-  final paymentMethods = ["Bank Transfer", "PayPal", "Stripe", "Other"];
-
   @override
   void onInit() {
     super.onInit();
     fetchPayoutData();
   }
-
 
   void addBeneficiary(BeneficiaryModel beneficiary) {
     this.beneficiary.value = beneficiary;
@@ -86,8 +72,7 @@ class PayoutsController extends GetxController {
     isBeneficiarySelected.value = true;
   }
 
-  void withdraw() {
-  }
+  void withdraw() {}
 
   void updateMinWithdrawal(String value) {
     minWithdrawalAmount.value = value;
@@ -97,11 +82,6 @@ class PayoutsController extends GetxController {
   void toggleAutoWithdrawal(bool value) {
     autoWithdrawalEnabled.value = value;
     // TODO: Update toggle state in API
-  }
-
-  void changeDay(String day) {
-    selectedDay.value = day;
-    // TODO: Update day in API
   }
 
   void changePaymentMethod(String method) {
@@ -129,8 +109,7 @@ class PayoutsController extends GetxController {
     nextAutoWithdrawal.value = "Every Friday";
     minWithdrawalAmount.value = "\$100";
     autoWithdrawalEnabled.value = true;
-    selectedDay.value = "Friday";
-    paymentMethod.value = "Bank Transfer";
+    paymentMethod.value = "manual";
     bankAccount.value = "123456789";
   }
 }

@@ -43,14 +43,19 @@ class RecentOrderCardWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                customer,
-                style: getTextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF111827),
+              Expanded(
+                child: Text(
+                  customer,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: getTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF111827),
+                  ),
                 ),
               ),
+              SizedBox(width: 12),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
@@ -72,10 +77,15 @@ class RecentOrderCardWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '$items • $amount',
-                style: getTextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+              Expanded(
+                child: Text(
+                  '$items • $amount',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: getTextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                ),
               ),
+              SizedBox(width: 12),
               Text(
                 time,
                 style: getTextStyle(fontSize: 14, color: Color(0xFF6B7280)),

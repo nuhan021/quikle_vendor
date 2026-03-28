@@ -3,18 +3,20 @@ import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_textfield.dart';
 
 class WithdrawalConfigView extends StatelessWidget {
+  static const List<String> _withdrawalFrequencyOptions = [
+    "manual",
+    "weekly",
+    "monthly",
+    "yearly",
+  ];
+
   final String minAmount;
   final ValueChanged<String> onMinAmountChanged;
 
   final bool autoWithdrawalEnabled;
   final ValueChanged<bool> onToggleAutoWithdrawal;
 
-  final String? selectedDay;
-  final List<String> days;
-  final ValueChanged<String> onDayChanged;
-
   final String? paymentMethod;
-  final List<String> paymentMethods;
   final ValueChanged<String> onPaymentMethodChanged;
 
   final String bankAccount;
@@ -26,11 +28,7 @@ class WithdrawalConfigView extends StatelessWidget {
     required this.onMinAmountChanged,
     required this.autoWithdrawalEnabled,
     required this.onToggleAutoWithdrawal,
-    required this.selectedDay,
-    required this.days,
-    required this.onDayChanged,
     required this.paymentMethod,
-    required this.paymentMethods,
     required this.onPaymentMethodChanged,
     required this.bankAccount,
     required this.onBankAccountChanged,
@@ -63,44 +61,12 @@ class WithdrawalConfigView extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Auto Withdrawal Day", style: getTextStyle(fontSize: 14)),
-              Transform.scale(
-                scale: 0.65,
-                child: Switch(
-                  value: autoWithdrawalEnabled,
-                  onChanged: onToggleAutoWithdrawal,
-                  activeTrackColor: Colors.green,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-
-          DropdownButtonFormField<String>(
-            value: selectedDay,
-            items: days
-                .map((d) => DropdownMenuItem(value: d, child: Text(d)))
-                .toList(),
-            onChanged: (v) => onDayChanged(v!),
-          ),
-          const SizedBox(height: 16),
-
           DropdownButtonFormField<String>(
             value: paymentMethod,
-            items: paymentMethods
+            items: _withdrawalFrequencyOptions
                 .map((m) => DropdownMenuItem(value: m, child: Text(m)))
                 .toList(),
             onChanged: (v) => onPaymentMethodChanged(v!),
-          ),
-          const SizedBox(height: 16),
-
-          CustomTextField(
-            label: "Bank Account",
-            controller: TextEditingController(text: bankAccount),
-            onChanged: onBankAccountChanged,
           ),
         ],
       ),
