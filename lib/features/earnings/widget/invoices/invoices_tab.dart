@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../../../core/common/styles/global_text_style.dart';
 import '../../controller/invoice_controller.dart';
 import 'invoice_card.dart';
 
@@ -10,8 +12,21 @@ class InvoicesTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(InvoiceController());
 
-    return Obx(
-      () => ListView.builder(
+    return Obx(() {
+      if (controller.invoices.isEmpty) {
+        return Center(
+          child: Text(
+            'No invoices found.',
+            style: getTextStyle(
+              fontSize: 14,
+              color: Colors.black54,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        );
+      }
+
+      return ListView.builder(
         padding: const EdgeInsets.only(bottom: 80),
         itemCount: controller.invoices.length,
         itemBuilder: (context, index) {
@@ -27,7 +42,7 @@ class InvoicesTab extends StatelessWidget {
             tags: List<String>.from(invoice["tags"]),
           );
         },
-      ),
-    );
+      );
+    });
   }
 }
