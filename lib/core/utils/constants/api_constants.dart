@@ -38,6 +38,7 @@ class ApiConstants {
   static const String vendorAccount = "${baseUrl}earning/vendor/vendor_account";
   static const String addBeneficiary =
       "${baseUrl}earning/vendor/add_beneficiary";
+  static const String withdraw = "${baseUrl}earning/vendor/withdraw";
   // Cupons
   static const String createCupon = "${baseUrl}promo/cupons/";
   static const String getCupons = "${baseUrl}promo/cupons/my_cupon";
