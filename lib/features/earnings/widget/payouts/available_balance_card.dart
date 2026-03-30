@@ -5,7 +5,7 @@ import '../../../../core/common/widgets/custom_button.dart';
 class AvailableBalanceCard extends StatelessWidget {
   final String title;
   final String balanceText;
-  final String subtitle;
+  final String? subtitle;
   final VoidCallback onWithdraw;
   final bool showWithdrawButton;
 
@@ -13,7 +13,7 @@ class AvailableBalanceCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.balanceText,
-    required this.subtitle,
+    this.subtitle,
     required this.onWithdraw,
     this.showWithdrawButton = true,
   });
@@ -49,11 +49,13 @@ class AvailableBalanceCard extends StatelessWidget {
                 balanceText,
                 style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               ),
-              const SizedBox(height: 10),
-              Text(
-                subtitle,
-                style: getTextStyle(fontSize: 12, color: Colors.black54),
-              ),
+              if (subtitle != null && subtitle!.trim().isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Text(
+                  subtitle!,
+                  style: getTextStyle(fontSize: 12, color: Colors.black54),
+                ),
+              ],
             ],
           ),
 

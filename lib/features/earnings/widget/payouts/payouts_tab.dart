@@ -3,6 +3,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:quikle_vendor/features/earnings/controller/overview_controller.dart';
 import 'package:quikle_vendor/features/earnings/controller/payouts_controller.dart';
 import 'package:quikle_vendor/features/earnings/widget/payouts/available_balance_card.dart';
 import 'package:quikle_vendor/features/earnings/widget/payouts/beneficiary_card_view.dart';
@@ -17,6 +18,9 @@ class PayoutsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(PayoutsController());
+    final overviewController = Get.isRegistered<OverviewController>()
+        ? Get.find<OverviewController>()
+        : Get.put(OverviewController());
 
     return Obx(() {
       if (!controller.hasBeneficiary) {
@@ -30,12 +34,16 @@ class PayoutsTab extends StatelessWidget {
         child: Column(
           children: [
             AvailableBalanceCard(
-              title: "Available Balance",
+              title: "Total Earnings",
               balanceText:
-                  "\$${controller.availableBalance.value.toStringAsFixed(2)}",
+                  "\$${overviewController.totalEarnings.value.toStringAsFixed(2)}",
               subtitle:
-                  "Next auto-withdrawal: ${controller.nextAutoWithdrawal.value}",
-              onWithdraw: () => showWithdrawDialog(context, controller),
+                  "Net Balance: \$${overviewController.netEarnings.value.toStringAsFixed(2)}",
+              onWithdraw: () {
+                controller.availableBalance.value =
+                    overviewController.totalEarnings.value;
+                showWithdrawDialog(context, controller);
+              },
             ),
             const SizedBox(height: 16),
 
@@ -43,13 +51,8 @@ class PayoutsTab extends StatelessWidget {
                 ? WithdrawalConfigView(
                     minAmount: controller.minWithdrawalAmount.value,
                     onMinAmountChanged: controller.updateMinWithdrawal,
-                    autoWithdrawalEnabled:
-                        controller.autoWithdrawalEnabled.value,
-                    onToggleAutoWithdrawal: controller.toggleAutoWithdrawal,
                     paymentMethod: controller.paymentMethod.value,
                     onPaymentMethodChanged: controller.changePaymentMethod,
-                    bankAccount: controller.bankAccount.value,
-                    onBankAccountChanged: controller.updateBankAccount,
                   )
                 : BeneficiaryCardView(
                     name: controller.beneficiary.value!.name,

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../core/common/styles/global_text_style.dart';
 import '../../../../core/common/widgets/custom_textfield.dart';
 
-class WithdrawalConfigView extends StatelessWidget {
+class WithdrawalConfigView extends StatefulWidget {
   static const List<String> _withdrawalFrequencyOptions = [
     "manual",
     "weekly",
@@ -12,30 +13,56 @@ class WithdrawalConfigView extends StatelessWidget {
 
   final String minAmount;
   final ValueChanged<String> onMinAmountChanged;
-
-  final bool autoWithdrawalEnabled;
-  final ValueChanged<bool> onToggleAutoWithdrawal;
-
   final String? paymentMethod;
   final ValueChanged<String> onPaymentMethodChanged;
-
-  final String bankAccount;
-  final ValueChanged<String> onBankAccountChanged;
 
   const WithdrawalConfigView({
     super.key,
     required this.minAmount,
     required this.onMinAmountChanged,
-    required this.autoWithdrawalEnabled,
-    required this.onToggleAutoWithdrawal,
     required this.paymentMethod,
     required this.onPaymentMethodChanged,
-    required this.bankAccount,
-    required this.onBankAccountChanged,
   });
 
   @override
+  State<WithdrawalConfigView> createState() => _WithdrawalConfigViewState();
+}
+
+class _WithdrawalConfigViewState extends State<WithdrawalConfigView> {
+  late final TextEditingController _minAmountController;
+
+  @override
+  void initState() {
+    super.initState();
+    _minAmountController = TextEditingController(text: widget.minAmount);
+  }
+
+  @override
+  void didUpdateWidget(covariant WithdrawalConfigView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.minAmount != _minAmountController.text) {
+      _minAmountController.value = TextEditingValue(
+        text: widget.minAmount,
+        selection: TextSelection.collapsed(offset: widget.minAmount.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _minAmountController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final selectedMethod =
+        WithdrawalConfigView._withdrawalFrequencyOptions.contains(
+          widget.paymentMethod,
+        )
+        ? widget.paymentMethod
+        : null;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -56,17 +83,36 @@ class WithdrawalConfigView extends StatelessWidget {
 
           CustomTextField(
             label: "Minimum Withdrawal Amount",
-            controller: TextEditingController(text: minAmount),
-            onChanged: onMinAmountChanged,
+            hintText: "500",
+            controller: _minAmountController,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            onChanged: widget.onMinAmountChanged,
           ),
           const SizedBox(height: 16),
 
           DropdownButtonFormField<String>(
-            value: paymentMethod,
-            items: _withdrawalFrequencyOptions
+            initialValue: selectedMethod,
+            decoration: const InputDecoration(
+              labelText: "Auto Payout Status",
+              border: OutlineInputBorder(),
+              enabledBorder: OutlineInputBorder(),
+              focusedBorder: OutlineInputBorder(),
+            ),
+            items: WithdrawalConfigView._withdrawalFrequencyOptions
                 .map((m) => DropdownMenuItem(value: m, child: Text(m)))
                 .toList(),
-            onChanged: (v) => onPaymentMethodChanged(v!),
+            onChanged: (v) {
+              if (v != null) {
+                widget.onPaymentMethodChanged(v);
+              }
+            },
+          ),
+          const SizedBox(height: 16),
+
+          Text(
+            "This updates your beneficiary auto payout settings.",
+            style: getTextStyle(fontSize: 12, color: Colors.black54),
           ),
         ],
       ),
