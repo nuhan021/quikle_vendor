@@ -51,6 +51,34 @@ class OrderService {
     }
   }
 
+  Future<OrderModel?> fetchOrderById({
+    required String orderId,
+    String? token,
+  }) async {
+    try {
+      final response = await _networkCaller.getRequest(
+        '${ApiConstants.orderDetails}$orderId',
+        token: token,
+      );
+
+      if (response.isSuccess && response.responseData != null) {
+        final jsonData = response.responseData is String
+            ? jsonDecode(response.responseData as String)
+                  as Map<String, dynamic>
+            : response.responseData as Map<String, dynamic>;
+
+        log('✅ Order detail API Response: ${jsonEncode(jsonData)}');
+        return OrderModel.fromJson(jsonData);
+      }
+
+      log('❌ Order detail API Error: ${response.responseData}');
+      return null;
+    } catch (e) {
+      log('Error fetching order details: $e');
+      return null;
+    }
+  }
+
   /// Map API status to UI status for filtering
   static String mapApiStatusToUiStatus(String? apiStatus) {
     switch (apiStatus?.toLowerCase()) {

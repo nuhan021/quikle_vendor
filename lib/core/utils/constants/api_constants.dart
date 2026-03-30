@@ -32,6 +32,7 @@ class ApiConstants {
 
   // Orders
   static const String myOrders = "${baseUrl}earning/order/my_orders";
+  static const String orderDetails = "${baseUrl}earning/order/";
   static const String confirmedPaymentOrders =
       "${baseUrl}earning/order/my_orders?offset=0&limit=5&status=confirmed";
   static const String createOffer = "${baseUrl}rider/orders/create-offer/";

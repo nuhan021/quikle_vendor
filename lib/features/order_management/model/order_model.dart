@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 class OrderResponse {
@@ -44,6 +43,7 @@ class OrderModel {
   final String? userName;
   final int? riderId;
   final int? vendorId;
+  final String? type;
   final String? shippingAddress;
   final String? deliveryType;
   final String? paymentMethod;
@@ -55,6 +55,8 @@ class OrderModel {
   final String? status;
   final String? transactionId;
   final String? trackingNumber;
+  final String? invoice1;
+  final String? invoice2;
   final DateTime? estimatedDelivery;
   final String? paymentStatus;
   final DateTime? createdAt;
@@ -67,6 +69,7 @@ class OrderModel {
     this.userName,
     this.riderId,
     this.vendorId,
+    this.type,
     this.shippingAddress,
     this.deliveryType,
     this.paymentMethod,
@@ -78,6 +81,8 @@ class OrderModel {
     this.status,
     this.transactionId,
     this.trackingNumber,
+    this.invoice1,
+    this.invoice2,
     this.estimatedDelivery,
     this.paymentStatus,
     this.createdAt,
@@ -86,7 +91,7 @@ class OrderModel {
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
-    DateTime? _parseDate(String? s) {
+    DateTime? parseDate(String? s) {
       if (s == null) return null;
       try {
         return DateTime.parse(s);
@@ -109,6 +114,7 @@ class OrderModel {
           : (json['vendor_id'] is String
                 ? int.tryParse(json['vendor_id'] as String)
                 : null),
+      type: json['type'] as String? ?? json['delivery_type'] as String?,
       shippingAddress: json['shipping_address'] as String?,
       deliveryType: json['delivery_type'] as String?,
       paymentMethod: json['payment_method'] as String?,
@@ -120,10 +126,12 @@ class OrderModel {
       status: json['status'] as String?,
       transactionId: json['transaction_id'] as String?,
       trackingNumber: json['tracking_number'] as String?,
-      estimatedDelivery: _parseDate(json['estimated_delivery'] as String?),
+      invoice1: json['invoice1'] as String?,
+      invoice2: json['invoice2'] as String?,
+      estimatedDelivery: parseDate(json['estimated_delivery'] as String?),
       paymentStatus: json['payment_status'] as String?,
-      createdAt: _parseDate(json['created_at'] as String?),
-      updatedAt: _parseDate(json['updated_at'] as String?),
+      createdAt: parseDate(json['created_at'] as String?),
+      updatedAt: parseDate(json['updated_at'] as String?),
       items:
           (json['items'] as List<dynamic>?)
               ?.map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
@@ -138,6 +146,7 @@ class OrderModel {
     'user_name': userName,
     'rider_id': riderId,
     'vendor_id': vendorId,
+    'type': type,
     'shipping_address': shippingAddress,
     'delivery_type': deliveryType,
     'payment_method': paymentMethod,
@@ -149,6 +158,8 @@ class OrderModel {
     'status': status,
     'transaction_id': transactionId,
     'tracking_number': trackingNumber,
+    'invoice1': invoice1,
+    'invoice2': invoice2,
     'estimated_delivery': estimatedDelivery?.toIso8601String(),
     'payment_status': paymentStatus,
     'created_at': createdAt?.toIso8601String(),
