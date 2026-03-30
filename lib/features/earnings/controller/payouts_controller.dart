@@ -5,12 +5,14 @@ import 'package:quikle_vendor/features/earnings/model/earnings_model.dart';
 import 'package:quikle_vendor/features/earnings/model/beneficiary_model.dart';
 import 'package:quikle_vendor/features/earnings/services/add_beneficiary_services.dart';
 import 'package:quikle_vendor/features/earnings/services/earning_sevices.dart';
+import 'package:quikle_vendor/features/earnings/services/withdraw_services.dart';
 import 'package:quikle_vendor/core/models/response_data.dart';
 import 'package:quikle_vendor/core/utils/logging/logger.dart';
 
 class PayoutsController extends GetxController {
   final EarningsService _earningsService = EarningsService();
   final AddBeneficiaryServices _beneficiaryService = AddBeneficiaryServices();
+  final WithdrawServices _withdrawServices = WithdrawServices();
 
   var availableBalance = 0.0.obs;
 
@@ -19,6 +21,7 @@ class PayoutsController extends GetxController {
   var paymentMethod = "".obs;
   var bankAccount = "".obs;
   var isSavingWithdrawalConfig = false.obs;
+  var isWithdrawing = false.obs;
 
   Rx<BeneficiaryModel?> beneficiary = Rx<BeneficiaryModel?>(null);
 
@@ -115,6 +118,46 @@ class PayoutsController extends GetxController {
       return;
     }
     availableBalance.value -= amount;
+  }
+
+  Future<ResponseData> withdrawRemote(
+    double amount, {
+    String? refreshToken,
+  }) async {
+    if (amount <= 0 || amount > availableBalance.value) {
+      return ResponseData(
+        isSuccess: false,
+        statusCode: 400,
+        responseData: {},
+        errorMessage: 'Please enter a valid withdrawal amount.',
+      );
+    }
+
+    isWithdrawing.value = true;
+    try {
+      final response = await _withdrawServices.withdraw(
+        amount: amount,
+        refreshToken: refreshToken,
+      );
+
+      if (response.isSuccess) {
+        withdrawFunds(amount);
+      } else {
+        AppLoggerHelper.error('Withdraw failed: ${response.errorMessage}');
+      }
+
+      return response;
+    } catch (e) {
+      AppLoggerHelper.error('Exception in withdrawRemote', e);
+      return ResponseData(
+        isSuccess: false,
+        statusCode: 500,
+        responseData: {},
+        errorMessage: e.toString(),
+      );
+    } finally {
+      isWithdrawing.value = false;
+    }
   }
 
   Future<ResponseData> saveWithdrawalConfig({String? refreshToken}) async {

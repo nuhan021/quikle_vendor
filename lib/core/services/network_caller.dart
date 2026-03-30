@@ -241,9 +241,7 @@ class NetworkCaller {
         isSuccess: true,
         statusCode: response.statusCode,
         responseData: decoded,
-        errorMessage: (decoded is Map && decoded['message'] != null)
-            ? decoded['message']
-            : '',
+        errorMessage: _extractErrorMessage(decoded, fallback: ''),
       );
     }
 
@@ -253,9 +251,7 @@ class NetworkCaller {
         isSuccess: false,
         statusCode: 400,
         responseData: decoded,
-        errorMessage: decoded is Map && decoded['message'] != null
-            ? decoded['message']
-            : 'Bad Request',
+        errorMessage: _extractErrorMessage(decoded, fallback: 'Bad Request'),
       );
     }
 
@@ -285,9 +281,7 @@ class NetworkCaller {
         isSuccess: false,
         statusCode: 500,
         responseData: decoded,
-        errorMessage: decoded is Map && decoded['message'] != null
-            ? decoded['message']
-            : 'Server error',
+        errorMessage: _extractErrorMessage(decoded, fallback: 'Server error'),
       );
     }
 
@@ -296,10 +290,62 @@ class NetworkCaller {
       isSuccess: false,
       statusCode: response.statusCode,
       responseData: decoded,
-      errorMessage: decoded is Map && decoded['message'] != null
-          ? decoded['message']
-          : 'Unknown error',
+      errorMessage: _extractErrorMessage(decoded, fallback: 'Unknown error'),
     );
+  }
+
+  String _extractErrorMessage(dynamic decoded, {required String fallback}) {
+    if (decoded == null) return fallback;
+    if (decoded is String && decoded.trim().isNotEmpty) return decoded;
+
+    if (decoded is Map) {
+      final message = decoded['message'];
+      if (message is String && message.trim().isNotEmpty) {
+        return message;
+      }
+
+      final detail = decoded['detail'];
+      if (detail is String && detail.trim().isNotEmpty) {
+        return detail;
+      }
+
+      final parts = <String>[];
+      decoded.forEach((key, value) {
+        final parsed = _valueToMessage(value);
+        if (parsed.isNotEmpty) {
+          parts.add('$key: $parsed');
+        }
+      });
+
+      if (parts.isNotEmpty) {
+        return parts.join(', ');
+      }
+    }
+
+    if (decoded is List && decoded.isNotEmpty) {
+      return decoded.map(_valueToMessage).where((e) => e.isNotEmpty).join(', ');
+    }
+
+    return fallback;
+  }
+
+  String _valueToMessage(dynamic value) {
+    if (value == null) return '';
+    if (value is String) return value;
+    if (value is List) {
+      return value.map(_valueToMessage).where((e) => e.isNotEmpty).join(', ');
+    }
+    if (value is Map) {
+      return value.entries
+          .map((entry) {
+            final parsed = _valueToMessage(entry.value);
+            if (parsed.isEmpty) return '';
+            return '${entry.key}: $parsed';
+          })
+          .where((e) => e.isNotEmpty)
+          .join(', ');
+    }
+    return value.toString();
   }
 
   // HANDLE NETWORK ERROR

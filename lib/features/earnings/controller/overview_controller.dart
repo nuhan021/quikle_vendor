@@ -20,7 +20,7 @@ class OverviewController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchOverviewData(); 
+    fetchOverviewData();
   }
 
   final EarningsService _service = EarningsService();
@@ -70,6 +70,19 @@ class OverviewController extends GetxController {
   void changeRange(String value) {
     selectedRange.value = value;
     fetchOverviewData(range: value);
+  }
+
+  void applyWithdrawal(double amount) {
+    if (amount <= 0) return;
+
+    totalEarnings.value = (totalEarnings.value - amount).clamp(
+      0.0,
+      double.infinity,
+    );
+    netEarnings.value = (netEarnings.value - amount).clamp(
+      0.0,
+      double.infinity,
+    );
   }
 
   String _mapRangeToPeriod(String rangeLabel) {
