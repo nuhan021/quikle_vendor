@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/common/styles/global_text_style.dart';
 
 class TransactionCard extends StatelessWidget {
-  final String orderId, amount, status, time, customer, delivery;
+  final String orderId;
+  final String amount;
+  final String status;
+  final String time;
+  final String customer;
+  final String delivery;
   final List<String> tags;
 
   const TransactionCard({
@@ -38,14 +44,20 @@ class TransactionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// Order ID + Amount
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "Order $orderId",
-                style: getTextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              Expanded(
+                child: Text(
+                  "Order $orderId",
+                  overflow: TextOverflow.ellipsis,
+                  style: getTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
+              const SizedBox(width: 12),
               Text(
                 amount,
                 style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w700),
@@ -53,19 +65,20 @@ class TransactionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-
-          /// Customer + Time
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                customer,
-                style: getTextStyle(
-                  fontSize: 14,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w500,
+              Expanded(
+                child: Text(
+                  customer,
+                  overflow: TextOverflow.ellipsis,
+                  style: getTextStyle(
+                    fontSize: 14,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
+              const SizedBox(width: 12),
               Text(
                 time,
                 style: getTextStyle(
@@ -77,74 +90,76 @@ class TransactionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-
-          /// Status + Tags | Delivery
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  /// Status Badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isReceived()
-                          ? Colors.green.withValues(alpha: .2)
-                          : Colors.transparent,
-                      border: isPending()
-                          ? Border.all(color: Colors.orange, width: 1)
-                          : null,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      status,
-                      style: getTextStyle(
-                        color: isReceived()
-                            ? Colors.black87
-                            : isPending()
-                            ? Colors.orange
-                            : Colors.grey,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-
-                  /// Tags
-                  for (final tag in tags)
+              Expanded(
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
                     Container(
-                      margin: const EdgeInsets.only(right: 6),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withValues(alpha: .2),
+                        color: isReceived()
+                            ? Colors.green.withValues(alpha: .2)
+                            : Colors.transparent,
+                        border: isPending()
+                            ? Border.all(color: Colors.orange, width: 1)
+                            : !isReceived()
+                            ? Border.all(color: Colors.black12, width: 1)
+                            : null,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        tag,
+                        status,
                         style: getTextStyle(
+                          color: isReceived()
+                              ? Colors.black87
+                              : isPending()
+                              ? Colors.orange
+                              : Colors.grey,
                           fontSize: 12,
-                          color: Colors.black87,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
-                ],
+                    for (final tag in tags)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withValues(alpha: .2),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          tag,
+                          style: getTextStyle(
+                            fontSize: 12,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-
-              /// Delivery
-              Text(
-                delivery,
-                style: getTextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w400,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  delivery,
+                  textAlign: TextAlign.end,
+                  overflow: TextOverflow.ellipsis,
+                  style: getTextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
             ],

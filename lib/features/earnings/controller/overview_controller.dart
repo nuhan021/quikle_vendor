@@ -55,12 +55,11 @@ class OverviewController extends GetxController {
             : 0.0;
         ordersCount.value = model.totalOrders ?? 0;
       } else {
-        // fallback to previous mock data for UX continuity
-        _applyMockData();
-        errorMessage.value = 'Failed to load earnings. Showing demo data.';
+        _resetOverviewData();
+        errorMessage.value = 'Failed to load earnings.';
       }
     } catch (e) {
-      _applyMockData();
+      _resetOverviewData();
       errorMessage.value = 'Error loading earnings: $e';
     } finally {
       isLoading.value = false;
@@ -93,13 +92,13 @@ class OverviewController extends GetxController {
     return 'this_week';
   }
 
-  void _applyMockData() {
-    totalEarnings.value = 4250.80;
-    netEarnings.value = 325.72;
-    paymentReceived.value = 3890.40;
-    pending.value = 360.40;
-    commission.value = 425.08;
-    avgOrder.value = 29.93;
-    ordersCount.value = 142;
+  void _resetOverviewData() {
+    totalEarnings.value = 0.0;
+    netEarnings.value = 0.0;
+    paymentReceived.value = 0.0;
+    pending.value = 0.0;
+    commission.value = 0.0;
+    avgOrder.value = 0.0;
+    ordersCount.value = 0;
   }
 }
