@@ -14,6 +14,8 @@ class AddBeneficiaryServices {
     required String bankIfsc,
     String? email,
     String? phone,
+    int? autoPayoutAmount,
+    String? autoPayoutStatus,
     String? refreshToken,
   }) async {
     try {
@@ -30,11 +32,15 @@ class AddBeneficiaryServices {
         'bank_ifsc': bankIfsc,
         if (email != null) 'email': email,
         if (phone != null) 'phone': phone,
+        if (autoPayoutAmount != null) 'auto_payout_amount': autoPayoutAmount,
+        if (autoPayoutStatus != null) 'auto_payout_status': autoPayoutStatus,
       };
 
       final authHeader = StorageService.token != null
           ? 'Bearer ${StorageService.token}'
           : null;
+
+      AppLoggerHelper.debug('Add beneficiary request body: $body');
 
       final response = await networkCaller.postRequest(
         ApiConstants.addBeneficiary,
