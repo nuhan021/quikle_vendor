@@ -29,7 +29,6 @@ class CompletedOrderDetailsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// 🔹 Header (fully data-driven)
                 OrderDetailsHeaderWidget(
                   orderId: order['id'],
                   status: order['status'],
