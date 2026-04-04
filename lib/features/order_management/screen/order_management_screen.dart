@@ -57,7 +57,6 @@ class OrderManagementScreen extends StatelessWidget {
                   final apiStatus = controller.apiStatusForTabIndex(
                     controller.selectedTab.value,
                   );
-                  // Force a refresh even if cache exists so API is hit and shimmer shows
                   await controller.fetchOrdersForApiStatus(
                     apiStatus,
                     force: true,
