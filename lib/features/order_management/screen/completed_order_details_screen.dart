@@ -37,7 +37,6 @@ class CompletedOrderDetailsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
 
-                /// 🔹 Order Items (fully reusable)
                 OrderDetailsItemsWidget(
                   items: List<Map<String, dynamic>>.from(order['items']),
                   total: order['total'],
