@@ -50,7 +50,6 @@ class CompletedOrderDetailsScreen extends StatelessWidget {
                 //   deliveryTime: order['deliveryTime'],
                 //   address: order['address'],
                 // ),
-                // const SizedBox(height: 30),
 
                 OrderDetailsActionsWidget(
                   orderId: order['id'],
