@@ -50,18 +50,24 @@ class OrderCardWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  orderId,
-                  style: getTextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF111827),
+                Expanded(
+                  child: Text(
+                    orderId,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: getTextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF111827),
+                    ),
                   ),
                 ),
+                SizedBox(width: 12),
                 Text(
                   timeAgo,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: getTextStyle(
                     fontSize: 14.sp,
                     color: Color(0xFF6B7280),
@@ -84,12 +90,16 @@ class OrderCardWidget extends StatelessWidget {
                   child: Icon(Icons.person, color: Colors.white, size: 12),
                 ),
                 SizedBox(width: 12),
-                Text(
-                  customerName,
-                  style: getTextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF111827),
+                Expanded(
+                  child: Text(
+                    customerName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: getTextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF111827),
+                    ),
                   ),
                 ),
               ],
@@ -108,9 +118,13 @@ class OrderCardWidget extends StatelessWidget {
                   child: Icon(Icons.access_time, color: Colors.white, size: 12),
                 ),
                 SizedBox(width: 12),
-                Text(
-                  deliveryTime,
-                  style: getTextStyle(fontSize: 16, color: Color(0xFF111827)),
+                Expanded(
+                  child: Text(
+                    deliveryTime,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: getTextStyle(fontSize: 16, color: Color(0xFF111827)),
+                  ),
                 ),
               ],
             ),
