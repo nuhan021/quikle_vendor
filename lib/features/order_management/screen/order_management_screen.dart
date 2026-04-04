@@ -32,7 +32,6 @@ class OrderManagementScreen extends StatelessWidget {
         child: Column(
           children: [
             OrdersTabNavigationWidget(),
-            // Show prescription orders widget only for medicine vendors in "New" tab
             Obx(() {
               if (controller.selectedTab.value == 0 && isMedicineVendor) {
                 return GestureDetector(
