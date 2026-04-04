@@ -64,7 +64,6 @@ class OrderManagementScreen extends StatelessWidget {
                 }
 
                 if (controller.isLoading.value) {
-                  // Show a list of ShimmerOrderCard placeholders while orders load
                   return RefreshIndicator(
                     onRefresh: _onRefresh,
                     backgroundColor: Colors.white,
