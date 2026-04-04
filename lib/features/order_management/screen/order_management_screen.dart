@@ -53,7 +53,6 @@ class OrderManagementScreen extends StatelessWidget {
             }),
             Expanded(
               child: Obx(() {
-                // Pull-to-refresh should refresh only the currently selected tab's data
                 Future<void> _onRefresh() async {
                   final apiStatus = controller.apiStatusForTabIndex(
                     controller.selectedTab.value,
