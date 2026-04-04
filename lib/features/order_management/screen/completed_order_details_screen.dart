@@ -44,8 +44,6 @@ class CompletedOrderDetailsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
 
-             
-
                 OrderDetailsActionsWidget(
                   orderId: order['id'],
                   status: order['status'],
