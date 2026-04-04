@@ -52,7 +52,6 @@ class CompletedOrderDetailsScreen extends StatelessWidget {
                 // ),
                 // const SizedBox(height: 30),
 
-                /// 🔹 Actions — button callbacks come from controller
                 OrderDetailsActionsWidget(
                   orderId: order['id'],
                   status: order['status'],
