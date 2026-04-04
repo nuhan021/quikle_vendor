@@ -47,7 +47,6 @@ class CompletedOrderDetailsScreen extends StatelessWidget {
                 /// 🔹 Customer Info
                 // OrderDetailsCustomerInfoWidget(
                 //   name: order['customerName'],
-                //   deliveryTime: order['deliveryTime'],
 
                 OrderDetailsActionsWidget(
                   orderId: order['id'],
