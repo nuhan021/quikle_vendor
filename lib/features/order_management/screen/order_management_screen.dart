@@ -17,7 +17,6 @@ class OrderManagementScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(OrderManagementController());
 
-    // Get vendor type from StorageService
     final vendorData = StorageService.getVendorDetails();
     final vendorType = vendorData?['type'] as String? ?? '';
     final isMedicineVendor = vendorType.toLowerCase() == 'medicine';
